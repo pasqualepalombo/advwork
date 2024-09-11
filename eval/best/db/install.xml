@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/advwork/eval/best/db" VERSION="20120122" COMMENT="XMLDB file for Moodle mod/advwork/eval/best"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="advworkeval_best_settings" COMMENT="Settings for the grading evaluation subplugin Comparison with the best assessment.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="advworkid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="comparison" TYPE="int" LENGTH="3" NOTNULL="false" DEFAULT="5" SEQUENCE="false" COMMENT="Here we store the recently set factor of comparison of assessment in the given advwork. Reasonable values are from 1 to 10 or so. Default to 5."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fkuq_advwork" TYPE="foreign-unique" FIELDS="advworkid" REFTABLE="advwork" REFFIELDS="id" COMMENT="Every advwork can have only one settings record"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

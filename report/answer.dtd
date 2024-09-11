@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT question (answer*)>
+<!ELEMENT answer EMPTY>
+<!ATTLIST answer
+     id ID #REQUIRED
+     name CDATA #REQUIRED
+     email CDATA #REQUIRED
+     value CDATA #REQUIRED
+     motivation CDATA #REQUIRED>

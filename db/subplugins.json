@@ -1,0 +1,7 @@
+{
+    "plugintypes": {
+        "advworkform": "mod\/advwork\/form",
+        "advworkallocation": "mod\/advwork\/allocation",
+        "advworkeval": "mod\/advwork\/eval"
+    }
+}
