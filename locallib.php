@@ -1765,7 +1765,7 @@ class advwork {
 	/* @return #TODO */
 	public function createclasssimulation_url() {
         global $CFG;
-		return new moodle_url('/sim/simulationclass.php', array('update' => $this->cm->id, 'return' => 1));
+		return new moodle_url('/mod/advwork/sim/simulationclass.php', array('update' => $this->cm->id, 'return' => 1));
     }
 
     /**
@@ -5325,9 +5325,7 @@ class advwork_user_plan implements renderable {
 		
 		//SIM//
 		$task->title = get_string('Create simulation class', 'advwork');
-		var_dump($task);
 		$task->link = $advwork->createclasssimulation_url();
-		var_dump($task);
 		
 		
         if ($advwork->useexamples and $advwork->examplesmode == advwork::EXAMPLES_BEFORE_SUBMISSION
