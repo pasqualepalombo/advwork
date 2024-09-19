@@ -1765,8 +1765,8 @@ class advwork {
 	/* @return #TODO */
 	public function createclasssimulation_url() {
         global $CFG;
-		return new moodle_url('/mod/advwork/sim/simulationclass.php', array('update' => $this->cm->id, 'return' => 1));
-    }
+        return new moodle_url('/mod/advwork/view.php', array('id' => $this->cm->id));
+        }
 
     /**
      * @param string $method allocation method
