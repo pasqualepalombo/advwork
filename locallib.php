@@ -38,6 +38,64 @@ require_once (__DIR__.'/enum/basicenum.php');
 require_once (__DIR__.'/enum/capabilities.php');
 require_once (__DIR__.'/statistics.php');
 
+
+//SIM funzione aggiunta
+require_once(__DIR__ . '/../../config.php'); // Include the main Moodle config file.
+require_once($CFG->libdir . '/moodlelib.php'); // Include the library with user_create_user().
+
+if(isset($csr)){
+// Example user data (you can replace this with dynamic data).
+    $userdata = [
+        'username' => 'johndoe',
+        'password' => 'password123',
+        'firstname' => 'John',
+        'lastname' => 'Doe',
+        'email' => 'johndoe@example.com',
+        'city' => 'New York'
+    ];
+
+    // Call the function to create the user.
+    $new_user = create_custom_user($userdata);
+
+    // Output the result (you can redirect or show a success message).
+    echo "User created with ID: " . $new_user->id;
+}
+
+$csr = null;
+
+
+
+function create_custom_user($userdata) {
+    global $DB;
+
+    // Prepare the user object with required fields.
+    $user = new stdClass();
+    $user->username = $userdata['username'];  // Unique username.
+    $user->password = hash_internal_user_password($userdata['password']); // Password (hashed).
+    $user->firstname = $userdata['firstname'];
+    $user->lastname = $userdata['lastname'];
+    $user->email = $userdata['email'];
+    $user->confirmed = 1;  // Mark as confirmed.
+    $user->mnethostid = $CFG->mnet_localhost_id; // Necessary for user creation.
+    $user->auth = 'manual';  // Auth method (can be manual, ldap, etc.).
+    $user->timecreated = time();  // Timestamp for user creation.
+    $user->timemodified = time(); // Timestamp for user modification.
+
+    // Add optional fields as needed.
+    if (isset($userdata['city'])) {
+        $user->city = $userdata['city'];
+    }
+
+    // Call Moodle's user_create_user() function to insert the user.
+    $new_user = user_create_user($user);
+
+    // Return the created user object, or any other info you need.
+    return $new_user;
+}
+
+
+
+
 /**
  * Full-featured advwork API
  *
@@ -1762,9 +1820,16 @@ class advwork {
         return new moodle_url('/course/modedit.php', array('update' => $this->cm->id, 'return' => 1));
     }
 	
-	/* @return #TODO */
+	/* @return on the same page and creating, if needed, the virtual students #TODO */
 	public function createclasssimulation_url() {
         global $CFG;
+        
+
+        # devo trovare il modo di rendere il link utilizzabile. forse vedere moodle_url con params?
+        # o forse devo solo mettere questo action ma bene, forse è meglio
+        echo '<a href="yourpage.php?action=create_user">Create User</a>';
+        $csr = 1;
+
         return new moodle_url('/mod/advwork/view.php', array('id' => $this->cm->id));
         }
 
@@ -5323,11 +5388,16 @@ class advwork_user_plan implements renderable {
             $phase->tasks['instructreviewers'] = $task;
         }
 		
-		//SIM//
-		$task->title = get_string('Create simulation class', 'advwork');
+
+
+
+		//SIM SUBMISSION PHASE - CREATE SIMULATION CLASS BUTTON//
+		$task->title = get_string('Create simulation class: 15', 'advwork');
 		$task->link = $advwork->createclasssimulation_url();
+        
 		
 		
+
         if ($advwork->useexamples and $advwork->examplesmode == advwork::EXAMPLES_BEFORE_SUBMISSION
                 and has_capability('mod/advwork:submit', $advwork->context, $userid, false)
                     and !has_capability('mod/advwork:manageexamples', $advwork->context, $userid)) {
