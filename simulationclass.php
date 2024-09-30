@@ -23,9 +23,14 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
+#Advwork Library
 require(__DIR__.'/../../config.php');
 require_once(__DIR__.'/locallib.php');
+
+#Moodle Library for creating/handling users
+require_once(__DIR__ . '/../../config.php'); // Include the main Moodle config file.
+require_once($CFG->libdir . '/moodlelib.php'); // Include the library with user_create_user().
+
 $id         = required_param('id', PARAM_INT); 
 $w          = optional_param('w', 0, PARAM_INT);  // advwork instance ID
 $editmode   = optional_param('editmode', null, PARAM_BOOL);
@@ -64,19 +69,91 @@ $output = $PAGE->get_renderer('mod_advwork');
 
 $PAGE->set_title('Simulation Class');
 
+#SIM FUNCTIONS
+$stud_num = "";
+$stud_already_created = 0;
+$test_user = new stdClass();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    # get how many students to create
+    $stud_num = test_input($_POST["stud_num"]);
+    echo "<script type='text/javascript'>alert('" . $stud_num . "');</script>";
+
+    #base students data
+    $userdata = [
+        'username' => 'sim_student',
+        'password' => '123',
+        'firstname' => 'SIM',
+        'lastname' => 'STUDENT',
+        'email' => 'student@sim.com'
+    ];
+    create_custom_user($userdata);
+    #$new_user = create_custom_user($userdata);
+
+}
+
+function test(){
+    echo "<script type='text/javascript'>alert('test function');</script>";
+}
+
+function test_input($data) {
+  $data = trim($data);
+  $data = stripslashes($data);
+  $data = htmlspecialchars($data);
+  return $data;
+}
+
+function create_custom_user($userdata) {
+    echo "<script type='text/javascript'>alert('create custom user');</script>";
+    global $DB, $CFG;
+    $user = new stdClass();
+    $user->username = $userdata['username'];  // Unique username.
+    $user->password = hash_internal_user_password($userdata['password']); // Password (hashed).
+    $user->firstname = $userdata['firstname'];
+    $user->lastname = $userdata['lastname'];
+    $user->email = $userdata['email'];
+    $user->confirmed = 1;  // Mark as confirmed.
+    $user->mnethostid = $CFG->mnet_localhost_id; // Host ID.
+    $user->auth = 'manual';  // Authentication method.
+    $user->timecreated = time();  // Timestamp for creation.
+    $user->timemodified = time(); // Timestamp for modification.
+
+    // Add optional fields.
+    if (isset($userdata['city'])) {
+        $user->city = $userdata['city'];
+    }
+
+    $test_user = $user;
+    // Insert the user using Moodle's built-in function.
+    #$new_user = user_create_user($user);
+
+    #return $new_user;
+}
+
+
 #OUTPUT STARTS HERE
 
 echo $output->header();
-echo $output->heading(format_string('Simulation Class'));
+echo $output->heading(format_string('Simulated Students'));
 
-$backlink = "view.php?id=" . $id;
 #echo "<script type='text/javascript'>alert('$id');</script>";
 
 ?>
-
+<div class="container">
+  <p>Total number of simulated students: <?php echo($stud_already_created); ?></p>
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            How many students to create: <input type="number" name="stud_num">
+            <input type="submit">
+        </form>
+        <span class="badge bg-info"><?php echo "User created with ID: ";?></span>
+        <?php var_dump($test_user);?>
+    </p>
+</div>
 <p>Creazione di una classe virtuale con assessement automatico...</p>
 <p>Creazione studenti: no</p>
 <p>Impostazione dei gruppi per ADVWORK: no</p>
 <p>Assegnazione dei gruppi: no</p>
 <p>Simulazione degli assessment: no</p>
-<button type="button" class="btn btn-light" id=""><a href="<?php echo $backlink; ?>">Back to ADVWORKER: View</a></button>
+<button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
