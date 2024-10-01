@@ -29,7 +29,10 @@ require_once(__DIR__.'/locallib.php');
 
 #Moodle Library for creating/handling users
 require_once(__DIR__ . '/../../config.php'); // Include the main Moodle config file.
-require_once($CFG->libdir . '/moodlelib.php'); // Include the library with user_create_user().
+require_once($CFG->libdir . '/moodlelib.php'); 
+require_once($CFG->dirroot . '/user/lib.php'); // Include la libreria utenti di Moodle.
+
+use core_user; // Usa il namespace corretto per la classe core_user.
 
 $id         = required_param('id', PARAM_INT); 
 $w          = optional_param('w', 0, PARAM_INT);  // advwork instance ID
@@ -72,14 +75,13 @@ $PAGE->set_title('Simulation Class');
 #SIM FUNCTIONS
 $stud_num = "";
 $stud_already_created = 0;
-$test_user = new stdClass();
+$important_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     # get how many students to create
     $stud_num = test_input($_POST["stud_num"]);
-    echo "<script type='text/javascript'>alert('" . $stud_num . "');</script>";
-
+    
     #base students data
     $userdata = [
         'username' => 'sim_student',
@@ -88,13 +90,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         'lastname' => 'STUDENT',
         'email' => 'student@sim.com'
     ];
-    create_custom_user($userdata);
-    #$new_user = create_custom_user($userdata);
 
-}
-
-function test(){
-    echo "<script type='text/javascript'>alert('test function');</script>";
+    // Chiama la funzione per creare il nuovo utente.
+    try {
+        $new_user = create_custom_user($userdata);
+        $important_message = "Utente creato con successo. ID utente: " . $new_user->id;
+    } catch (Exception $e) {
+        $important_message = "Errore nella creazione dell'utente: " . $e->getMessage();
+    }
 }
 
 function test_input($data) {
@@ -105,30 +108,28 @@ function test_input($data) {
 }
 
 function create_custom_user($userdata) {
-    echo "<script type='text/javascript'>alert('create custom user');</script>";
-    global $DB, $CFG;
+    // Controlla che i dati necessari siano presenti.
+    if (empty($userdata['username']) || empty($userdata['password']) || empty($userdata['email'])) {
+        throw new Exception('Dati mancanti: username, password o email non sono presenti.');
+    }
+
+    // Creare un oggetto utente.
     $user = new stdClass();
-    $user->username = $userdata['username'];  // Unique username.
-    $user->password = hash_internal_user_password($userdata['password']); // Password (hashed).
+    $user->username = $userdata['username'];
+    $user->password = hash_internal_user_password($userdata['password']);  // Hash la password.
     $user->firstname = $userdata['firstname'];
     $user->lastname = $userdata['lastname'];
     $user->email = $userdata['email'];
-    $user->confirmed = 1;  // Mark as confirmed.
-    $user->mnethostid = $CFG->mnet_localhost_id; // Host ID.
-    $user->auth = 'manual';  // Authentication method.
-    $user->timecreated = time();  // Timestamp for creation.
-    $user->timemodified = time(); // Timestamp for modification.
+    $user->confirmed = 1;  // Conferma l'utente.
+    $user->mnethostid = $GLOBALS['CFG']->mnet_localhost_id; // ID host.
+    $user->auth = 'manual';  // Metodo di autenticazione (manuale).
+    $user->timecreated = time();
+    $user->timemodified = time();
 
-    // Add optional fields.
-    if (isset($userdata['city'])) {
-        $user->city = $userdata['city'];
-    }
+    // Creare l'utente utilizzando la funzione `user_create_user()`.
+    $new_user = user_create_user($user);
 
-    $test_user = $user;
-    // Insert the user using Moodle's built-in function.
-    #$new_user = user_create_user($user);
-
-    #return $new_user;
+    return $new_user;
 }
 
 
@@ -136,8 +137,6 @@ function create_custom_user($userdata) {
 
 echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
-
-#echo "<script type='text/javascript'>alert('$id');</script>";
 
 ?>
 <div class="container">
@@ -147,8 +146,7 @@ echo $output->heading(format_string('Simulated Students'));
             How many students to create: <input type="number" name="stud_num">
             <input type="submit">
         </form>
-        <span class="badge bg-info"><?php echo "User created with ID: ";?></span>
-        <?php var_dump($test_user);?>
+        <span class="badge bg-warning"><?php echo $important_message;?></span>
     </p>
 </div>
 <p>Creazione di una classe virtuale con assessement automatico...</p>
