@@ -73,30 +73,66 @@ $output = $PAGE->get_renderer('mod_advwork');
 $PAGE->set_title('Simulation Class');
 
 #SIM FUNCTIONS
-$stud_num_to_create = "";
+$stud_num_to_create = 0;
+$num_students = read_how_many_sim_students_already_exists('sim_student', false);
+#quello sotto è l'array degli studenti, mi servirà sicuramente
+#$students = get_students_by_username_prefix('sim_student', true);
+
+#DEBUG
 $important_message = "";
+$debug = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     # get how many students to create
-    $stud_num_to_create = test_input($_POST["stud_num_to_create"]);
+    $stud_num_to_create = intval($_POST["stud_num_to_create"]);
     
-    #base students data
-    $userdata = [
-        'username' => 'sim_student',
-        'password' => '123',
-        'firstname' => 'SIM',
-        'lastname' => 'STUDENT',
-        'email' => 'student@sim.com'
-    ];
+    var_dump($stud_num_to_create);
+    var_dump($num_students);
+    $debug = 'NS:' . $num_students . ' SNTC:' . $stud_num_to_create;
 
-    // Chiama la funzione per creare il nuovo utente.
-    try {
-        $new_user = create_custom_user($userdata);
-        $important_message = "Utente creato con successo. ID utente: " . $new_user->id;
-    } catch (Exception $e) {
-        $important_message = "Errore nella creazione dell'utente: " . $e->getMessage();
+    if ($num_students >= $stud_num_to_create) {
+        
+        $message = "troppi";
+        echo "<script type='text/javascript'>alert('$message');</script>";
+
+        $important_message = 'Si hanno a disposizione abbastanza studenti';
     }
+    elseif ($num_students < $stud_num_to_create) {
+        
+        $message = "pochi";
+        echo "<script type='text/javascript'>alert('$message');</script>";
+
+        $remaining_students = $stud_num_to_create - $num_students;
+        
+        $message = $remaining_students;
+        echo "<script type='text/javascript'>alert('$message');</script>";
+        
+        for ($x = $num_students + 1; $x <= $stud_num_to_create; $x++) {
+
+            $userdata = [
+                'username' => 'sim_student_' . $x,
+                'password' => '123',
+                'firstname' => 'SIM',
+                'lastname' => 'STUDENT',
+                'email' => 'student' . $x . '@sim.com'
+            ];
+            
+            // Chiama la funzione per creare il nuovo utente.
+            try {
+                $new_user = create_custom_user($userdata);
+                $important_message = "Utenti creato con successo.";
+            } catch (Exception $e) {
+                $important_message = "Errore nella creazione dell'utente: " . $e->getMessage();
+            }
+
+        }
+        
+    }
+    #togliere queste due se voglio evitare il redirect e ottenere le informazioni
+    header("Location: simulationclass.php?id=" . $id); 
+    exit();
+    
 }
 
 function test_input($data) {
@@ -150,7 +186,6 @@ function read_how_many_sim_students_already_exists($prefix = 'sim_student', $ret
     }
 }
 
-$num_students = read_how_many_sim_students_already_exists('sim_student', false);
 
 #OUTPUT STARTS HERE
 
@@ -165,11 +200,11 @@ echo $output->heading(format_string('Simulated Students'));
             How many students to create: <input type="number" name="stud_num_to_create">
             <input type="submit">
         </form>
-        <span class="badge bg-warning"><?php echo $important_message;?></span>
+        <span class="badge bg-warning"><?php echo $important_message; echo $debug; ?></span>
     </p>
 </div>
 <p>Creazione di una classe virtuale con assessement automatico...</p>
-<p>Creazione studenti: no</p>
+<p>Creazione studenti: si</p>
 <p>Impostazione dei gruppi per ADVWORK: no</p>
 <p>Assegnazione dei gruppi: no</p>
 <p>Simulazione degli assessment: no</p>
