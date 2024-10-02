@@ -28,9 +28,9 @@ require(__DIR__.'/../../config.php');
 require_once(__DIR__.'/locallib.php');
 
 #Moodle Library for creating/handling users
-require_once(__DIR__ . '/../../config.php'); // Include the main Moodle config file.
-require_once($CFG->libdir . '/moodlelib.php'); 
+require_once($CFG->libdir . '/moodlelib.php'); // Include il user_create_user
 require_once($CFG->dirroot . '/user/lib.php'); // Include la libreria utenti di Moodle.
+require_once($CFG->libdir . '/datalib.php'); // Include le funzioni del database di Moodle.
 
 use core_user; // Usa il namespace corretto per la classe core_user.
 
@@ -73,14 +73,13 @@ $output = $PAGE->get_renderer('mod_advwork');
 $PAGE->set_title('Simulation Class');
 
 #SIM FUNCTIONS
-$stud_num = "";
-$stud_already_created = 0;
+$stud_num_to_create = "";
 $important_message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     # get how many students to create
-    $stud_num = test_input($_POST["stud_num"]);
+    $stud_num_to_create = test_input($_POST["stud_num_to_create"]);
     
     #base students data
     $userdata = [
@@ -132,6 +131,26 @@ function create_custom_user($userdata) {
     return $new_user;
 }
 
+function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
+    global $DB;
+
+    $sql = "SELECT * FROM {user} WHERE username LIKE :prefix AND deleted = 0"; 
+    $params = ['prefix' => $prefix . '%'];
+
+    // Se si vuole restituire l'array con i risultati.
+    if ($return_array) {
+        // Esegui la query e ottieni i record.
+        $students = $DB->get_records_sql($sql, $params);
+        return $students;  // Restituisce un array di oggetti utente.
+    } else {
+        // Se si vuole solo il numero degli utenti che corrispondono.
+        $sql_count = "SELECT COUNT(*) FROM {user} WHERE username LIKE :prefix AND deleted = 0";
+        $count = $DB->count_records_sql($sql_count, $params);
+        return $count;  // Restituisce il numero di studenti trovati.
+    }
+}
+
+$num_students = read_how_many_sim_students_already_exists('sim_student', false);
 
 #OUTPUT STARTS HERE
 
@@ -140,10 +159,10 @@ echo $output->heading(format_string('Simulated Students'));
 
 ?>
 <div class="container">
-  <p>Total number of simulated students: <?php echo($stud_already_created); ?></p>
+  <p>Total number of simulated students: <?php echo $num_students; ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            How many students to create: <input type="number" name="stud_num">
+            How many students to create: <input type="number" name="stud_num_to_create">
             <input type="submit">
         </form>
         <span class="badge bg-warning"><?php echo $important_message;?></span>
