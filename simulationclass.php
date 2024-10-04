@@ -76,9 +76,12 @@ $PAGE->set_title('Simulation Class');
 #SIM FUNCTIONS
 $stud_num_to_create = 0;
 $num_students = 0;
+
+
 #DEBUG
 $important_message = "";
 $debug = '';
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['create_students_btn'])) {
@@ -87,14 +90,55 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } 
     elseif (isset($_POST['enroll_students_btn'])) {
         $stud_num_to_enroll= intval($_POST["stud_num_to_enroll"]);
-        enroll_users_by_form($stud_num_to_enroll);
+        enroll_users_by_form($stud_num_to_enroll, $id);
     }
-
+    elseif (isset($_POST['create_submissions_btn'])) {
+        create_submissions_by_advwork_id($id);
+    }
 
     #togliere queste due se voglio evitare il redirect e ottenere le informazioni
     #header("Location: simulationclass.php?id=" . $id); 
     #exit();
     
+}
+
+function create_submissions_by_advwork_id($advwork_id) {
+    echo "<script type='text/javascript'>alert('$advwork_id');</script>";
+    $course_id = get_course_id_from_activity($advwork_id);
+    $enrolled_students = get_students_in_course($course_id, true);
+    $advworkid = $advwork_id;
+    $timecreated = time();
+    $timemodified = time();
+    $title = 'Submission_title_by_SM';
+    $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_SM</p>';
+    $contentformat = 1;
+
+    foreach ($enrolled_students as $student){
+        $authorid = $student->id;
+        $params = [
+            'advworkid' => $advworkid,
+            'authorid' => $authorid,
+            'timecreated' => $timecreated,
+            'timemodified' => $timemodified,
+            'title' => $title,
+            'content' => $content,
+            'contentformat' => $contentformat,
+        ];
+        $sql = "
+            INSERT INTO mdl_advwork_submission (advworkid, authorid, timecreated, timemodified, title, content, contentformat) 
+            VALUES (:advworkid, :authorid, :timecreated, :timemodified, :title, :content, :contentformat)";
+
+        $DB->execute($sql, $params);
+    }
+    #fare la query singola prima di mdl_advwork_submissions
+    #solo advworkid, authorid, time1 e 2, title, content e contentformat=1
+
+    #poi fai un bel ciclo rispetto gli studenti. ora devo far riposare il surface.
+    
+    #fare la query singola prima di mdl_advwork_submissions
+    #solo advworkid, authorid, time1 e 2, title, content e contentformat=1
+
+    #poi fai un bel ciclo rispetto gli studenti. ora devo far riposare il surface.
 }
 
 function create_users_by_form($stud_num_to_create){
@@ -129,7 +173,7 @@ function create_users_by_form($stud_num_to_create){
 
 }
 
-function enroll_users_by_form($stud_num_to_enroll){
+function enroll_users_by_form($stud_num_to_enroll, $id_activity){
     global $DB;
     $num_students = read_how_many_sim_students_already_exists('sim_student', false);
 
@@ -138,12 +182,33 @@ function enroll_users_by_form($stud_num_to_enroll){
         
         $students = read_how_many_sim_students_already_exists('sim_student', true);
         $students_to_enroll = array_slice($students, 0, $stud_num_to_enroll);
-
-
-
+    
+        $courseid = get_course_id_from_activity($id_activity);
         
-    }
+        #echo "<script type='text/javascript'>alert('$courseid');</script>";
 
+
+        if (empty($courseid) || empty($students_to_enroll)) {
+            throw new Exception('Il corso o gli studenti non sono stati definiti correttamente.');
+        }
+        
+        // Recupera l'istanza del metodo di iscrizione (self enrolment, manual enrolment, ecc.).
+        $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => 'manual'), '*', MUST_EXIST);
+        
+        // Recupera il plugin di iscrizione manuale.
+        $enrol_manual = enrol_get_plugin('manual');
+
+        if ($enrol && $enrol_manual) {
+            foreach ($students_to_enroll as $student) {
+                $student_id = $student->id; // Estrai solo l'ID dello studente
+                // Iscrivi l'utente al corso.
+                $enrol_manual->enrol_user($enrol, $student_id, 5); // 5 è l'ID del ruolo di 'student' di mdl_role.
+            }
+            echo "Studenti iscritti con successo al corso con ID: $courseid";
+        } else {
+            throw new Exception('Non è stato possibile trovare il metodo di iscrizione manuale per il corso.');
+        } 
+    }
 }
 
 function create_custom_user($userdata) {
@@ -261,6 +326,21 @@ function get_students_in_course($courseid, $return_array = true) {
     }
 }
 
+function get_submission_number($advwork_id) {
+    global $DB;
+
+    # Prepara la query SQL per ottenere il numero di tutte le submission.
+    $params = ['advworkid' => $advwork_id];
+    
+    $sql_count = "
+        SELECT COUNT(*) 
+        FROM mdl_advwork_submissions 
+        WHERE advworkid = :advworkid";
+
+    $count = $DB->count_records_sql($sql_count, $params);
+    return $count;  # Restituisce il numero di studenti trovati.
+}
+
 #OUTPUT STARTS HERE
 
 echo $output->header();
@@ -273,17 +353,24 @@ echo $output->heading(format_string('Simulated Students'));
 <p><form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
                 How many students to create: <input type="number" name="stud_num_to_create">
                 <button type="submit" name="create_students_btn">Create Simulated Students</button>
-</p></form>
+</form></p>
 <p><span class="badge bg-warning"><?php echo $important_message; echo $debug; ?></span></p>
 
-<p>Total number of simulated students en-rolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
+<p>How many simulated students en-rolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
 <p><form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-                How many students to en-roll: <input type="number" name="stud_num_to_enroll">
+                How many students to en-roll in total: <input type="number" name="stud_num_to_enroll">
                 <button type="submit" name="enroll_students_btn">En-roll Simulated Students</button>
 </form></p>
-<p>Creazione di una classe virtuale con assessement automatico...</p>
+<form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+    <p>Submissions number: <?php echo get_submission_number($id); ?>    
+    <button type="submit" name="create_submissions_btn">Create Simulated Submissions</button>
+    </p>
+</form>
 <p>Creazione studenti: si</p>
-<p>Impostazione dei gruppi per ADVWORK: no</p>
-<p>Assegnazione dei gruppi: no</p>
+<p>Partecipazione al corso automatico: si</p>
 <p>Simulazione degli assessment: no</p>
+<p>Assegnazione dei gruppi: no</p>
+<p>Assegnazione del grouping: no</p>
+<p>Impostazione dei gruppi e grouping per ADVWORK: no</p>
+
 <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
