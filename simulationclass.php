@@ -76,12 +76,11 @@ $PAGE->set_title('Simulation Class');
 #SIM FUNCTIONS
 $stud_num_to_create = 0;
 $num_students = 0;
-
+$advworkid = $advworkrecord->id;
 
 #DEBUG
 $important_message = "";
 $debug = '';
-
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['create_students_btn'])) {
@@ -93,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         enroll_users_by_form($stud_num_to_enroll, $id);
     }
     elseif (isset($_POST['create_submissions_btn'])) {
-        create_submissions_by_advwork_id($id);
+        create_submissions_by_advwork_id($id, $advworkid);
     }
 
     #togliere queste due se voglio evitare il redirect e ottenere le informazioni
@@ -102,43 +101,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
 }
 
-function create_submissions_by_advwork_id($advwork_id) {
-    echo "<script type='text/javascript'>alert('$advwork_id');</script>";
+function create_submissions_by_advwork_id($advwork_id, $advworkid) {
+    global $DB;
+    echo "<script type='text/javascript'>alert('$advworkid');</script>";
     $course_id = get_course_id_from_activity($advwork_id);
     $enrolled_students = get_students_in_course($course_id, true);
-    $advworkid = $advwork_id;
-    $timecreated = time();
-    $timemodified = time();
+    
     $title = 'Submission_title_by_SM';
     $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_SM</p>';
-    $contentformat = 1;
-
+    
     foreach ($enrolled_students as $student){
         $authorid = $student->id;
-        $params = [
-            'advworkid' => $advworkid,
-            'authorid' => $authorid,
-            'timecreated' => $timecreated,
-            'timemodified' => $timemodified,
-            'title' => $title,
-            'content' => $content,
-            'contentformat' => $contentformat,
-        ];
-        $sql = "
-            INSERT INTO mdl_advwork_submission (advworkid, authorid, timecreated, timemodified, title, content, contentformat) 
-            VALUES (:advworkid, :authorid, :timecreated, :timemodified, :title, :content, :contentformat)";
 
-        $DB->execute($sql, $params);
+        $data = new stdClass();
+        $data->advworkid = $advworkid;            // Valore dell'ID advwork
+        $data->authorid = $authorid;              // ID dell'autore
+        $data->timecreated = time();              // Timestamp attuale
+        $data->timemodified = time();             // Timestamp attuale
+        $data->title = $title;       // Titolo dell'inserzione
+        $data->content = $content;  // Contenuto dell'inserzione
+        $data->feedbackauthorformat = 1;
+        $data->contentformat = 1;                 // Formato del contenuto (es: 1 per testo)
+        
+        $DB->insert_record('advwork_submissions', $data);
     }
-    #fare la query singola prima di mdl_advwork_submissions
-    #solo advworkid, authorid, time1 e 2, title, content e contentformat=1
-
-    #poi fai un bel ciclo rispetto gli studenti. ora devo far riposare il surface.
     
-    #fare la query singola prima di mdl_advwork_submissions
-    #solo advworkid, authorid, time1 e 2, title, content e contentformat=1
-
-    #poi fai un bel ciclo rispetto gli studenti. ora devo far riposare il surface.
 }
 
 function create_users_by_form($stud_num_to_create){
@@ -185,9 +172,6 @@ function enroll_users_by_form($stud_num_to_enroll, $id_activity){
     
         $courseid = get_course_id_from_activity($id_activity);
         
-        #echo "<script type='text/javascript'>alert('$courseid');</script>";
-
-
         if (empty($courseid) || empty($students_to_enroll)) {
             throw new Exception('Il corso o gli studenti non sono stati definiti correttamente.');
         }
