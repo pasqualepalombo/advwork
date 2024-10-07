@@ -424,5 +424,6 @@ $string['delete_empty_advwork'] = "Delete empty Advwork in the chart";
 $string['delete_empty_advwork_confirmation'] = "Are you sure to delete the empty advwork session? Will be delete all the session without any submission, even the ones has been recently started?";
 $string['delete_empty_advwork_denied_message'] = "The empty session has not been deleted.";
 
-
+//Added for SimulationClass
+$string['createsimulationclass'] = 'Create Simulation Class';
 

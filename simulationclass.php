@@ -1,5 +1,5 @@
 <?php
-
+#echo "<script type='text/javascript'>alert('$message');</script>";
 # This file is part of Moodle - http://moodle.org/
 #
 # Moodle is free software: you can redistribute it and/or modify
@@ -73,71 +73,64 @@ $output = $PAGE->get_renderer('mod_advwork');
 
 $PAGE->set_title('Simulation Class');
 
-#SIM FUNCTIONS
-$stud_num_to_create = 0;
-$num_students = 0;
-$advworkid = $advworkrecord->id;
+#SIM MESSAGES
+$message_create = '';
+$message_enroll = '';
+$message_submission = '';
+$message_groups = '';
+$message_allocation = '';
 
-#DEBUG
-$important_message = "";
-$debug = '';
-
+#SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['create_students_btn'])) {
-        $stud_num_to_create = intval($_POST["stud_num_to_create"]);
-        create_users_by_form($stud_num_to_create);
-    } 
+        $students_number_to_create = intval($_POST["students_number_to_create"]);
+        create_simulation_students($students_number_to_create);
+    }
     elseif (isset($_POST['enroll_students_btn'])) {
-        $stud_num_to_enroll= intval($_POST["stud_num_to_enroll"]);
-        enroll_users_by_form($stud_num_to_enroll, $id);
+        $students_number_to_enroll= intval($_POST["students_number_to_enroll"]);
+        enroll_simulated_users($students_number_to_enroll, $courseid);
     }
     elseif (isset($_POST['create_submissions_btn'])) {
-        create_submissions_by_advwork_id($id, $advworkid);
+        create_submissions($courseid, $advwork->id);
     }
-
-    #togliere queste due se voglio evitare il redirect e ottenere le informazioni
-    #header("Location: simulationclass.php?id=" . $id); 
-    #exit();
-    
 }
 
-function create_submissions_by_advwork_id($advwork_id, $advworkid) {
+#SIM FUNCTIONS
+function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
     global $DB;
-    echo "<script type='text/javascript'>alert('$advworkid');</script>";
-    $course_id = get_course_id_from_activity($advwork_id);
-    $enrolled_students = get_students_in_course($course_id, true);
-    
-    $title = 'Submission_title_by_SM';
-    $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_SM</p>';
-    
-    foreach ($enrolled_students as $student){
-        $authorid = $student->id;
 
-        $data = new stdClass();
-        $data->advworkid = $advworkid;            // Valore dell'ID advwork
-        $data->authorid = $authorid;              // ID dell'autore
-        $data->timecreated = time();              // Timestamp attuale
-        $data->timemodified = time();             // Timestamp attuale
-        $data->title = $title;       // Titolo dell'inserzione
-        $data->content = $content;  // Contenuto dell'inserzione
-        $data->feedbackauthorformat = 1;
-        $data->contentformat = 1;                 // Formato del contenuto (es: 1 per testo)
-        
-        $DB->insert_record('advwork_submissions', $data);
+    $sql = "SELECT * FROM {user} WHERE username LIKE :prefix AND deleted = 0"; 
+    $params = ['prefix' => $prefix . '%'];
+
+    # Se si vuole restituire l'array con i risultati.
+    if ($return_array) {
+        $students = $DB->get_records_sql($sql, $params);
+        return $students;
+    } else {
+        # Se si vuole solo il numero degli utenti che corrispondono.
+        $sql_count = "SELECT COUNT(*) FROM {user} WHERE username LIKE :prefix AND deleted = 0";
+        $count = $DB->count_records_sql($sql_count, $params);
+        return $count;
     }
-    
 }
 
-function create_users_by_form($stud_num_to_create){
-    $num_students = read_how_many_sim_students_already_exists('sim_student', false);
-    $debug = 'NS:' . $num_students . ' SNTC:' . $stud_num_to_create;
-
-    if ($num_students >= $stud_num_to_create) {
-        $important_message = 'Si hanno a disposizione abbastanza studenti';
+function display_function_message($message){
+    if (!empty($message)) {
+        echo '<div class="alert alert-warning" role="alert"> ' . $message . '</div>';
     }
-    elseif ($num_students < $stud_num_to_create) {
-        $remaining_students = $stud_num_to_create - $num_students;
-        for ($x = $num_students + 1; $x <= $stud_num_to_create; $x++) {
+}
+
+function create_simulation_students($students_number_to_create){
+    global $message_create;
+    $students_number_already_created = read_how_many_sim_students_already_exists('sim_student', false);
+    
+    if ($students_number_already_created >= $students_number_to_create) {
+        
+        $message_create = 'Si hanno a disposizione abbastanza studenti';
+    }
+    elseif ($students_number_already_created < $students_number_to_create) {
+        $remaining_students = $students_number_to_create - $students_number_already_created;
+        for ($x = $students_number_already_created + 1; $x <= $students_number_to_create; $x++) {
 
             $userdata = [
                 'username' => 'sim_student_' . $x,
@@ -150,48 +143,12 @@ function create_users_by_form($stud_num_to_create){
             # Chiama la funzione per creare il nuovo utente.
             try {
                 $new_user = create_custom_user($userdata);
-                $important_message = "Utenti creato con successo.";
+                $message_create = "Utenti creato con successo.";
             } catch (Exception $e) {
-                $important_message = "Errore nella creazione dell'utente: " . $e->getMessage();
+                $message_create = "Errore nella creazione dell'utente: " . $e->getMessage();
             }
 
         }
-    } 
-
-}
-
-function enroll_users_by_form($stud_num_to_enroll, $id_activity){
-    global $DB;
-    $num_students = read_how_many_sim_students_already_exists('sim_student', false);
-
-    # vedi se ce ne sono abbasta con $num_students
-    if ($stud_num_to_enroll <= $num_students) {
-        
-        $students = read_how_many_sim_students_already_exists('sim_student', true);
-        $students_to_enroll = array_slice($students, 0, $stud_num_to_enroll);
-    
-        $courseid = get_course_id_from_activity($id_activity);
-        
-        if (empty($courseid) || empty($students_to_enroll)) {
-            throw new Exception('Il corso o gli studenti non sono stati definiti correttamente.');
-        }
-        
-        // Recupera l'istanza del metodo di iscrizione (self enrolment, manual enrolment, ecc.).
-        $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => 'manual'), '*', MUST_EXIST);
-        
-        // Recupera il plugin di iscrizione manuale.
-        $enrol_manual = enrol_get_plugin('manual');
-
-        if ($enrol && $enrol_manual) {
-            foreach ($students_to_enroll as $student) {
-                $student_id = $student->id; // Estrai solo l'ID dello studente
-                // Iscrivi l'utente al corso.
-                $enrol_manual->enrol_user($enrol, $student_id, 5); // 5 è l'ID del ruolo di 'student' di mdl_role.
-            }
-            echo "Studenti iscritti con successo al corso con ID: $courseid";
-        } else {
-            throw new Exception('Non è stato possibile trovare il metodo di iscrizione manuale per il corso.');
-        } 
     }
 }
 
@@ -201,81 +158,29 @@ function create_custom_user($userdata) {
         throw new Exception('Dati mancanti: username, password o email non sono presenti.');
     }
 
-    # Creare un oggetto utente.
     $user = new stdClass();
     $user->username = $userdata['username'];
-    $user->password = hash_internal_user_password($userdata['password']);  # Hash la password.
+    $user->password = hash_internal_user_password($userdata['password']);
     $user->firstname = $userdata['firstname'];
     $user->lastname = $userdata['lastname'];
     $user->email = $userdata['email'];
-    $user->confirmed = 1;  # Conferma l'utente.
-    $user->mnethostid = $GLOBALS['CFG']->mnet_localhost_id; # ID host.
-    $user->auth = 'manual';  # Metodo di autenticazione (manuale).
+    $user->confirmed = 1;
+    $user->mnethostid = $GLOBALS['CFG']->mnet_localhost_id;
+    $user->auth = 'manual';
     $user->timecreated = time();
     $user->timemodified = time();
 
-    # Creare l'utente utilizzando la funzione `user_create_user()`.
+    # user_create_user è la funziona di moodle
     $new_user = user_create_user($user);
 
     return $new_user;
 }
 
-function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
-    global $DB;
-
-    $sql = "SELECT * FROM {user} WHERE username LIKE :prefix AND deleted = 0"; 
-    $params = ['prefix' => $prefix . '%'];
-
-    # Se si vuole restituire l'array con i risultati.
-    if ($return_array) {
-        # Esegui la query e ottieni i record.
-        $students = $DB->get_records_sql($sql, $params);
-        return $students;  # Restituisce un array di oggetti utente.
-    } else {
-        # Se si vuole solo il numero degli utenti che corrispondono.
-        $sql_count = "SELECT COUNT(*) FROM {user} WHERE username LIKE :prefix AND deleted = 0";
-        $count = $DB->count_records_sql($sql_count, $params);
-        return $count;  # Restituisce il numero di studenti trovati.
-    }
-}
-
-function get_course_name($activity_id) {
-    global $DB;
-
-    # Recupera l'id da quello dell'activity
-    $courseid = get_course_id_from_activity($activity_id);
-
-    # Recupera il record del corso con l'ID specificato.
-    $course = $DB->get_record('course', array('id' => $courseid), 'fullname');
-
-    # Verifica se il corso esiste.
-    if ($course) {
-        return $course->fullname;  # Restituisce il nome completo del corso.
-    } else {
-        throw new Exception('Corso non trovato');
-    }
-}
-
-function get_course_id_from_activity($activityid) {
-    global $DB;
-
-    # Recupera il record del modulo di corso con l'ID dell'attività specificata.
-    $module = $DB->get_record('course_modules', array('id' => $activityid), 'course');
-
-    # Verifica se il modulo esiste.
-    if ($module) {
-        return $module->course;  # Restituisce l'ID del corso a cui appartiene l'attività.
-    } else {
-        throw new Exception('Modulo o attività non trovati');
-    }
-}
-
 function get_students_in_course($courseid, $return_array = true) {
     global $DB;
-
-    # Prepara la query SQL per ottenere gli studenti iscritti al corso con il ruolo di studente.
+    
     $sql = "
-        SELECT u.id, u.username, u.firstname, u.lastname, u.email
+        SELECT DISTINCT u.id, u.username, u.firstname, u.lastname, u.email
         FROM {user} u
         JOIN {user_enrolments} ue ON ue.userid = u.id
         JOIN {enrol} e ON e.id = ue.enrolid
@@ -283,19 +188,18 @@ function get_students_in_course($courseid, $return_array = true) {
         JOIN {context} ctx ON ra.contextid = ctx.id
         JOIN {role} r ON ra.roleid = r.id
         WHERE e.courseid = :courseid
-        AND r.shortname = 'student'";  # Ruolo di studente.
+        AND r.shortname = 'student'";  // Ruolo di studente.
     
     $params = ['courseid' => $courseid];
 
     # Se si vuole restituire l'array di studenti.
     if ($return_array) {
-        # Esegui la query per ottenere i record degli studenti.
         $students = $DB->get_records_sql($sql, $params);
-        return $students;  # Restituisce un array di oggetti utente.
+        return $students;
     } else {
         # Se si vuole solo il numero degli studenti.
         $sql_count = "
-            SELECT COUNT(u.id)
+            SELECT COUNT(DISTINCT u.id)
             FROM {user} u
             JOIN {user_enrolments} ue ON ue.userid = u.id
             JOIN {enrol} e ON e.id = ue.enrolid
@@ -306,23 +210,115 @@ function get_students_in_course($courseid, $return_array = true) {
             AND r.shortname = 'student'";
         
         $count = $DB->count_records_sql($sql_count, $params);
-        return $count;  # Restituisce il numero di studenti trovati.
+        return $count;
     }
 }
 
-function get_submission_number($advwork_id) {
+function enroll_simulated_users($students_number_to_enroll, $courseid){    
+    global $message_enroll;
     global $DB;
 
-    # Prepara la query SQL per ottenere il numero di tutte le submission.
-    $params = ['advworkid' => $advwork_id];
-    
-    $sql_count = "
-        SELECT COUNT(*) 
-        FROM mdl_advwork_submissions 
+    $students_number_already_created = read_how_many_sim_students_already_exists('sim_student', false);
+
+    if ($students_number_to_enroll <= $students_number_already_created) {
+        
+        $students = read_how_many_sim_students_already_exists('sim_student', true);
+        $students_to_enroll = array_slice($students, 0, $students_number_to_enroll);
+        
+        if (empty($courseid) || empty($students_to_enroll)) {
+            $message_enroll = 'Il corso o gli studenti non sono stati definiti correttamente.';
+        }
+        
+        $enrol = $DB->get_record('enrol', array('courseid' => $courseid, 'enrol' => 'manual'), '*', MUST_EXIST);
+
+        $enrol_manual = enrol_get_plugin('manual');
+
+        if ($enrol && $enrol_manual) {
+            foreach ($students_to_enroll as $student) {
+                $student_id = $student->id; 
+                $enrol_manual->enrol_user($enrol, $student_id, 5); // 5 è l'ID del ruolo di 'student' di mdl_role.
+            }
+            $message_enroll = "Studenti iscritti con successo al corso";
+        } else {
+            $message_enroll = 'Non è stato possibile trovare il metodo di iscrizione manuale per il corso.';
+        } 
+    }
+    else {
+        $message_enroll = 'Non ci sono abbastanza studenti per iscriverli tutti';
+    }
+}
+
+function get_submissions($advwork_id, $return_array = true) {
+    global $DB;
+
+    $sql = "
+        SELECT *
+        FROM mdl_advwork_submissions
         WHERE advworkid = :advworkid";
 
-    $count = $DB->count_records_sql($sql_count, $params);
-    return $count;  # Restituisce il numero di studenti trovati.
+    $params = ['advworkid' => $advwork_id];
+
+    // Se si vuole restituire l'array di submission
+    if ($return_array) {
+        $submissions = $DB->get_records_sql($sql, $params);
+        return $submissions;
+    } else {
+        // Se si vuole solo il numero delle submission
+        $sql_count = "
+            SELECT COUNT(*)
+            FROM mdl_advwork_submissions
+            WHERE advworkid = :advworkid";
+
+        $count = $DB->count_records_sql($sql_count, $params);
+        return $count;
+    }
+}
+
+function get_submission_authors_id($advwork_id) {
+    global $DB;
+
+    $sql = "
+        SELECT authorid
+        FROM mdl_advwork_submissions
+        WHERE advworkid = :advworkid";
+
+    $params = ['advworkid' => $advwork_id];
+    $submissions = $DB->get_records_sql($sql, $params);
+    return $submissions;
+}
+
+function create_submissions($courseid, $advwork_id) {
+    global $DB;
+    
+    # si creano solo le submission degli studenti che non ne hanno una
+    $enrolled_students = get_students_in_course($courseid, true);
+    $submission_authors_already_exited = get_submission_authors_id($advwork_id);
+    $latest_students = array_filter($enrolled_students, function($student) use ($submission_authors_already_exited) {
+        foreach ($submission_authors_already_exited as $author) {
+            if ($student->id === $author->authorid) {
+                return false;
+            }
+        }
+        return true;
+    });
+    
+    $title = 'Submission_title_by_SM';
+    $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_SM</p>';
+    
+    foreach ($latest_students as $student){
+        $authorid = $student->id;
+        $data = new stdClass();
+        $data->advworkid = $advwork_id;
+        $data->authorid = $student->id;
+        $data->timecreated = time();
+        $data->timemodified = time();
+        $data->title = $title;
+        $data->content = $content;
+        $data->feedbackauthorformat = 1;
+        $data->contentformat = 1; # 1 per testo)
+        
+        $DB->insert_record('advwork_submissions', $data);
+    } 
 }
 
 #OUTPUT STARTS HERE
@@ -331,30 +327,58 @@ echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
 ?>
 
-<p>On course "<?php echo get_course_name($id); ?>" with ID: <?php echo get_course_id_from_activity($id); ?>,
-    activity "" with ID: <?php echo $id; ?></p>
-<p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
-<p><form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-                How many students to create: <input type="number" name="stud_num_to_create">
-                <button type="submit" name="create_students_btn">Create Simulated Students</button>
-</form></p>
-<p><span class="badge bg-warning"><?php echo $important_message; echo $debug; ?></span></p>
 
-<p>How many simulated students en-rolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
-<p><form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-                How many students to en-roll in total: <input type="number" name="stud_num_to_enroll">
-                <button type="submit" name="enroll_students_btn">En-roll Simulated Students</button>
-</form></p>
-<form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-    <p>Submissions number: <?php echo get_submission_number($id); ?>    
-    <button type="submit" name="create_submissions_btn">Create Simulated Submissions</button>
+<div class="container">
+    <p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p>
+    <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
+</div>
+
+<div class="container">
+    <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row">
+                <div class ="col-3">How many students to create:</div>
+                <div class ="col-2"><input type="number" name="students_number_to_create"></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_students_btn">Create Simulated Students</button></div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_create); ?>
     </p>
-</form>
-<p>Creazione studenti: si</p>
-<p>Partecipazione al corso automatico: si</p>
-<p>Simulazione degli assessment: no</p>
-<p>Assegnazione dei gruppi: no</p>
-<p>Assegnazione del grouping: no</p>
-<p>Impostazione dei gruppi e grouping per ADVWORK: no</p>
+</div>
+
+<div class="container">
+    <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row">
+                <div class ="col-3">How many students to enroll in total:</div>
+                <div class ="col-2"><input type="number" name="students_number_to_enroll"></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="enroll_students_btn">Enroll Simulated Students</button></div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_enroll); ?>
+    </p>
+</div>
+
+<div class="container">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row">
+                <div class ="col-5">Submissions number: <?php echo get_submissions($advwork->id, false);?> / <?php 
+                    echo get_students_in_course($courseid, false); ?></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_submissions_btn">Create Simulated Submissions</button></div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_submission);?>
+    </p>
+</div>
+
 
 <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
+
+
+<?php 
+$PAGE->requires->js_call_amd('mod_advwork/advworkview', 'init');
+echo $output->footer();
+?>

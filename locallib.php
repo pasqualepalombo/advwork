@@ -5347,7 +5347,7 @@ class advwork_user_plan implements renderable {
 
 
 		//SIM SUBMISSION PHASE - CREATE SIMULATION CLASS BUTTON//
-		$task->title = get_string('Create simulation class', 'advwork');
+		$task->title = get_string('createsimulationclass', 'advwork');
 		$task->link = $advwork->createclasssimulation_url();
         
 		
