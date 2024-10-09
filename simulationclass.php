@@ -99,6 +99,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['create_groups_btn'])) {
         create_groups_for_course($courseid);
     }
+    elseif (isset($_POST['create_grouping_btn'])) {
+        create_grouping_with_all_groups($courseid, 'SIM Grouping');
+    }
 }
 
 #SIM FUNCTIONS
@@ -349,6 +352,11 @@ function create_groups_for_course($courseid) {
     $group_size = 4;
     $num_groups = ceil($total_students / $group_size);
 
+    if($num_groups == count_groups_in_course($courseid)){
+        $message_groups = 'Gruppi già presenti, non ne sono stati creati altri';
+        return;
+    }
+
     for ($i = 0; $i < $num_groups; $i++) {
         $group_name = "SIM Group " . ($i + 1);
         $group_data = new stdClass();
@@ -365,16 +373,37 @@ function create_groups_for_course($courseid) {
             }
         }
     }
-    create_grouping_with_all_groups($courseid, 'SIM Grouping');
+    #create_grouping_with_all_groups($courseid, 'SIM Grouping');
     $message_submission = "Gruppi creati con successo per il corso con ID: $courseid";
 }
 
-function create_grouping_with_all_groups($courseid, $groupingname) {
+function get_course_grouping_name($courseid) {
+    global $DB;
+
+    $course = $DB->get_record('course', ['id' => $courseid], 'defaultgroupingid');
     
-    require_once($CFG->dirroot . '/group/lib.php');
+    if (empty($course->defaultgroupingid)) {
+        return "nessuno";
+    }
 
+    $grouping = $DB->get_record('groupings', ['id' => $course->defaultgroupingid], 'name');
+    
+    return $grouping ? $grouping->name : "nessuno";
+}
+
+function set_groups_course_setting($courseid, $groupingid) {
+    global $DB;
+    $data = new stdClass();
+    $data->id = $courseid;
+    $data->groupmode = SEPARATEGROUPS;
+    $data->groupmodeforce = 1;
+    $data->defaultgroupingid = $groupingid;
+    $DB->update_record('course', $data);
+}
+
+function create_grouping_with_all_groups($courseid, $groupingname) {
     global $CFG, $DB;
-
+    
     $groupingdata = new stdClass();
     $groupingdata->courseid = $courseid;
     $groupingdata->name = $groupingname;
@@ -388,11 +417,15 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
     $groups = $DB->get_records('groups', array('courseid' => $courseid));
 
     foreach ($groups as $group) {
-        groups_add_group_to_grouping($group->id, $groupingid);
+        groups_assign_grouping($groupingid, $group->id);
     }
+
+    set_groups_course_setting($courseid, $groupingid);
 
     return $groupingid;
 }
+
+
 
 #OUTPUT STARTS HERE
 
@@ -454,8 +487,10 @@ echo $output->heading(format_string('Simulated Students'));
                 <div class ="col-5">
                     <div>Active groups: <?php echo count_groups_in_course($courseid);?></div>
                     <div>Group dimension: 4</div>
+                    <div>Active grouping: <?php echo get_course_grouping_name($courseid); ?></div>
                 </div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups and Grouping</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_grouping_btn">Create Grouping</button></div>
             </div>
         </form>
         <?php echo display_function_message($message_groups);?>
