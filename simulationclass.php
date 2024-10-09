@@ -33,6 +33,9 @@ require_once($CFG->dirroot . '/user/lib.php'); # Include la libreria utenti di M
 require_once($CFG->libdir . '/datalib.php'); # Include le funzioni del database di Moodle.
 require_once($CFG->libdir . '/enrollib.php'); // Include le funzioni di iscrizione.
 
+#Moodle Library for managing groups and grouping
+require_once($CFG->dirroot . '/group/lib.php');
+
 use core_user; # Usa il namespace corretto per la classe core_user.
 
 $id         = required_param('id', PARAM_INT); #id dell'activity, non del corso
@@ -92,6 +95,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (isset($_POST['create_submissions_btn'])) {
         create_submissions($courseid, $advwork->id);
+    }
+    elseif (isset($_POST['create_groups_btn'])) {
+        create_groups_for_course($courseid);
     }
 }
 
@@ -289,7 +295,7 @@ function get_submission_authors_id($advwork_id) {
 
 function create_submissions($courseid, $advwork_id) {
     global $DB;
-    
+    global $message_submission;
     # si creano solo le submission degli studenti che non ne hanno una
     $enrolled_students = get_students_in_course($courseid, true);
     $submission_authors_already_exited = get_submission_authors_id($advwork_id);
@@ -318,7 +324,74 @@ function create_submissions($courseid, $advwork_id) {
         $data->contentformat = 1; # 1 per testo)
         
         $DB->insert_record('advwork_submissions', $data);
-    } 
+    }
+    $message_submission = 'All submissions created. Now allocate with groups and grouping';
+}
+
+function count_groups_in_course($courseid) {
+    global $DB;
+    $sql = "SELECT COUNT(id) 
+            FROM {groups} 
+            WHERE courseid = :courseid";
+    $params = ['courseid' => $courseid];
+    $count = $DB->count_records_sql($sql, $params);
+    return $count;
+}
+
+function create_groups_for_course($courseid) {
+    global $DB;
+    global $message_groups;
+
+    $students = get_students_in_course($courseid, true);
+    $students_array = array_values($students);
+
+    $total_students = count($students_array);
+    $group_size = 4;
+    $num_groups = ceil($total_students / $group_size);
+
+    for ($i = 0; $i < $num_groups; $i++) {
+        $group_name = "SIM Group " . ($i + 1);
+        $group_data = new stdClass();
+        $group_data->courseid = $courseid;
+        $group_data->name = $group_name;
+        $group_data->description = "Gruppo creato in maniera automatica.";
+        $groupid = groups_create_group($group_data);
+
+        for ($j = 0; $j < $group_size; $j++) {
+            $student_index = ($i * $group_size) + $j;
+            if ($student_index < $total_students) {
+                $student_id = $students_array[$student_index]->id;
+                groups_add_member($groupid, $student_id);
+            }
+        }
+    }
+    create_grouping_with_all_groups($courseid, 'SIM Grouping');
+    $message_submission = "Gruppi creati con successo per il corso con ID: $courseid";
+}
+
+function create_grouping_with_all_groups($courseid, $groupingname) {
+    
+    require_once($CFG->dirroot . '/group/lib.php');
+
+    global $CFG, $DB;
+
+    $groupingdata = new stdClass();
+    $groupingdata->courseid = $courseid;
+    $groupingdata->name = $groupingname;
+    $groupingdata->description = 'Grouping with all groups';
+    $groupingdata->descriptionformat = FORMAT_HTML;
+    $groupingdata->timecreated = time();
+    $groupingdata->timemodified = time();
+
+    $groupingid = groups_create_grouping($groupingdata);
+
+    $groups = $DB->get_records('groups', array('courseid' => $courseid));
+
+    foreach ($groups as $group) {
+        groups_add_group_to_grouping($group->id, $groupingid);
+    }
+
+    return $groupingid;
 }
 
 #OUTPUT STARTS HERE
@@ -337,7 +410,7 @@ echo $output->heading(format_string('Simulated Students'));
     <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row">
+            <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to create:</div>
                 <div class ="col-2"><input type="number" name="students_number_to_create"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_students_btn">Create Simulated Students</button></div>
@@ -351,7 +424,7 @@ echo $output->heading(format_string('Simulated Students'));
     <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row">
+            <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to enroll in total:</div>
                 <div class ="col-2"><input type="number" name="students_number_to_enroll"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="enroll_students_btn">Enroll Simulated Students</button></div>
@@ -364,13 +437,28 @@ echo $output->heading(format_string('Simulated Students'));
 <div class="container">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row">
+            <div class="row d-flex align-items-center">
                 <div class ="col-5">Submissions number: <?php echo get_submissions($advwork->id, false);?> / <?php 
                     echo get_students_in_course($courseid, false); ?></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_submissions_btn">Create Simulated Submissions</button></div>
             </div>
         </form>
         <?php echo display_function_message($message_submission);?>
+    </p>
+</div>
+
+<div class="container">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row d-flex align-items-center">
+                <div class ="col-5">
+                    <div>Active groups: <?php echo count_groups_in_course($courseid);?></div>
+                    <div>Group dimension: 4</div>
+                </div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups and Grouping</button></div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_groups);?>
     </p>
 </div>
 
