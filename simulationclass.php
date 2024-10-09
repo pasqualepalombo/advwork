@@ -26,6 +26,7 @@
 #Advwork Library
 require(__DIR__.'/../../config.php');
 require_once(__DIR__.'/locallib.php');
+require_once(__DIR__.'/allocation/random/lib.php');
 
 #Moodle Library for creating/handling users
 require_once($CFG->libdir . '/moodlelib.php'); # Include il user_create_user
@@ -82,6 +83,7 @@ $message_enroll = '';
 $message_submission = '';
 $message_groups = '';
 $message_allocation = '';
+$message_allocation = '';
 
 #SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -101,6 +103,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (isset($_POST['create_grouping_btn'])) {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
+    }
+    elseif (isset($_POST['create_allocation_btn'])) {
+        create_allocation_among_groups();
     }
 }
 
@@ -425,8 +430,75 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
     return $groupingid;
 }
 
+function check_the_allocation($courseid, $advwork_id) {
+    global $DB;
 
+    $enrolled_students = get_students_in_course($courseid, true);
+    $submission_ids = array_map(function($submission) {
+        return $submission->authorid;
+    }, get_submissions($advwork_id, true));
 
+    $result = [];
+    $submissionids_placeholder = implode(',', array_fill(0, count($submission_ids), '?'));
+    #var_dump($submissionids_placeholder);
+    #var_dump($submission_ids);
+
+    #ora ho gli studenti da cui posso prendere gli id
+    #ora ho le submission con le id
+    #devo prendere tutte le righe da mdl_advwork_assessment che hanno "submissionid" che compare in $submissions_ids
+    #su questo nuovo array controllo il review array
+
+    $sql = "
+        SELECT *
+        FROM {advwork_assessments}
+        WHERE submissionid IN ($submissionids_placeholder)
+    ";
+
+    // Esegui la query con i submission IDs come parametri
+    $advwork_assessments = $DB->get_records_sql($sql, $submission_ids);
+
+    var_dump($advwork_assessments);
+    /*
+    foreach ($enrolled_students as $student) {
+        $reviewerid = $student->id; // Ottieni l'ID dello studente
+        
+        // Prepara la query per contare le occorrenze del reviewerid nella tabella mdl_advwork_assessments
+        $sql = "
+            SELECT COUNT(*)
+            FROM {advwork_assessments}
+            WHERE reviewerid = :reviewerid
+            AND submissionid IN ($submissionids_placeholder)
+        ";
+
+        // Imposta i parametri per la query
+        $params = ['reviewerid' => $reviewerid];
+        
+        // Aggiungi gli ID delle submission ai parametri
+        $params = array_merge($params, $advwork_submissions);
+
+        // Esegui la query e ottieni il conteggio
+        $count = $DB->count_records_sql($sql, $params);
+
+        // Controlla se il conteggio è esattamente tre
+        if ($count === 3) {
+            $result[] = $reviewerid; // Aggiungi l'ID allo stato se è presente tre volte
+        }
+    }
+
+    // Controlla se il numero di elementi in $result è uguale al numero di $enrolled_students
+    if (count($result) === count($enrolled_students)) {
+        return "completed"; // Restituisce "completed" se tutti gli studenti hanno tre valutazioni
+    } else {
+        return "no"; // Restituisce null o un messaggio vuoto se non sono tutti completati
+    }
+    */
+}
+
+function create_allocation_among_groups() {
+    #si agisce su mdl_advowrk_assessments
+    #random_allocation($authors, $reviewers, $assessments, $result, array $options)
+    return;
+}
 #OUTPUT STARTS HERE
 
 echo $output->header();
@@ -489,14 +561,28 @@ echo $output->heading(format_string('Simulated Students'));
                     <div>Group dimension: 4</div>
                     <div>Active grouping: <?php echo get_course_grouping_name($courseid); ?></div>
                 </div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_grouping_btn">Create Grouping</button></div>
+                <div class="col">
+                    <div><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups</button></br></div>
+                    <div><p></p></div>
+                    <div><button type="submit" class="btn btn-primary" name="create_grouping_btn">Create Grouping</button></div>
+                </div>
             </div>
         </form>
         <?php echo display_function_message($message_groups);?>
     </p>
 </div>
 
+<div class="container">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row d-flex align-items-center">
+                <div class ="col-5">Allocation made: <?php echo check_the_allocation($courseid, $advwork->id);?></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_allocation_btn">Random Reviewers Allocation</button></div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_allocation);?>
+    </p>
+</div>
 
 <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
 

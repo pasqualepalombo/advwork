@@ -443,8 +443,19 @@ class advwork_random_allocator implements advwork_allocator {
      * @return array                 array of (reviewerid => authorid) pairs
      */
     protected function random_allocation($authors, $reviewers, $assessments, $result, array $options) {
+		echo "<script type='text/javascript'>alert('random allocation');</script>";
+        $kkk = "###################################";
+        var_dump($kkk);
+        var_dump($authors);
+        var_dump($kkk);
+        var_dump($reviewers);
+        var_dump($kkk);
+        var_dump($assessments);
+        var_dump($kkk);
+        var_dump($result);
         if (empty($authors) || empty($reviewers)) {
             // nothing to be done
+			echo "<script type='text/javascript'>alert('no author o reviewers');</script>";
             return array();
         }
 
