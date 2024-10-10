@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
     }
     elseif (isset($_POST['create_allocation_btn'])) {
-        create_allocation_among_groups();
+        create_allocation_among_groups($courseid);
     }
 }
 
@@ -430,72 +430,45 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
     return $groupingid;
 }
 
-function check_the_allocation($courseid, $advwork_id) {
+function check_the_allocation($courseid, $advworkid) {
     global $DB;
 
-    $enrolled_students = get_students_in_course($courseid, true);
-    $submission_ids = array_map(function($submission) {
-        return $submission->authorid;
-    }, get_submissions($advwork_id, true));
-
-    $result = [];
+    $sql_submissions = "
+        SELECT id
+        FROM {advwork_submissions}
+        WHERE advworkid = :advworkid
+    ";
+    
+    $submission_ids = $DB->get_fieldset_sql($sql_submissions, ['advworkid' => $advworkid]);
+    
+    if (empty($submission_ids)) {
+        return 'no';
+    }
+    
     $submissionids_placeholder = implode(',', array_fill(0, count($submission_ids), '?'));
-    #var_dump($submissionids_placeholder);
-    #var_dump($submission_ids);
-
-    #ora ho gli studenti da cui posso prendere gli id
-    #ora ho le submission con le id
-    #devo prendere tutte le righe da mdl_advwork_assessment che hanno "submissionid" che compare in $submissions_ids
-    #su questo nuovo array controllo il review array
-
-    $sql = "
-        SELECT *
+    $sql_assessments = "
+        SELECT reviewerid, COUNT(*) as review_count
         FROM {advwork_assessments}
         WHERE submissionid IN ($submissionids_placeholder)
+        GROUP BY reviewerid
+        HAVING COUNT(*) = 3
     ";
 
-    // Esegui la query con i submission IDs come parametri
-    $advwork_assessments = $DB->get_records_sql($sql, $submission_ids);
-
-    var_dump($advwork_assessments);
-    /*
-    foreach ($enrolled_students as $student) {
-        $reviewerid = $student->id; // Ottieni l'ID dello studente
-        
-        // Prepara la query per contare le occorrenze del reviewerid nella tabella mdl_advwork_assessments
-        $sql = "
-            SELECT COUNT(*)
-            FROM {advwork_assessments}
-            WHERE reviewerid = :reviewerid
-            AND submissionid IN ($submissionids_placeholder)
-        ";
-
-        // Imposta i parametri per la query
-        $params = ['reviewerid' => $reviewerid];
-        
-        // Aggiungi gli ID delle submission ai parametri
-        $params = array_merge($params, $advwork_submissions);
-
-        // Esegui la query e ottieni il conteggio
-        $count = $DB->count_records_sql($sql, $params);
-
-        // Controlla se il conteggio è esattamente tre
-        if ($count === 3) {
-            $result[] = $reviewerid; // Aggiungi l'ID allo stato se è presente tre volte
-        }
+    $reviewers_with_three_reviews = $DB->get_records_sql($sql_assessments, $submission_ids);
+    $students_number = get_students_in_course($courseid, false);
+    $reviewers_number = count($reviewers_with_three_reviews);
+    
+    if ($students_number == $reviewers_number) {
+        return 'ok';
     }
-
-    // Controlla se il numero di elementi in $result è uguale al numero di $enrolled_students
-    if (count($result) === count($enrolled_students)) {
-        return "completed"; // Restituisce "completed" se tutti gli studenti hanno tre valutazioni
-    } else {
-        return "no"; // Restituisce null o un messaggio vuoto se non sono tutti completati
+    else {
+        return 'no';
     }
-    */
 }
 
-function create_allocation_among_groups() {
-    #si agisce su mdl_advowrk_assessments
+function create_allocation_among_groups($courseid) {
+    
+    $students = get_students_in_course($courseid);
     #random_allocation($authors, $reviewers, $assessments, $result, array $options)
     return;
 }

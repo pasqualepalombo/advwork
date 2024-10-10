@@ -444,6 +444,7 @@ class advwork_random_allocator implements advwork_allocator {
      */
     protected function random_allocation($authors, $reviewers, $assessments, $result, array $options) {
 		echo "<script type='text/javascript'>alert('random allocation');</script>";
+        /*
         $kkk = "###################################";
         var_dump($kkk);
         var_dump($authors);
@@ -453,6 +454,7 @@ class advwork_random_allocator implements advwork_allocator {
         var_dump($assessments);
         var_dump($kkk);
         var_dump($result);
+        */
         if (empty($authors) || empty($reviewers)) {
             // nothing to be done
 			echo "<script type='text/javascript'>alert('no author o reviewers');</script>";
