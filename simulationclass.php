@@ -494,7 +494,6 @@ function assign_submissions_to_students($student_ids, $submissions, $revier_numb
         $assignments[$submission_id] = $assigned_students;
     }
 
-    var_dump($assignments);
     return $assignments;
 }
 
@@ -522,7 +521,21 @@ function get_groups_and_students($courseid, $advworkid) {
             $submissions[] = $submission[$first_key]->id;
         }
         
-        assign_submissions_to_students($student_ids, $submissions, 3);
+        $assignments = assign_submissions_to_students($student_ids, $submissions, 3);
+        #var_dump($assignments);
+        #echo "###########################";
+        #var_dump($submissions);
+        #echo "###########################";
+        
+        foreach($submissions as $submission) {
+            foreach($assignments as $assign){
+                echo "submission: ";
+                var_dump($submission);
+                echo "con assignment: ";
+                var_dump($assign);
+            }
+        }
+
         $submissions = [];
     }
 
