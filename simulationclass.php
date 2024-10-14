@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
     }
     elseif (isset($_POST['create_allocation_btn'])) {
-        create_allocation_among_groups($courseid);
+        create_allocation_among_groups($courseid, $advwork->id);
     }
 }
 
@@ -466,11 +466,76 @@ function check_the_allocation($courseid, $advworkid) {
     }
 }
 
-function create_allocation_among_groups($courseid) {
+function get_single_submission_by_author_advwork($advwork_id, $authorid) {
+    global $DB;
+
+    $sql = "
+        SELECT *
+        FROM mdl_advwork_submissions
+        WHERE advworkid = :advworkid AND authorid = :authorid";
+
+    $params = ['advworkid' => $advwork_id, 'authorid' => $authorid];
+
+    $submission = $DB->get_records_sql($sql, $params);
+    return $submission;
+}
+
+function assign_submissions_to_students($student_ids, $submissions, $revier_number) {
+    $assignments = [];
+
+    foreach ($submissions as $index => $submission_id) {
+        $student_id = $student_ids[$index];
+        $possible_students = array_diff($student_ids, [$student_id]);
+
+        shuffle($possible_students);
+
+        $assigned_students = array_slice($possible_students, 0, $revier_number);
+
+        $assignments[$submission_id] = $assigned_students;
+    }
+
+    var_dump($assignments);
+    return $assignments;
+}
+
+function get_groups_and_students($courseid, $advworkid) {
+    global $DB;
+    global $message_allocation;
+
+    $groups_and_students = array();
+    $groups = groups_get_all_groups($courseid);
+
+    $student_ids;
+    $submissions = [];
+
+    if (!$groups) {
+        $message_allocation = "Nessun gruppo trovato o sono vuoti";
+        return;
+    }
+
+    foreach ($groups as $group) {
+        $student_ids = array_keys(groups_get_members($group->id, 'u.id'));
+        
+        foreach ($student_ids as $authorid){
+            $submission = get_single_submission_by_author_advwork($advworkid, $authorid);
+            $first_key = array_key_first($submission);
+            $submissions[] = $submission[$first_key]->id;
+        }
+        
+        assign_submissions_to_students($student_ids, $submissions, 3);
+        $submissions = [];
+    }
+
+}
+
+
+function create_allocation_among_groups($courseid,$advworkid) {
+    get_groups_and_students($courseid,$advworkid);
+    #prendi i gruppi separatamente, cosi da ognuno hai l'id dello studente.
+    #dall'id dello studente puoi ottenere la submission rispetto l'id dell'advwork
+    #in ogni gruppo assegna i review
+    #scrivi la query
     
-    $students = get_students_in_course($courseid);
-    #random_allocation($authors, $reviewers, $assessments, $result, array $options)
-    return;
 }
 #OUTPUT STARTS HERE
 
