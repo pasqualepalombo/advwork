@@ -480,22 +480,47 @@ function get_single_submission_by_author_advwork($advwork_id, $authorid) {
     return $submission;
 }
 
-function assign_submissions_to_students($student_ids, $submissions, $revier_number) {
+function assign_submissions_to_students($student_ids, $submissions, $reviewer_number) {
+    #al momento il numero dei reviewers è bloccato a 3
     $assignments = [];
 
     foreach ($submissions as $index => $submission_id) {
         $student_id = $student_ids[$index];
         $possible_students = array_diff($student_ids, [$student_id]);
-
         shuffle($possible_students);
-
-        $assigned_students = array_slice($possible_students, 0, $revier_number);
-
+        $assigned_students = array_slice($possible_students, 0, $reviewer_number);
         $assignments[$submission_id] = $assigned_students;
     }
 
     return $assignments;
 }
+
+#useless, just for debugging
+function print_assignments($assignments) {
+    foreach ($assignments as $submission_id => $student_ids) {
+        $students_list = implode(',', $student_ids);
+        echo "Per la submission $submission_id ho questi id studenti: $students_list\n";
+    }
+}
+
+function write_assessments($assignments) {
+    global $DB;
+
+    foreach ($assignments as $submissionid => $reviewer_ids) {
+        foreach ($reviewer_ids as $reviewerid) {
+            $data = new stdClass();
+            $data->submissionid = $submissionid;
+            $data->reviewerid = $reviewerid;
+            $data->weight = 1;
+            $data->timecreated = time();
+            $data->feedbackauthorattachment = 0;
+            $data->feedbackauthorformat = 1;
+            $data->feedbackreviewerformat = 1;
+            $DB->insert_record('advwork_assessments', $data);
+        }
+    }
+}
+
 
 function get_groups_and_students($courseid, $advworkid) {
     global $DB;
@@ -511,10 +536,9 @@ function get_groups_and_students($courseid, $advworkid) {
         $message_allocation = "Nessun gruppo trovato o sono vuoti";
         return;
     }
-
+    
     foreach ($groups as $group) {
         $student_ids = array_keys(groups_get_members($group->id, 'u.id'));
-        
         foreach ($student_ids as $authorid){
             $submission = get_single_submission_by_author_advwork($advworkid, $authorid);
             $first_key = array_key_first($submission);
@@ -522,19 +546,8 @@ function get_groups_and_students($courseid, $advworkid) {
         }
         
         $assignments = assign_submissions_to_students($student_ids, $submissions, 3);
-        #var_dump($assignments);
-        #echo "###########################";
-        #var_dump($submissions);
-        #echo "###########################";
         
-        foreach($submissions as $submission) {
-            foreach($assignments as $assign){
-                echo "submission: ";
-                var_dump($submission);
-                echo "con assignment: ";
-                var_dump($assign);
-            }
-        }
+        write_assessments($assignments);
 
         $submissions = [];
     }
