@@ -97,7 +97,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'third_aspect_desc' => $_POST['third_aspect_desc'],
             'third_weight' => intval($_POST['third_weight'])
         ];
-        update_assessment_form($values_array);
+        update_assessment_form($values_array, $advwork->id);
     }
     elseif (isset($_POST['create_students_btn'])) {
         $students_number_to_create = intval($_POST["students_number_to_create"]);
@@ -122,8 +122,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 #SIM FUNCTIONS
-function update_assessment_form($values) {
-    
+function update_assessment_form($values, $advworkid) {
+    global $DB;
+
+    $rows = [];
+
+    #Primo Aspect
+    $rows[] = (object) [
+        'advworkid' => $advworkid,
+        'sort' => 1,
+        'description' => '<p dir="ltr" style="text-align: left;">' . $values['first_aspect_desc'] . '</p>',
+        'descriptionformat' => 1,
+        'grade' => 10,
+        'weight' => intval($values['first_weight'])
+    ];
+
+    #Secondo Aspect
+    $rows[] = (object) [
+        'advworkid' => $advworkid,
+        'sort' => 2,
+        'description' => '<p dir="ltr" style="text-align: left;">' . $values['second_aspect_desc'] . '</p>',
+        'descriptionformat' => 1,
+        'grade' => 10,
+        'weight' => intval($values['second_weight'])
+    ];
+
+    //Terzo Aspect
+    $rows[] = (object) [
+        'advworkid' => $advworkid,
+        'sort' => 3,
+        'description' => '<p dir="ltr" style="text-align: left;">' . $values['third_aspect_desc'] . '</p>',
+        'descriptionformat' => 1,
+        'grade' => 10,
+        'weight' => intval($values['third_weight'])
+    ];
+
+    foreach ($rows as $row) {
+        $DB->insert_record('advworkform_acc_mod', $row);
+    }
 }
 
 function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
@@ -720,12 +756,16 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-
-
 <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
-
 
 <?php 
 $PAGE->requires->js_call_amd('mod_advwork/advworkview', 'init');
 echo $output->footer();
+
+
+#finisci l'assessment form cosi che si salvano in acc_mod
+#dopo ricorda che bisogna aggiungere i voti in grades, ma dimensionid è l'id dell'acc_mod del form assessment, 
+#mentre assessmentid invece è ovviamente quello di assessment.
+#fatti i grades, allora bisogna aggiungere il voto su assessment che è (somma di ((voti * peso)/massimo ))/somma pesi
+#cosi dovremmo starci, spero
 ?>
