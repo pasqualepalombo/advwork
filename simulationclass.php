@@ -78,6 +78,7 @@ $output = $PAGE->get_renderer('mod_advwork');
 $PAGE->set_title('Simulation Class');
 
 #SIM MESSAGES
+$message_form = '';
 $message_create = '';
 $message_enroll = '';
 $message_submission = '';
@@ -87,7 +88,18 @@ $message_allocation = '';
 
 #SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['create_students_btn'])) {
+    if (isset($_POST['update_assessment_btn'])) {
+        $values_array = [
+            'first_aspect_desc' => $_POST['first_aspect_desc'],
+            'first_weight' => intval($_POST['first_weight']),
+            'second_aspect_desc' => $_POST['second_aspect_desc'],
+            'second_weight' => intval($_POST['second_weight']),
+            'third_aspect_desc' => $_POST['third_aspect_desc'],
+            'third_weight' => intval($_POST['third_weight'])
+        ];
+        update_assessment_form($values_array);
+    }
+    elseif (isset($_POST['create_students_btn'])) {
         $students_number_to_create = intval($_POST["students_number_to_create"]);
         create_simulation_students($students_number_to_create);
     }
@@ -110,6 +122,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 #SIM FUNCTIONS
+function update_assessment_form($values) {
+    
+}
+
 function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
     global $DB;
 
@@ -495,14 +511,6 @@ function assign_submissions_to_students($student_ids, $submissions, $reviewer_nu
     return $assignments;
 }
 
-#useless, just for debugging
-function print_assignments($assignments) {
-    foreach ($assignments as $submission_id => $student_ids) {
-        $students_list = implode(',', $student_ids);
-        echo "Per la submission $submission_id ho questi id studenti: $students_list\n";
-    }
-}
-
 function write_assessments($assignments) {
     global $DB;
 
@@ -520,7 +528,6 @@ function write_assessments($assignments) {
         }
     }
 }
-
 
 function get_groups_and_students($courseid, $advworkid) {
     global $DB;
@@ -554,25 +561,90 @@ function get_groups_and_students($courseid, $advworkid) {
 
 }
 
-
 function create_allocation_among_groups($courseid,$advworkid) {
     get_groups_and_students($courseid,$advworkid);
-    #prendi i gruppi separatamente, cosi da ognuno hai l'id dello studente.
-    #dall'id dello studente puoi ottenere la submission rispetto l'id dell'advwork
-    #in ogni gruppo assegna i review
-    #scrivi la query
-    
 }
+
 #OUTPUT STARTS HERE
 
 echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
 ?>
 
-
 <div class="container">
     <p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p>
     <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
+</div>
+
+<div class="container bg-light">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row d-flex align-items-center">
+                <div class ="col-3">Edit Form Assessment and weights:</div>
+                <div class ="col-9">
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                    <div class="row">
+                        <div class="col">Aspect 1 Desc: <input type="text" value = "SIMA1D" name="first_aspect_desc"></div>
+                        <div class="col">Weight:
+                            <select name="first_weight" class="form-select">
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Aspect 2 Desc: <input type="text" value = "SIMA2D" name="second_aspect_desc"></div>
+                        <div class="col">Weight:
+                            <select name="second_weight" class="form-select">
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Aspect 3 Desc: <input type="text" value = "SIMA3D" name="third_aspect_desc"></div>
+                        <div class="col">Weight:
+                            <select name="third_weight" class="form-select">
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                                <option value="30">30%</option>
+                                <option value="40">40%</option>
+                                <option value="50">50%</option>
+                                <option value="60">60%</option>
+                                <option value="70">70%</option>
+                                <option value="80">80%</option>
+                                <option value="90">90%</option>
+                                <option value="100">100%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col"><button type="submit" class="btn btn-primary" name="update_assessment_btn">Update Assessment Info</button></div>
+                    </div>
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                </div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_form); ?>
+    </p>
 </div>
 
 <div class="container">
@@ -647,6 +719,8 @@ echo $output->heading(format_string('Simulated Students'));
         <?php echo display_function_message($message_allocation);?>
     </p>
 </div>
+
+
 
 <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
 

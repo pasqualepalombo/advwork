@@ -333,6 +333,7 @@ echo $output->header();
 
 echo $output->heading_with_help(format_string($advwork->name), 'userplan', 'advwork');
 echo $output->heading(format_string($currentphasetitle), 3, null, 'mod_advwork-userplanheading');
+
 //SIMULATION CLASS LINK
 $link = $advwork->createclasssimulation_url();
 echo "<a href='$link'><button class='btn btn-primary'>SIMULATION CLASS</button></a>";
