@@ -39,25 +39,6 @@ require_once (__DIR__.'/enum/capabilities.php');
 require_once (__DIR__.'/statistics.php');
 
 
-//SIM funzione aggiunta
-
-function request_handler() {
-    #a primo load non deve fare nulla
-    if($csr == 0){
-        $message = "Request Handler primo load";
-    }
-
-    echo "<script type='text/javascript'>alert('$message');</script>";
-
-}
-
-//$csr = 0;
-//$message = "Primo Load: " . $csr;
-//echo "<script type='text/javascript'>alert('$message');</script>";
-
-//SIM fine funzione aggiunta
-
-
 /**
  * Full-featured advwork API
  *
@@ -5342,17 +5323,11 @@ class advwork_user_plan implements renderable {
             }
             $phase->tasks['instructreviewers'] = $task;
         }
-		
-
-
-
-		//SIM SUBMISSION PHASE - CREATE SIMULATION CLASS BUTTON//
+        /*
+        //SIM SUBMISSION PHASE - CREATE SIMULATION CLASS BUTTON//
 		$task->title = get_string('createsimulationclass', 'advwork');
 		$task->link = $advwork->createclasssimulation_url();
-        
-		
-		
-
+        */
         if ($advwork->useexamples and $advwork->examplesmode == advwork::EXAMPLES_BEFORE_SUBMISSION
                 and has_capability('mod/advwork:submit', $advwork->context, $userid, false)
                     and !has_capability('mod/advwork:manageexamples', $advwork->context, $userid)) {
@@ -5476,6 +5451,8 @@ class advwork_user_plan implements renderable {
         $phase->title = get_string('phaseassessment', 'advwork');
         $phase->tasks = array();
         $phase->isreviewer = has_capability('mod/advwork:peerassess', $advwork->context, $userid);
+
+        
         if ($advwork->phase == advwork::PHASE_SUBMISSION and $advwork->phaseswitchassessment
                 and has_capability('mod/advwork:switchphase', $advwork->context, $userid)) {
             $task = new stdClass();
