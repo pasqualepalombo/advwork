@@ -3301,9 +3301,6 @@ class advwork {
 
         $studentmodelsjsonresponse = $webservice->post_session_data($sessiondata);
 
-        #DEBUG
-        $myfile = fopen("ll1_studentmodelsjsonresponse.txt", "a") or die("Unable to open file!");
-        fwrite($myfile, $studentmodelsjsonresponse);
 
         $studentmodels = json_decode($studentmodelsjsonresponse);
 
@@ -3312,13 +3309,6 @@ class advwork {
             $this->delete_student_models($courseid, $advwork->id, $cumulated);
         }
 
-
-        /*echo "Modello studente : <br>";
-        var_dump($studentmodels);*/
-
-        #DEBUG
-        $myfile = fopen("ll2_studentmodels.txt", "a") or die("Unable to open file!");
-        fwrite($myfile, $studentmodels);
 
         $this->save_student_models_in_database($studentmodels, $courseid, $advwork->id, $cumulated);
 

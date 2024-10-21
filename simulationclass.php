@@ -1,20 +1,4 @@
 <?php
-#echo "<script type='text/javascript'>alert('$message');</script>";
-# This file is part of Moodle - http://moodle.org/
-#
-# Moodle is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Moodle is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
  * Creazione della classe simulata
  *
@@ -616,55 +600,72 @@ function process_grades($advworkid) {
     global $DB;
     global $message_grades;
 
-    // 1. Prendere tutte le submissions dalla tabella mdl_advwork_submissions
     $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
 
     if (!$submissions) {
-        $message_grades = 'nessuna submission per questo advwork';
-        return; // Non ci sono submissions per questo advworkid
+        $message_grades = 'Non ci sono submission per questo advwork';
+        return;
     }
 
-    // Estrarre gli ID delle submissions
     $submission_ids = array_keys($submissions);
 
-    // 2. Prendere tutti gli assessments dalla tabella mdl_advwork_assessments che hanno submissionid uguale agli id di submissions
     list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
     $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
 
     if (!$assessments) {
-        $message_grades = 'nessun assessment per questo advwork';
-        return; // Non ci sono assessments per le submissions selezionate
+        $message_grades = 'Non ci sono assessment per questo advwork';
+        return;
     }
 
-    // 3. Prendere tutti gli aspects dalla tabella mdl_advworkform_acc_mod con l'advworkid passato
     $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
 
     if (!$aspects) {
         $message_grades = 'Assessment Form non configurato';
-        return; // Non ci sono aspects per questo advworkid
+        return;
     }
 
-    // Estrarre gli ID degli aspects
     $aspect_ids = array_keys($aspects);
-
-    // 4. Creare righe nella tabella mdl_advwork_grades
+    
     foreach ($assessments as $assessment) {
+        $sum_weighted_grades = 0;
+        $sum_weights = 0;
+
         foreach ($aspect_ids as $aspect_id) {
+            $aspect = $aspects[$aspect_id];
+
+            $grade = rand(0, 10);
+
             $grade_record = (object) [
                 'assessmentid' => $assessment->id,
                 'strategy' => 'acc_mod',
                 'dimensionid' => $aspect_id,
-                'grade' => rand(0, 10) + (rand(0, 100) / 100), // Numero random da 0.00 a 10.00
+                'grade' => $grade,
                 'timecreated' => time(),
                 'timemodified' => time(),
             ];
 
-            // Inserire il record nella tabella mdl_advwork_grades
             $DB->insert_record('advwork_grades', $grade_record);
+
+            $max_grade = $aspect->grade;
+            $weight = $aspect->weight; 
+            $sum_weighted_grades += ($grade / $max_grade) * $weight;
+            $sum_weights += $weight;
         }
+
+        if ($sum_weights > 0) {
+            $final_grade = $sum_weighted_grades / $sum_weights;
+            $final_grade = $final_grade * 100;
+        } else {
+            #evitare la divisione per zero
+            $final_grade = 0;
+        }
+
+        $assessment->grade = $final_grade;
+        $assessment->timemodified = time();
+
+        $DB->update_record('advwork_assessments', $assessment);
     }
 }
-
 
 #OUTPUT STARTS HERE
 
@@ -839,11 +840,4 @@ echo $output->heading(format_string('Simulated Students'));
 <?php 
 $PAGE->requires->js_call_amd('mod_advwork/advworkview', 'init');
 echo $output->footer();
-
-
-
-#dopo ricorda che bisogna aggiungere i voti in grades, ma dimensionid è l'id dell'acc_mod del form assessment, 
-#mentre assessmentid invece è ovviamente quello di assessment.
-#fatti i grades, allora bisogna aggiungere il voto su assessment che è (somma di ((voti * peso)/massimo ))/somma pesi
-#cosi dovremmo starci, spero
 ?>
