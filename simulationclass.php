@@ -158,7 +158,14 @@ function update_assessment_form($values, $advworkid) {
     ];
 
     foreach ($rows as $row) {
-        $DB->insert_record('advworkform_acc_mod', $row);
+        $existing_record = $DB->get_record('advworkform_acc_mod', ['advworkid' => $advworkid, 'sort' => $row->sort]);
+
+        if ($existing_record) {
+            $row->id = $existing_record->id;
+            $DB->update_record('advworkform_acc_mod', $row);
+        } else {
+            $DB->insert_record('advworkform_acc_mod', $row);
+        }
     }
 }
 
