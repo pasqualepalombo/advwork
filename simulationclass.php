@@ -95,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_submissions($courseid, $advwork->id);
     }
     elseif (isset($_POST['create_groups_btn'])) {
+        $groups_size = intval($_POST["group_size_to_create"]);
         create_groups_for_course($courseid, $groups_size);
     }
     elseif (isset($_POST['create_grouping_btn'])) {
@@ -416,6 +417,7 @@ function create_groups_for_course($courseid, $group_size) {
     # Verifica che il gruppo abbia almeno 4 persone
     if ($group_size < 4) {
         $message_groups = "Dimensione non valida, i gruppi devono avere almeno 4 persone.";
+        $message_groups = $group_size;
         return;
     }
     
@@ -482,7 +484,8 @@ function set_groups_course_setting($courseid, $groupingid) {
 
 function create_grouping_with_all_groups($courseid, $groupingname) {
     global $CFG, $DB;
-    
+    global $message_groups;
+
     $groupingdata = new stdClass();
     $groupingdata->courseid = $courseid;
     $groupingdata->name = $groupingname;
@@ -492,7 +495,7 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
     $groupingdata->timemodified = time();
 
     $groupingid = groups_create_grouping($groupingdata);
-
+    
     $groups = $DB->get_records('groups', array('courseid' => $courseid));
 
     foreach ($groups as $group) {
@@ -500,7 +503,7 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
     }
 
     set_groups_course_setting($courseid, $groupingid);
-
+    $message_groups = "Grouping effettuato con successo";
     return $groupingid;
 }
 
