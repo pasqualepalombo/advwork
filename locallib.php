@@ -4025,6 +4025,7 @@ class advwork {
    JOIN mdl_advwork_assessments as assessments ON assessments.submissionid = submissions.`Submission Id`
    JOIN mdl_user AS reviewers ON reviewers.id = assessments.reviewerid
    WHERE assessments.reviewerid NOT IN ($teachersidsparameter);");
+   # Giuseppe Bruno: cambiato da FIND_IN_SET=0 a NOT IN
 
     }
     /**
@@ -4061,6 +4062,7 @@ class advwork {
    JOIN (SELECT groupings.groupingid, groupings.groupid, member.userid FROM mdl_groupings_groups as groupings join mdl_groups_members as member on groupings.groupid = member.groupid WHERE groupings.groupid=$groupid) as submisioner_group on submisioner_group.userid = submissions.`Author Id`
    WHERE assessments.reviewerid NOT IN ($teachersidsparameter);
 ");
+    # Giuseppe Bruno cambiato da FIND_IN_SET=0 a NOT IN
 
     }
 

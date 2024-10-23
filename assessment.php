@@ -150,6 +150,13 @@ if (is_null($assessment->grade) and !$assessmenteditable) {
 
         // And finally redirect the user's browser.
         if (!is_null($rawgrade) and isset($data->saveandclose)) {
+            # Start : Giuseppe Bruno
+            #if it was pressed the button 'save and close' from a teacher (canovveridegrades), set the session variables in a useful way to be used in the 'view' page
+            if(isset($_POST['saveandclose']) && $_POST['saveandclose'] && $canoverridegrades){
+                $_SESSION['saveandclosefromassessment']=true;
+                $_SESSION['submissionidfromassessment']=$submission->id;
+            }
+            # End : Giuseppe Bruno
             redirect($advwork->view_url());
         } else if (!is_null($rawgrade) and isset($data->saveandshownext)) {
             $next = reset($pending);
@@ -178,6 +185,19 @@ if ($canoverridegrades or $cansetassessmentweight) {
         redirect($advwork->view_url());
     }
 }
+
+# Start : Giuseppe Bruno
+# if it was pressed the button 'save and continue' from a teacher (canovveridegrades), set the session variables in a useful way to be used in the 'view' page
+if(isset($_POST['saveandcontinue']) && $_POST['saveandcontinue'] && $canoverridegrades){
+    $_SESSION['saveandcontinuefromassessment']=true;
+    $_SESSION['assessurl']=$PAGE->url;
+    $_SESSION['submissionidfromassessment']=$submission->id;
+    redirect($advwork->view_url());
+}
+if(isset($_SESSION['assessurl'])){
+    unset($_SESSION['assessurl']);
+}
+# End : Giuseppe Bruno
 
 // output starts here
 $output = $PAGE->get_renderer('mod_advwork');      // advwork renderer

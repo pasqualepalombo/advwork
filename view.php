@@ -524,9 +524,22 @@ case advwork::PHASE_ASSESSMENT:
     }
 
     if (has_capability('mod/advwork:viewallassessments', $PAGE->context)) {
-        $perpage = get_user_preferences('advwork_perpage', 10);
+        # Start : Giuseppe Bruno
+        # old: $perpage = get_user_preferences('advwork_perpage', 10);
+        $perpage = get_user_preferences('advwork_perpage', 500);
+        # End : Giuseppe Bruno
         $groupid = groups_get_activity_group($advwork->cm, true);
         $data = $advwork->prepare_grading_report_data($USER->id, $groupid, $page, $perpage, $sortby, $sorthow);
+        # Start : Giuseppe Bruno
+        echo    "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        document.getElementById('apriNuovaScheda').addEventListener('click', function() {
+                            window.open('markshistory.php', '_blank');
+                        });
+                    });
+                </script>
+                <button id='apriNuovaScheda' class='btn btn-warning' style='width:100%'>History</button>";
+        # End : Giuseppe Bruno
         if ($data) {
             $showauthornames    = has_capability('mod/advwork:viewauthornames', $advwork->context);
             $showreviewernames  = has_capability('mod/advwork:viewreviewernames', $advwork->context);
@@ -706,7 +719,303 @@ case advwork::PHASE_EVALUATION:
             $reportopts->showcumulatedgrades     = true;
             $reportopts->advworkphase           = $advwork->phase;
 
+            # Start : Giuseppe Bruno
+            //set the csv directory path in a session variable to be used in the 'markshistory.php' page
+            $csvhistorydirectory = 'csvfiles/history/'. $course->fullname ."/". $advwork->id ."-". $advwork->name;
+            $_SESSION['csvhistorydirectory']=$csvhistorydirectory;
+            //if saveandclose or saveandcontinue (buttons) were pressed and was set the submissionid from the assessment page
+            //or is pressed "Re-calulate grades" button
+            if(((isset($_SESSION['saveandclosefromassessment']) || isset($_SESSION['saveandcontinuefromassessment'])) && 
+            ($_SESSION['saveandclosefromassessment'] || $_SESSION['saveandcontinuefromassessment']) &&
+            (isset($_SESSION['submissionidfromassessment']) && $_SESSION['submissionidfromassessment'])) ||
+            (isset($_SESSION['calculate_grades_button']) && $_SESSION['calculate_grades_button'])){
+                $aspectsandweights=$DB->get_records_sql("SELECT id,grade,weight FROM `mdl_advworkform_acc_mod` WHERE advworkid=$advwork->id"); // query per avere voto massimo e peso relativo all'advwork
+                $i=0;
+                $ok=true;
+                $maxnumreview=0;
+                //open the $data->grades variable (the table is composed from that)
+                foreach($data->grades as $riga){
+                    //saving all the datas i need to save in the csv files in $vals (userid,firstname,lastname)
+                    $vals[$i]['userid']=$riga->userid;
+                    $vals[$i]['firstname']=$riga->firstname;
+                    $vals[$i]['lastname']=$riga->lastname;
+                    $count=1;
+                    foreach($riga->reviewedby as $rigarevby){
+                        //if it's not a teacher grade, save if on the csv
+                        if(!in_array($rigarevby->userid, $courseteachersid)){  
+                            //saving all the datas i need to save in the csv files in $vals (gradereceived x, gradereceived x aspect y,useridreceived x)
+                            $vals[$i]['gradesreceived']['gradereceived'.$count][0]=$rigarevby->grade; 
+                            $vals[$i]['gradesreceived']['useridreceived'.$count][0]=$rigarevby->userid;
+                            $gradeaspects=$DB->get_records_sql("SELECT mdl_advwork_grades.id,mdl_advwork_grades.grade FROM mdl_advwork_grades JOIN mdl_advwork_assessments ON mdl_advwork_grades.assessmentid=mdl_advwork_assessments.id WHERE mdl_advwork_assessments.reviewerid=$rigarevby->userid and mdl_advwork_assessments.submissionid=$riga->submissionid");
+                            $countaspects=1;
+                            foreach($gradeaspects as $igrade){
+                                $vals[$i]['gradesreceived']['gradereceived'.$count]['aspect'.$countaspects]=$igrade->grade;
+                                $countaspects++;
+                            }
+                                                
+                            $count++;
+                        }
+                        elseif($rigarevby->grade==$riga->submissiongradesinglesession){
+                            //saving all the datas i need to save in the csv files in $vals (submission grade teacherid, submission grade aspect y)
+                            $vals[$i]['sumbissiongradeaspects']['id']=$rigarevby->userid;
+                            $gradeaspects=$DB->get_records_sql("SELECT mdl_advwork_grades.id,mdl_advwork_grades.grade FROM `mdl_advwork_assessments`join mdl_advwork_grades on mdl_advwork_grades.assessmentid=mdl_advwork_assessments.id where mdl_advwork_assessments.reviewerid=$rigarevby->userid and mdl_advwork_assessments.submissionid=$rigarevby->submissionid");
+                            $countaspects=1;
+                            foreach($gradeaspects as $igrade){
+                                $vals[$i]['sumbissiongradeaspects']['aspect'.$countaspects]=$igrade->grade;
+                                $countaspects++;
+                            }
+                        }
+                        
+                    }
+                    
+                    $numaspectsandweights=$countaspects-1;
 
+                    $count=1;
+                    foreach($riga->reviewerof as $rigarevof){
+                        //saving all the datas i need to save in the csv files in $vals (grade given x,userid given x, grade given x aspect y)
+                        $vals[$i]['gradesgiven']['gradegiven'.$count][0]=$rigarevof->grade; 
+                        $vals[$i]['gradesgiven']['useridgiven'.$count][0]=$rigarevof->userid;  
+                        $gradeaspects=$DB->get_records_sql("SELECT mdl_advwork_grades.id,mdl_advwork_grades.grade FROM `mdl_advwork_grades` join mdl_advwork_assessments on mdl_advwork_assessments.id=mdl_advwork_grades.assessmentid join mdl_advwork_submissions on mdl_advwork_assessments.submissionid=mdl_advwork_submissions.id where mdl_advwork_assessments.reviewerid=$riga->userid and mdl_advwork_submissions.authorid=$rigarevof->userid and mdl_advwork_submissions.advworkid=$advwork->id");
+                        $countaspects=1;
+                        foreach($gradeaspects as $igrade){
+                            $vals[$i]['gradesgiven']['gradegiven'.$count]['aspect'.$countaspects]=$igrade->grade;
+                            $countaspects++;
+                        }                      
+                        $count++;
+                    }
+
+                    if($maxnumreview < ($count-1)){
+                        $maxnumreview=$count-1;
+                    }
+
+                    $count=1;
+                    //saving all the datas i need to save in the csv files in $vals (max grade aspect y, weight % aspect y)
+                    foreach($aspectsandweights as $obj){
+                        $vals[$i]['maxgradeaspect'.$count]= $obj->grade;
+                        $vals[$i]['weightaspect'.$count]= ($obj->weight)/10;
+                        
+                        $count++;
+                    }
+                    
+                    
+                    //if we could not connect to the bayesian network, we could not have all the datas in the table, so to not write the csv $ok is set to false
+                    if(!$riga->submissiongradesinglesession){
+                        $ok=false;
+                        break;
+                    }else{
+                        //saving all the datas i need to save in the csv files in $vals (submission grade, competence (single session), assessment capability (single session))
+                        $vals[$i]['submissiongradesinglesession']=$riga->submissiongradesinglesession;
+                        $vals[$i]['competencesinglesession']=$riga->competencesinglesession;
+                        $vals[$i]['assessmentcapabilitysinglesession']=$riga->assessmentcapabilitysinglesession;
+                        //saving all the datas i need to save in the csv files in $vals (competence (cumulated), assessment capability (cumulated))
+                        $vals[$i]['competencecumulated']=$riga->competencecumulated;
+                        $vals[$i]['assessmentcapabilitycumulated']=$riga->assessmentcapabilitycumulated;
+                        $i++;
+                    }
+                }
+                
+                // if $ok is false, we had problems so won't be written the csv file
+                if(!$ok){
+                    echo '<script>console.log("Possibile errore nella connessione al BNS Server");</script>';
+                }else{
+                    //if the directory of the csvfiles doesn't exist yet, it's created if possible
+                    if (!is_dir($csvhistorydirectory)) {
+                        if (!mkdir($csvhistorydirectory, 0777, true)) {
+                            die('Errore nella creazione della csvhistorydirectory: ' . $csvhistorydirectory);
+                        }
+                    }
+                    
+                    //get all the csv files in the csvhistorydirectory
+                    $csvfiles = glob($csvhistorydirectory . '/*.csv');
+                    $numcsvhistoryfiles=count($csvfiles);
+
+                    if(!isset($_SESSION['csvhistorynum'])){
+                        if ($numcsvhistoryfiles == 0) {
+                            $_SESSION['csvhistorynum']=0;
+                        }else{
+                            $csvmaxold=0;
+                            //find the max number the csv files starts with (10-7 14-5 2-45 -> 14) to have a non continuos ascending order
+                            foreach ($csvfiles as $csvfile) {
+                                // get only the name of the file
+                                $filenamecsv = pathinfo(basename($csvfile), PATHINFO_FILENAME);
+                                // divide the string at the "-" 
+                                $csvstringarray = explode("-", $filenamecsv);
+                                if(((int)$csvstringarray[0]) > $csvmaxold){
+                                    $csvmaxold=(int)$csvstringarray[0];
+                                }
+                            }
+                            $_SESSION['csvhistorynum']=$csvmaxold+1;
+                        }
+                    }
+                    $csvnum=$_SESSION['csvhistorynum'];
+                    //if is not pressed the "Re-calulate grades" button write the last submissionid, evaluated by the teacher, as the second part of the file name
+                    if(!$_SESSION['calculate_grades_button']){
+                        $filename = $csvnum.'-'.$_SESSION['submissionidfromassessment'];
+                    }else{
+                        //if is pressed the "Re-calulate grades" button, name the csv file with 0-0
+                        $filename = '0-0';
+                    }
+                    
+                    // if we have the submissionid, save it, otherwise save 0
+                    if(isset($_SESSION['submissionidfromassessment']) && $_SESSION['submissionidfromassessment'] ){
+                        $submissionidfromassessment=$_SESSION['submissionidfromassessment'];
+                    }else{
+                        $submissionidfromassessment=0;
+                    }
+                    // go through all the csv files
+                    foreach ($csvfiles as $csvfile) {
+                        // get the filename without path
+                        $filenamecsv = pathinfo(basename($csvfile), PATHINFO_FILENAME);
+                        // separate the string on the "-"
+                        $csvstringarray = explode("-", $filenamecsv);
+                        //if it's found a csv file that has the same submissionid we want to save, delete the old one and stop searching
+                        if((int)$csvstringarray[1] == (int)$submissionidfromassessment){
+                            unlink($csvfile);
+                            break;
+                        }                
+                    }
+                    // create the csv file and open it on write mode
+                    $handle = fopen($csvhistorydirectory.'/'.$filename.'.csv', 'w');
+                    //set the start of the csv file's header
+                    $header = ['Userid', 'Firstname', 'Lastname'];
+
+                    // add grade received x, userid received x and grade received x aspect y to the header
+                    for ($i = 1; $i <= $maxnumreview; $i++) {
+                        $header[] = "Grade received ".$i;
+                        for($j=1; $j<=$numaspectsandweights; $j++){
+                            $header[] = "Grade received ".$i." Aspect ".$j;
+                        }
+                        $header[] = "Userid received ".$i;
+                    }
+
+                    // add grade given x, userid given x and grade given x aspect y to the header
+                    for ($i = 1; $i <= $maxnumreview; $i++) {
+                        $header[] = "Grade given ".$i;
+                        for($j=1; $j<=$numaspectsandweights; $j++){
+                            $header[] = "Grade given ".$i." Aspect ".$j;
+                        }
+                        $header[] = "Userid given ".$i;
+                    }
+                    // add max grade aspect x and weight % aspect y to the header
+                    for ($i = 1; $i <= $numaspectsandweights; $i++) {
+                        $header[] = "Max Grade Aspect ".$i;
+                        $header[] = "Weight % Aspect ".$i;                    
+                    }
+                    // add submission grade aspect y and submission grade teacherid to the header
+                    for ($i = 1; $i <= $numaspectsandweights; $i++) {
+                        $header[] = "Submission grade Aspect ".$i;                   
+                    }
+                    $header[] = "Submission grade teacherid"; 
+                    
+                    // add the last ones to the header
+                    $header = array_merge($header, [
+                        'Submission grade', 
+                        'Competence (single session)', 
+                        'Assessment capability (single session)', 
+                        'Competence (cumulated)', 
+                        'Assessment capability (cumulated)'
+                    ]);
+                    
+                    // set the header as the first row of $dati
+                    $dati[0] = $header;
+                    $i=1;
+                    foreach($vals as $val){
+                        //add sequentially the $vals's rows to $dati
+                        $dati[$i] = [];
+
+                        $dati[$i][] = $val['userid'];
+                        $dati[$i][] = $val['firstname'];
+                        $dati[$i][] = $val['lastname'];
+
+                        // add exactly $maxnumreview number of columns 'received' and the grades to every aspect for every one of them
+                        for($count=1; $count <= $maxnumreview; $count++){
+                            if (!$val['gradesreceived']['gradereceived'.$count][0]) {
+                                $dati[$i][] = "NULL";
+                            } else {
+                                $dati[$i][] = $val['gradesreceived']['gradereceived'.$count][0];
+                            }
+
+                            for($j=1; $j<=$numaspectsandweights; $j++){
+                                $dati[$i][]=(int)$val['gradesreceived']['gradereceived'.$count]['aspect'.$j];
+                            }  
+
+                            if (!$val['gradesreceived']['useridreceived'.$count][0]) {
+                                $dati[$i][] = "NULL";
+                            } else {
+                                $dati[$i][] = $val['gradesreceived']['useridreceived'.$count][0];
+                            }
+
+
+                        }
+                    
+                        // same thing (as upper) for givens
+                        for($count=1; $count <= $maxnumreview; $count++){
+                            if (!$val['gradesgiven']['gradegiven'.$count][0]) {
+                                $dati[$i][] = "NULL";
+                            } else {
+                                $dati[$i][] = $val['gradesgiven']['gradegiven'.$count][0];
+                            }
+                            
+                            for($j=1; $j<=$numaspectsandweights; $j++){
+                                $dati[$i][]=(int)$val['gradesgiven']['gradegiven'.$count]['aspect'.$j];
+                            }
+
+                            if (!$val['gradesgiven']['useridgiven'.$count][0]) {
+                                $dati[$i][] = "NULL";
+                            } else {
+                                $dati[$i][] = $val['gradesgiven']['useridgiven'.$count][0];
+                            }
+                        }
+
+                        //add the max grade aspects and the weights
+                        for($count=1; $count <= $numaspectsandweights; $count++){
+                            $dati[$i][] = $val['maxgradeaspect'.$count];
+                            $dati[$i][] = $val['weightaspect'.$count];                       
+                        }
+                        // add the last ones
+                        for ($j = 1; $j <= $numaspectsandweights; $j++) {
+                            $dati[$i][] = (int)$val['sumbissiongradeaspects']['aspect'.$j];             
+                        }
+                        $dati[$i][] = $val['sumbissiongradeaspects']['id']; 
+                        $dati[$i][] = $val['submissiongradesinglesession'];
+                        $dati[$i][] = $val['competencesinglesession'];
+                        $dati[$i][] = $val['assessmentcapabilitysinglesession'];
+                    
+                        if (!$val['competencecumulated']) {
+                            $dati[$i][] = "NULL";
+                        } else {
+                            $dati[$i][] = $val['competencecumulated'];
+                        }
+                    
+                        if (!$val['assessmentcapabilitycumulated']) {
+                            $dati[$i][] = "NULL";
+                        } else {
+                            $dati[$i][] = $val['assessmentcapabilitycumulated'];
+                        }
+                    
+                        $i++;
+                    }
+                    
+                    // write $dati in the csv opened before
+                    foreach ($dati as $riga) {
+                        fputcsv($handle, $riga);
+                    }
+
+                    // close the file
+                    fclose($handle);
+                    $_SESSION['csvhistorynum']+=1;
+                }
+                // unset some variables used only to write this csv
+                unset($_SESSION['saveandclosefromassessment']);
+                unset($_SESSION['submissionidfromassessment']);
+                unset($_SESSION['calculate_grades_button']);
+                // if it was pressed the button saveandcontinuefromassessment, we need to go back to the page we were in 
+                if(isset($_SESSION['saveandcontinuefromassessment']) && isset($_SESSION['assessurl'])){
+                    unset($_SESSION['saveandcontinuefromassessment']);
+                    redirect($_SESSION['assessurl']);
+                }
+            }
+        # End : Giuseppe Bruno
 
             print_collapsible_region_start('', 'advwork-viewlet-gradereport', get_string('gradesreport', 'advwork'));
             echo $output->box_start('generalbox gradesreport');

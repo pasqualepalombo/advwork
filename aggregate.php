@@ -63,6 +63,9 @@ if ($settingsdata = $settingsform->get_data()) {
 
     if (isloggedin() && $iscourseteacher) {
         $advwork->send_session_data($courseid, $advwork, $courseteachersid, $cm);
+        # Start : Giuseppe Bruno 
+        $_SESSION['calculate_grades_button']=true; 
+        # End : Giuseppe Bruno 
     }
 }
 redirect(new moodle_url($advwork->view_url(), compact('page', 'sortby', 'sorthow')));
