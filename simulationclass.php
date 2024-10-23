@@ -68,7 +68,6 @@ $message_enroll = '';
 $message_submission = '';
 $message_groups = '';
 $message_allocation = '';
-$message_allocation = '';
 $message_grades = '';
 
 #SIM FORM HANDLER
@@ -96,16 +95,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_submissions($courseid, $advwork->id);
     }
     elseif (isset($_POST['create_groups_btn'])) {
-        create_groups_for_course($courseid);
+        create_groups_for_course($courseid, $groups_size);
     }
     elseif (isset($_POST['create_grouping_btn'])) {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
     }
-    elseif (isset($_POST['create_allocation_btn'])) {
+    elseif (isset($_POST['create_random_allocation_btn'])) {
         create_allocation_among_groups($courseid, $advwork->id);
+    }
+    elseif (isset($_POST['create_sequential_allocation_btn'])) {
+        #TODO
+        return;
     }
     elseif (isset($_POST['create_grades_random_btn'])) {
         process_grades($advwork->id);
+    }
+    elseif (isset($_POST['create_k_grades_btn'])) {
+        #TODO
+        return;
+    }
+    elseif (isset($_POST['create_j_grades_btn'])) {
+        #TODO
+        return;
     }
 }
 
@@ -393,7 +404,7 @@ function count_groups_in_course($courseid) {
     return $count;
 }
 
-function create_groups_for_course($courseid) {
+function create_groups_for_course($courseid, $group_size) { 
     global $DB;
     global $message_groups;
 
@@ -401,10 +412,27 @@ function create_groups_for_course($courseid) {
     $students_array = array_values($students);
 
     $total_students = count($students_array);
-    $group_size = 4;
+    
+    # Verifica che il gruppo abbia almeno 4 persone
+    if ($group_size < 4) {
+        $message_groups = "Dimensione non valida, i gruppi devono avere almeno 4 persone.";
+        return;
+    }
+    
     $num_groups = ceil($total_students / $group_size);
 
-    if($num_groups == count_groups_in_course($courseid)){
+    # Se la dimensione non permette di avere gruppi validi(cioè tutti almeno 4 persone)
+    while (($total_students % $group_size < 4 && $total_students % $group_size > 0) || $group_size < 4) {
+        $message_groups = "Dimensione non valida. Riduzione della dimensione del gruppo.";
+        $group_size--;
+        if ($group_size < 4) {
+            $message_groups = "Impossibile creare gruppi con almeno 4 membri. Operazione annullata.";
+            return;
+        }
+        $num_groups = ceil($total_students / $group_size);
+    }
+
+    if ($num_groups == count_groups_in_course($courseid)){
         $message_groups = 'Gruppi già presenti, non ne sono stati creati altri';
         return;
     }
@@ -425,8 +453,7 @@ function create_groups_for_course($courseid) {
             }
         }
     }
-    #create_grouping_with_all_groups($courseid, 'SIM Grouping');
-    $message_submission = "Gruppi creati con successo per il corso con ID: $courseid";
+    $message_groups = "Gruppi creati con successo per il corso con ID: $courseid";
 }
 
 function get_course_grouping_name($courseid) {
@@ -790,45 +817,63 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container">
+<div class="container bg-light">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
-                <div class ="col-5">
+                <div class ="col-3">
                     <div>Active groups: <?php echo count_groups_in_course($courseid);?></div>
-                    <div>Group dimension: 4</div>
+                    <div>Group dimension:</div>
                     <div>Active grouping: <?php echo get_course_grouping_name($courseid); ?></div>
+                </div>
+                <div class ="col-2">
+                    <div><p></p></div>
+                    <div><input type="number" name="group_size_to_create"></div>
+                    <div><p></p></div>
                 </div>
                 <div class="col">
                     <div><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups</button></br></div>
                     <div><p></p></div>
                     <div><button type="submit" class="btn btn-primary" name="create_grouping_btn">Create Grouping</button></div>
                 </div>
+
             </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
         </form>
         <?php echo display_function_message($message_groups);?>
     </p>
 </div>
 
-<div class="container">
+<div class="container bg-light">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
-                <div class ="col-5">Allocation made: <?php echo check_the_allocation($courseid, $advwork->id);?></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_allocation_btn">Random Reviewers Allocation</button></div>
+                <div class ="col-5">Allocation status: <?php echo check_the_allocation($courseid, $advwork->id);?></div>
+                <div class="col">
+                    <div><button type="submit" class="btn btn-primary" name="create_random_allocation_btn">Random Reviewers Allocation</button></br></div>
+                    <div><p></p></div>
+                    <div><button type="submit" class="btn btn-primary" name="create_sequential_allocation_btn">Sequential Reviewers Allocation</button></div>
+                </div>
             </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
         </form>
         <?php echo display_function_message($message_allocation);?>
     </p>
 </div>
 
-<div class="container">
+<div class="container bg-light">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
-                <div class ="col-5">Insert grades: </div>
+                <div class ="col-5">Grades Rules: </div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_grades_random_btn">Random Grades</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_k_grades_btn">Grades by Knowledge</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_j_grades_btn">Grades by Judge</button></div>
             </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
         </form>
         <?php echo display_function_message($message_allocation);?>
     </p>
