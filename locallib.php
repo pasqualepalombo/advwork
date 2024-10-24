@@ -4091,7 +4091,7 @@ class advwork {
                ORDER BY submissions.grade DESC ) as submissions JOIN mdl_advwork_assessments as assessments ON assessments.submissionid = submissions.`Submission Id` 
                JOIN (SELECT groupings.groupingid, groupings.groupid, member.userid FROM mdl_groupings_groups as groupings join mdl_groups_members as member on groupings.groupid = member.groupid WHERE groupings.groupid=$groupid) as submisioner_group on submisioner_group.userid = submissions.`Author Id` 
         WHERE assessments.reviewerid IN ($teachersidsparameter)");
-
+        # Giuseppe Bruno cambiato da FIND_IN_SET>0 a IN
     }
     /**
      * @param $advworkid
@@ -4137,7 +4137,7 @@ class advwork {
                WHERE submissions.advworkid = $sessionid 
                ORDER BY submissions.grade DESC ) as submissions JOIN mdl_advwork_assessments as assessments ON assessments.submissionid = submissions.`Submission Id` 
         WHERE assessments.reviewerid IN ($teachersidsparameter)");
-
+        # Giuseppe Bruno cambiato da FIND_IN_SET>0 a IN
     }
 
 

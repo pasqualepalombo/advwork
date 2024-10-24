@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 #SIM FUNCTIONS
 function update_assessment_form($values, $advworkid) {
     global $DB;
-
+    global $message_form;
     $rows = [];
 
     #Primo Aspect
@@ -167,6 +167,7 @@ function update_assessment_form($values, $advworkid) {
             $DB->insert_record('advworkform_acc_mod', $row);
         }
     }
+    $message_form = "Assessment Form aggiornato con successo";
 }
 
 function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
@@ -392,7 +393,7 @@ function create_submissions($courseid, $advwork_id) {
         
         $DB->insert_record('advwork_submissions', $data);
     }
-    $message_submission = 'All submissions created. Now allocate with groups and grouping';
+    $message_submission = 'Tutti gli studenti ora hanno la propria submission.';
 }
 
 function count_groups_in_course($courseid) {
@@ -424,6 +425,7 @@ function create_groups_for_course($courseid, $group_size) {
     $num_groups = ceil($total_students / $group_size);
 
     # Se la dimensione non permette di avere gruppi validi(cioè tutti almeno 4 persone)
+    # questo significa che si possono avere gruppi di dimensione variabile come 8 8 e 7
     while (($total_students % $group_size < 4 && $total_students % $group_size > 0) || $group_size < 4) {
         $message_groups = "Dimensione non valida. Riduzione della dimensione del gruppo.";
         $group_size--;
@@ -539,7 +541,7 @@ function check_the_allocation($courseid, $advworkid) {
         return 'ok';
     }
     else {
-        return 'no';
+        return "$reviewers_number" + ',' + "$students_number";
     }
 }
 
@@ -559,6 +561,11 @@ function get_single_submission_by_author_advwork($advwork_id, $authorid) {
 
 function assign_submissions_to_students($student_ids, $submissions, $reviewer_number) {
     #al momento il numero dei reviewers è bloccato a 3
+
+    #BUG al momento questa funzione crea si 3 reviewers ma non fa in modo che ogni utente ne valuti solo 3,
+    # alcuni correggono 4 o addirittura 6 persone.
+    # devo capire quale è il problema, se c'è un numero minimo/massimo che lo rende possibile
+    # e se non è possibile allora vado di sequenziale
     $assignments = [];
 
     foreach ($submissions as $index => $submission_id) {
@@ -574,9 +581,9 @@ function assign_submissions_to_students($student_ids, $submissions, $reviewer_nu
 
 function write_assessments($assignments) {
     global $DB;
-
-    foreach ($assignments as $submissionid => $reviewer_ids) {
-        foreach ($reviewer_ids as $reviewerid) {
+    
+    foreach ($assignments as $submissionid => $reviewers) {
+        foreach ($reviewers as $reviewerid) {
             $data = new stdClass();
             $data->submissionid = $submissionid;
             $data->reviewerid = $reviewerid;
@@ -585,12 +592,13 @@ function write_assessments($assignments) {
             $data->feedbackauthorattachment = 0;
             $data->feedbackauthorformat = 1;
             $data->feedbackreviewerformat = 1;
+
             $DB->insert_record('advwork_assessments', $data);
         }
     }
 }
 
-function get_groups_and_students($courseid, $advworkid) {
+function create_allocation_among_groups($courseid, $advworkid) {
     global $DB;
     global $message_allocation;
 
@@ -607,23 +615,20 @@ function get_groups_and_students($courseid, $advworkid) {
     
     foreach ($groups as $group) {
         $student_ids = array_keys(groups_get_members($group->id, 'u.id'));
+
         foreach ($student_ids as $authorid){
             $submission = get_single_submission_by_author_advwork($advworkid, $authorid);
             $first_key = array_key_first($submission);
             $submissions[] = $submission[$first_key]->id;
         }
-        
+ 
         $assignments = assign_submissions_to_students($student_ids, $submissions, 3);
-        
+
         write_assessments($assignments);
 
         $submissions = [];
     }
 
-}
-
-function create_allocation_among_groups($courseid,$advworkid) {
-    get_groups_and_students($courseid,$advworkid);
 }
 
 function process_grades($advworkid) {
@@ -703,12 +708,12 @@ echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
 ?>
 
-<div class="container">
+<div class="container INFO">
     <p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p>
     <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
 </div>
 
-<div class="container bg-light">
+<div class="container bg-light FORM">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row d-flex align-items-center">
@@ -779,7 +784,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container">
+<div class="container CREATE">
     <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
@@ -793,7 +798,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container">
+<div class="container ENROLL">
     <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
@@ -807,7 +812,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container">
+<div class="container SUBMISSIONS">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row d-flex align-items-center">
@@ -820,7 +825,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light">
+<div class="container bg-light GROUPS">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -848,7 +853,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light">
+<div class="container bg-light ALLOCATION">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -866,7 +871,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light">
+<div class="container bg-light GRADES">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -888,4 +893,14 @@ echo $output->heading(format_string('Simulated Students'));
 <?php 
 $PAGE->requires->js_call_amd('mod_advwork/advworkview', 'init');
 echo $output->footer();
+
+#TODO 
+# sarebbe necessario se applicassi dei check di controllo per le funzionalità:
+#non si può fare groups e grouping se non con certo numero di iscritti 
+#non si può fare  create submission senza studenti iscritti al corso
+#non si può fare allocation senza groups and grouping
+# non si può usare i pulsanti di Grades Rules se prima non si ha aggiornato l'Assessment Form, 
+#se non ci sono studenti iscritti con submisson, groups e grouping e allocation fatta
+
+
 ?>
