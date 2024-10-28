@@ -102,11 +102,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
     }
     elseif (isset($_POST['create_random_allocation_btn'])) {
-        create_allocation_among_groups($courseid, $advwork->id);
+        $reviewers_size = intval($_POST["reviewers_size"]);
+        create_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
     }
     elseif (isset($_POST['create_sequential_allocation_btn'])) {
-        #TODO
-        return;
+        $reviewers_size = intval($_POST["reviewers_size"]);
+        create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
     }
     elseif (isset($_POST['create_grades_random_btn'])) {
         process_grades($advwork->id);
@@ -511,7 +512,7 @@ function create_grouping_with_all_groups($courseid, $groupingname) {
 
 function check_the_allocation($courseid, $advworkid) {
     global $DB;
-
+    #TODO qui bisogna finalizzare i return una volta che le allocazioni funzionano
     $sql_submissions = "
         SELECT id
         FROM {advwork_submissions}
@@ -562,12 +563,13 @@ function get_single_submission_by_author_advwork($advwork_id, $authorid) {
 function assign_submissions_to_students($student_ids, $submissions, $reviewer_number) {
     #al momento il numero dei reviewers è bloccato a 3
 
-    #BUG al momento questa funzione crea si 3 reviewers ma non fa in modo che ogni utente ne valuti solo 3,
-    # alcuni correggono 4 o addirittura 6 persone.
-    # devo capire quale è il problema, se c'è un numero minimo/massimo che lo rende possibile
-    # e se non è possibile allora vado di sequenziale
     $assignments = [];
-
+    var_dump('########STUDENT IDS########');
+    var_dump($student_ids);
+    var_dump('########SUBMISSIONS########');
+    var_dump($submissions);
+    
+    #BUG è qui il bug
     foreach ($submissions as $index => $submission_id) {
         $student_id = $student_ids[$index];
         $possible_students = array_diff($student_ids, [$student_id]);
@@ -575,14 +577,20 @@ function assign_submissions_to_students($student_ids, $submissions, $reviewer_nu
         $assigned_students = array_slice($possible_students, 0, $reviewer_number);
         $assignments[$submission_id] = $assigned_students;
     }
-
+    var_dump('########ASSIGNMENTS########');
+    var_dump($assignments);
     return $assignments;
 }
 
 function write_assessments($assignments) {
     global $DB;
-    
+    global $message_allocation;
+
     foreach ($assignments as $submissionid => $reviewers) {
+        
+        #Se esistono già degli assessments alla submission li cancella (poichè possono variare i numeri dei peers)
+        $DB->delete_records('advwork_assessments', ['submissionid' => $submissionid]);
+        
         foreach ($reviewers as $reviewerid) {
             $data = new stdClass();
             $data->submissionid = $submissionid;
@@ -596,9 +604,10 @@ function write_assessments($assignments) {
             $DB->insert_record('advwork_assessments', $data);
         }
     }
+    $message_allocation = "Allocazione effettuata con  successo";
 }
 
-function create_allocation_among_groups($courseid, $advworkid) {
+function create_allocation_among_groups($courseid, $advworkid, $reviewers_size) {
     global $DB;
     global $message_allocation;
 
@@ -623,6 +632,69 @@ function create_allocation_among_groups($courseid, $advworkid) {
         }
  
         $assignments = assign_submissions_to_students($student_ids, $submissions, 3);
+
+        #write_assessments($assignments);
+
+        $submissions = [];
+    }
+
+}
+
+function assign_sequential_submissions_to_students($student_ids, $submissions, $reviewers_size) {
+    
+    #il numero delle sub è incrementale insieme a quello dello studente,
+    #perciò l'n-esima sub è dell'n-esimo studente
+    
+    $assignments = [];
+    $num_students = count($student_ids);
+
+    for ($i = 0; $i < count($submissions); $i++) {
+        $submission_id = $submissions[$i];
+        $student_id = $student_ids[$i];
+        
+        $reviewers = [];
+        
+        $current_index = ($i + 1) % $num_students;
+        
+        while (count($reviewers) < $reviewers_size) {
+            if ($student_ids[$current_index] !== $student_id) {
+                $reviewers[] = $student_ids[$current_index];
+            }
+            $current_index = ($current_index + 1) % $num_students;
+        }
+        $assignments[$submission_id] = $reviewers;
+    }
+    
+    return $assignments;
+    
+
+}
+
+function create_sequential_allocation_among_groups($courseid, $advworkid, $reviewers_size) {
+    global $DB;
+    global $message_allocation;
+
+    $groups_and_students = array();
+    $groups = groups_get_all_groups($courseid);
+
+    $student_ids;
+    $submissions = [];
+
+    if (!$groups) {
+        $message_allocation = "Nessun gruppo trovato o sono vuoti";
+        return;
+    }
+    
+    foreach ($groups as $group) {
+        $student_ids = array_keys(groups_get_members($group->id, 'u.id'));
+
+        foreach ($student_ids as $authorid){
+            $submission = get_single_submission_by_author_advwork($advworkid, $authorid);
+            $first_key = array_key_first($submission);
+            $submissions[] = $submission[$first_key]->id;
+        }
+ 
+        $assignments = assign_sequential_submissions_to_students($student_ids, $submissions, $reviewers_size);
 
         write_assessments($assignments);
 
@@ -837,7 +909,7 @@ echo $output->heading(format_string('Simulated Students'));
                 </div>
                 <div class ="col-2">
                     <div><p></p></div>
-                    <div><input type="number" name="group_size_to_create"></div>
+                    <div><input type="number" value = 4 name="group_size_to_create"></div>
                     <div><p></p></div>
                 </div>
                 <div class="col">
@@ -858,7 +930,15 @@ echo $output->heading(format_string('Simulated Students'));
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
-                <div class ="col-5">Allocation status: <?php echo check_the_allocation($courseid, $advwork->id);?></div>
+                <div class ="col-3">
+                    <div>Allocation:</div>
+                    <div>Reviewers number:</div>
+                </div>
+                <div class ="col-2">
+                    <div><p></p></div>
+                    <div><input type="number" value = 3 name="reviewers_size"></div>
+                    <div><p></p></div>
+                </div>
                 <div class="col">
                     <div><button type="submit" class="btn btn-primary" name="create_random_allocation_btn">Random Reviewers Allocation</button></br></div>
                     <div><p></p></div>
