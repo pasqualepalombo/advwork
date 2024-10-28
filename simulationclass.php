@@ -69,6 +69,7 @@ $message_submission = '';
 $message_groups = '';
 $message_allocation = '';
 $message_grades = '';
+$random_tries = 0;
 
 #SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -103,7 +104,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (isset($_POST['create_random_allocation_btn'])) {
         $reviewers_size = intval($_POST["reviewers_size"]);
-        create_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
+        $random_attempts = intval($_POST["random_attempts"]);
+        create_allocation_among_groups($courseid, $advwork->id,$reviewers_size, $random_attempts);
     }
     elseif (isset($_POST['create_sequential_allocation_btn'])) {
         $reviewers_size = intval($_POST["reviewers_size"]);
@@ -560,27 +562,60 @@ function get_single_submission_by_author_advwork($advwork_id, $authorid) {
     return $submission;
 }
 
-function assign_submissions_to_students($student_ids, $submissions, $reviewer_number) {
-    #al momento il numero dei reviewers è bloccato a 3
+function assign_submissions_to_students($student_ids, $submissions, $reviewers_size, $random_attempts) { 
+    global $message_allocation;
+
+    $total_students = count($student_ids);
+    $total_submissions = count($submissions);
+    
+    #Verifica di compatibilità (sarà da cambiare i valori in automatico come i gruppi?)
+    if ($total_submissions * $reviewers_size != $total_students * $reviewers_size) {
+        $message_allocation = "Impossibile creare assegnazioni: verifica la compatibilità tra numero di studenti e submissions.";
+        return [];
+    }
 
     $assignments = [];
-    var_dump('########STUDENT IDS########');
-    var_dump($student_ids);
-    var_dump('########SUBMISSIONS########');
-    var_dump($submissions);
+    #Traccia quante volte ogni studente è assegnato
+    $assigned_count = array_fill_keys($student_ids, 0);
     
-    #BUG è qui il bug
     foreach ($submissions as $index => $submission_id) {
         $student_id = $student_ids[$index];
-        $possible_students = array_diff($student_ids, [$student_id]);
+        
+        #Filtra gli studenti per escludere quello corrente e chi ha già il numero massimo di assegnazioni
+        $possible_students = array_filter($student_ids, function($id) use ($student_id, $assigned_count, $reviewers_size) {
+            return $id !== $student_id && $assigned_count[$id] < $reviewers_size;
+        });
+        
+        #Verifica che ci siano abbastanza studenti disponibili
+        #Visto che è casuale è possibile una sfortuna nello shuffle, perciò ci prova diverse volte
+        #Sennò va in sequenziale visto che è sempre possibile, avverte in caso
+        if (count($possible_students) < $reviewers_size) {
+            $random_tries += 1;
+            if ($random_tries >= $random_attempts) {
+                $random_tries = 0;
+                $message_allocation = "Non è stata trovata un'allazione casuale. Si è passati alla versione sequenziale";
+                $assignments = assign_sequential_submissions_to_students($student_ids, $submissions, $reviewers_size);
+                return $assignments;
+            }
+            else {
+                assign_submissions_to_students($student_ids, $submissions, $reviewers_size, $random_attempts);
+            }
+            
+        }
+    
         shuffle($possible_students);
-        $assigned_students = array_slice($possible_students, 0, $reviewer_number);
+        $assigned_students = array_slice($possible_students, 0, $reviewers_size);
+        
         $assignments[$submission_id] = $assigned_students;
+        foreach ($assigned_students as $assigned_student) {
+            $assigned_count[$assigned_student]++;
+        }
     }
-    var_dump('########ASSIGNMENTS########');
-    var_dump($assignments);
+
+    
     return $assignments;
 }
+
 
 function write_assessments($assignments) {
     global $DB;
@@ -607,7 +642,7 @@ function write_assessments($assignments) {
     $message_allocation = "Allocazione effettuata con  successo";
 }
 
-function create_allocation_among_groups($courseid, $advworkid, $reviewers_size) {
+function create_allocation_among_groups($courseid, $advworkid, $reviewers_size, $random_attempts) {
     global $DB;
     global $message_allocation;
 
@@ -631,9 +666,10 @@ function create_allocation_among_groups($courseid, $advworkid, $reviewers_size) 
             $submissions[] = $submission[$first_key]->id;
         }
  
-        $assignments = assign_submissions_to_students($student_ids, $submissions, 3);
+        $assignments = assign_submissions_to_students($student_ids, $submissions, $reviewers_size, $random_attempts);
 
-        #write_assessments($assignments);
+    
+        write_assessments($assignments);
 
         $submissions = [];
     }
@@ -931,12 +967,14 @@ echo $output->heading(format_string('Simulated Students'));
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">
-                    <div>Allocation:</div>
-                    <div>Reviewers number:</div>
+                    <div><p>Allocation:</p></div>
+                    <div><p>Reviewers number:</p></div>
+                    <div><p>Random Attempts before Sequential:</p></div>
                 </div>
                 <div class ="col-2">
                     <div><p></p></div>
-                    <div><input type="number" value = 3 name="reviewers_size"></div>
+                    <div><p><input type="number" value = 3 name="reviewers_size"></p></div>
+                    <div><p><input type="number" value = 10 name="random_attempts"></p></div>
                     <div><p></p></div>
                 </div>
                 <div class="col">
@@ -963,7 +1001,7 @@ echo $output->heading(format_string('Simulated Students'));
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
-        <?php echo display_function_message($message_allocation);?>
+        <?php echo display_function_message($message_grades);?>
     </p>
 </div>
 
