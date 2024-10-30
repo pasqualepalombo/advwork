@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (isset($_POST['create_random_allocation_btn'])) {
         $reviewers_size = intval($_POST["reviewers_size"]);
-        if $reviewers_size < 3 {
+        if ($reviewers_size < 3) {
             $reviewers_size = 3;
         }
         $random_attempts = intval($_POST["random_attempts"]);
@@ -112,7 +112,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     elseif (isset($_POST['create_sequential_allocation_btn'])) {
         $reviewers_size = intval($_POST["reviewers_size"]);
-        if $reviewers_size < 3 {
+        if ($reviewers_size < 3) {
             $reviewers_size = 3;
         }
         create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
