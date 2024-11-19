@@ -1,6 +1,10 @@
 <?php
 /**
- * Creazione della classe simulata
+ * Creazione della classe simulata, prima versione
+ * 
+ * Questa versione richiede vari input da parte dell'utente.
+ * La prossima farà in modo da avere un'unico pannello di controllo
+ * e inviare la creazione, submission e assessment in maniera unica.
  *
  * @package    mod_advwork
  * @copyright  2024 Pasquale Palombo
