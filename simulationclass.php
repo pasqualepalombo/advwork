@@ -222,7 +222,7 @@ function create_simulation_students($students_number_to_create){
             $userdata = [
                 'username' => 'sim_student_' . $x,
                 'password' => '123',
-                'firstname' => 'SIM',
+                'firstname' => 'SIM ' . $x,
                 'lastname' => 'STUDENT',
                 'email' => 'student' . $x . '@sim.com'
             ];
@@ -389,10 +389,9 @@ function create_submissions($courseid, $advwork_id) {
         return true;
     });
     
-    $title = 'Submission_title_by_SM';
-    $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_SM</p>';
-    
     foreach ($latest_students as $student){
+        $title = 'Submission_title_by_' .$student->username;
+        $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_' .$student->username .'</p>';
         $authorid = $student->id;
         $data = new stdClass();
         $data->advworkid = $advwork_id;
@@ -406,6 +405,7 @@ function create_submissions($courseid, $advwork_id) {
         
         $DB->insert_record('advwork_submissions', $data);
     }
+        
     $message_submission = 'Tutti gli studenti ora hanno la propria submission.';
 }
 
