@@ -820,6 +820,134 @@ function process_grades($advworkid) {
     }
 }
 
+#LIG DEBUG
+function get_capability_grades($userid, $capid) {
+    global $DB;
+
+    $sql = "SELECT capabilityoverallgrade
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = :capid AND domainvalueid = 1";
+    $params = ['userid' => $userid, 'capid' => $capid];
+    $records = $DB->get_records_sql($sql, $params);
+    if (!empty($records)) {
+            echo " " . reset($records)->capabilityoverallgrade;
+    }
+}
+
+function get_var_capability_grades($userid, $capid) {
+    global $DB;
+    
+    $sql = "SELECT capabilityoverallgrade
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = 1 AND domainvalueid = 1";
+    $params = ['userid' => $userid];
+    $records = $DB->get_records_sql($sql, $params);
+    $k_value = reset($records)->capabilityoverallgrade;
+
+    $sql = "SELECT capabilityoverallgrade
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = 2 AND domainvalueid = 1";
+    $params = ['userid' => $userid];
+    $records = $DB->get_records_sql($sql, $params);
+    $j_value = reset($records)->capabilityoverallgrade;
+
+    echo " " . $k_value . " " . $j_value;
+
+}
+
+function get_capability_value($userid, $capid) {
+    global $DB;
+
+    $sql = "SELECT capabilityoverallvalue
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = :capid AND domainvalueid = 1";
+    $params = ['userid' => $userid, 'capid' => $capid];
+    $records = $DB->get_records_sql($sql, $params);
+    if (empty($records)) {return;}
+    
+    get_lig_assignment(reset($records)->capabilityoverallvalue);
+}
+
+function get_var_capability_value($userid, $capid) {
+    global $DB;
+    
+    $sql = "SELECT capabilityoverallvalue
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = 1 AND domainvalueid = 1";
+    $params = ['userid' => $userid];
+    $records = $DB->get_records_sql($sql, $params);
+    $k_value = reset($records)->capabilityoverallvalue;
+
+    $sql = "SELECT capabilityoverallvalue
+            FROM {advwork_student_models}
+            WHERE userid = :userid AND capabilityid = 2 AND domainvalueid = 1";
+    $params = ['userid' => $userid];
+    $records = $DB->get_records_sql($sql, $params);
+    $j_value = reset($records)->capabilityoverallvalue;
+    
+    if ($capid == 4){
+        # 3J:1K
+        #echo " " .$k_value . " " . $j_value;
+        $calc = ((3*$j_value + 1*$k_value)/4);
+        get_lig_assignment($calc);
+    }
+    if ($capid == 5){
+        # 2J:1K
+        #echo " " .$k_value . " " . $j_value;
+        $calc = ((2*$j_value + 1*$k_value)/3);
+        get_lig_assignment($calc);
+    }
+}
+
+function get_lig_assignment($capovval){
+    if ($capovval>=0.95){
+        echo " GOOD";
+    }
+    elseif($capovval>=0.75){
+        echo " INTERMEDIATE";
+    }
+    else {
+        echo " LOWER";
+    }
+
+    #for groups logic
+    return $capovval;
+}
+
+function get_distinct_user_ids($courseid, $advworkid, $capid) {
+    global $DB;
+
+    $sql = "SELECT DISTINCT userid 
+            FROM {advwork_student_models} 
+            WHERE courseid = :courseid AND advworkid = :advworkid";
+
+    $params = [
+        'courseid' => $courseid,
+        'advworkid' => $advworkid
+    ];
+
+    $userids = $DB->get_records_sql($sql, $params);
+
+    $userid_array = [];
+
+    if (!empty($userids)) {
+        foreach ($userids as $userid) {
+            $userid_array[] = $userid->userid;
+            echo "<p> ID: " .$userid->userid;
+            if ($capid == 4 or $capid == 5){
+                echo get_var_capability_grades($userid->userid, $capid);
+                echo get_var_capability_value($userid->userid, $capid);
+            }
+            else {
+                echo get_capability_grades($userid->userid, $capid);
+                echo get_capability_value($userid->userid, $capid);
+            }
+            echo "</p>";
+        }
+    }
+}
+
+
 #OUTPUT STARTS HERE
 
 echo $output->header();
@@ -1015,20 +1143,40 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
+<div class="container bg-light LIG">
+    <div class="row"><div class="col"><p></br></p></div></div>
+        <div class="row d-flex align-items-center">
+            <div class ="col-3">
+                <h3>K LIG</h3>
+                <?php echo get_distinct_user_ids($courseid, $advwork->id,1); ?>
+            </div>
+            <div class ="col-3">
+                <h3>J LIG</h3>
+                <?php echo get_distinct_user_ids($courseid, $advwork->id,2); ?>
+            </div>
+            <div class ="col-3">
+                <h3>3J:1K LIG</h3>
+                <?php echo get_distinct_user_ids($courseid, $advwork->id,4); ?>
+            </div>
+            <div class ="col-3">
+                <h3>2J:1K LIG</h3>
+                <?php echo get_distinct_user_ids($courseid, $advwork->id,5); ?>
+            </div>
+        </div>
+    <div class="row"><div class="col"><p></br></p></div></div>
+</div>
 
-<button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
+<div class="container bg-light RETURN">
+    <p>
+    <div class="row d-flex align-items-center">
+        <div class="col">
+            <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
+        </div>
+    </div>
+    </p>
+</div>
 
 <?php 
 $PAGE->requires->js_call_amd('mod_advwork/advworkview', 'init');
 echo $output->footer();
-
-#TODO 
-# sarebbe necessario se applicassi dei check di controllo per le funzionalità:
-#non si può fare groups e grouping se non con certo numero di iscritti 
-#non si può fare  create submission senza studenti iscritti al corso
-#non si può fare allocation senza groups and grouping
-# non si può usare i pulsanti di Grades Rules se prima non si ha aggiornato l'Assessment Form, 
-#se non ci sono studenti iscritti con submisson, groups e grouping e allocation fatta
-
-
 ?>
