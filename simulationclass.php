@@ -73,6 +73,7 @@ $message_submission = '';
 $message_groups = '';
 $message_allocation = '';
 $message_grades = '';
+$message_teacher = '';
 $random_tries = 0;
 
 #SIM FORM HANDLER
@@ -131,6 +132,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['create_j_grades_btn'])) {
         #TODO
         return;
+    }
+    elseif (isset($_POST['teacher_evaluation'])) {
+        $num = intval($_POST['teacher_number']);
+        automatic_teacher_evaluation($num,$output, $advwork, $courseid);
     }
 }
 
@@ -820,6 +825,53 @@ function process_grades($advworkid) {
     }
 }
 
+# AUTOMATIC TEACHER GRADES
+
+function get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid) {
+    global $message_teacher;
+
+    $groupid = groups_get_activity_group($advwork->cm, true);
+    $nextbestsubmissiontograde = $advwork->get_next_best_submission_to_grade($advwork, $courseid, $groupid);
+    if(empty($nextbestsubmissiontograde)) {
+        $message_teacher = "Nessuna submission da valutare trovata";
+        return;}
+    return $nextbestsubmissiontograde->id;
+}
+
+function process_teacher_grades($advworkid, $submissionid) {
+    echo "leggi";
+
+    #non ho capito, devo creare una nuova riga ma capire il voto che mi sa che è di process_grades
+    #sicuramente devo iniziare vedendo write_assessments e cosi creare la riga, ma poi devo capire che diamine
+    #collegare per i voti.
+
+
+    /*
+    $data = new stdClass();
+    $data->submissionid = $submissionid;
+    #TODO sarebbe da prendere l'id del teacher, per ora lo lascio all'admin
+    $data->reviewerid = 2;
+    $data->weight = 1;
+    $data->timecreated = time();
+    $data->feedbackauthorattachment = 0;
+    $data->feedbackauthorformat = 1;
+    $data->feedbackreviewerformat = 1;
+
+    $DB->insert_record('advwork_assessments', $data);
+    */
+}
+
+
+function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
+    for ($i = 0; $i < $num; $i++) {
+        $assessment_id = get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
+        process_teacher_grades($advwork->id, $assessment_id);
+    }
+        #crea l'assessemnt
+            #con che voto?
+        #salva l'assessment
+}
+
 #LIG DEBUG
 function get_capability_grades($userid, $capid) {
     global $DB;
@@ -947,11 +999,13 @@ function get_distinct_user_ids($courseid, $advworkid, $capid) {
     }
 }
 
-
 #OUTPUT STARTS HERE
 
 echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
+if (isloggedin() && $iscourseteacher) {
+    get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
+}
 ?>
 
 <div class="container INFO">
@@ -1139,7 +1193,22 @@ echo $output->heading(format_string('Simulated Students'));
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
-        <?php echo display_function_message($message_grades);?>
+        <?php echo display_function_message($message_teacher);?>
+    </p>
+</div>
+
+<div class="container bg-light TEACHER_GRADES">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row"><div class="col"><p></br></p></div></div>
+            <div class="row d-flex align-items-center">
+                <div class ="col-3">Automatic Teacher Grades number: </div>
+                <div class ="col-2"><input type="number" value = 10 name="teacher_number"></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="teacher_evaluation">Evaluate</button></div>
+            </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
+        </form>
+        <?php echo display_function_message($message_teacher);?>
     </p>
 </div>
 
