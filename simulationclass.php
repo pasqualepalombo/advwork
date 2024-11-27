@@ -838,38 +838,63 @@ function get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid)
     return $nextbestsubmissiontograde->id;
 }
 
-function process_teacher_grades($advworkid, $submissionid) {
-    echo "leggi";
-
-    #non ho capito, devo creare una nuova riga ma capire il voto che mi sa che è di process_grades
-    #sicuramente devo iniziare vedendo write_assessments e cosi creare la riga, ma poi devo capire che diamine
-    #collegare per i voti.
-
-
-    /*
-    $data = new stdClass();
-    $data->submissionid = $submissionid;
-    #TODO sarebbe da prendere l'id del teacher, per ora lo lascio all'admin
-    $data->reviewerid = 2;
-    $data->weight = 1;
-    $data->timecreated = time();
-    $data->feedbackauthorattachment = 0;
-    $data->feedbackauthorformat = 1;
-    $data->feedbackreviewerformat = 1;
-
-    $DB->insert_record('advwork_assessments', $data);
-    */
-}
-
-
 function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
     for ($i = 0; $i < $num; $i++) {
-        $assessment_id = get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
-        process_teacher_grades($advwork->id, $assessment_id);
+        global $DB;
+        global $USER;
+
+        #prendo l'id della submission
+        $submission_id = get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
+        echo "<script type='text/javascript'>alert('$submission_id');</script>";
+
+        #creazione riga su advwork_assessments
+        $new_record = new stdClass();
+        $new_record->submissionid = $submission_id;
+        $new_record->reviewerid = $USER->id;
+        $new_record->weight = 1;
+        $new_record->timecreated = time();
+        $assessment_id = $DB->insert_record('advwork_assessments', $new_record);
+
+        #creazione delle righe su advwork_grades con i relativi acc_mod
+        $acc_mod_records = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advwork->id]);
+        $dimension_ids = [];
+        $dimension_grades = [];
+        $dimension_weights = [];
+        foreach ($acc_mod_records as $record) {
+            $dimension_ids[] = $record->id;
+            $dimension_grades[] = $record->grade;
+            $dimension_weights[] = $record->weight;
+        }
+        
+        $grades = [rand(6, 10), rand(6, 10), rand(6, 10)];
+
+        foreach ($dimension_ids as $index => $dimension_id) {
+            $new_record = new stdClass();
+            $new_record->assessmentid = $assessment_id;
+            $new_record->strategy = 'acc_mod';
+            $new_record->dimensionid = $dimension_id;
+            $new_record->grade = $grades[$index];
+            $DB->insert_record('advwork_grades', $new_record);
+        }
+
+        #aggiornamento di adv_assessement per la media pesata
+        $weighted_sum = 0;
+        $total_weights = 0;
+        foreach ($grades as $index => $grade) {
+            $normalized_grade = $grade / $dimension_grades[$index];
+            $weighted_sum += $normalized_grade * $dimension_weights[$index];
+            $total_weights += $dimension_weights[$index];
+        }
+        if ($total_weights == 0) {
+            return 0;
+        }
+        
+        $data = new stdClass();
+        $data->id = $assessment_id;
+        $data->timemodified = time();
+        $data->grade = ($weighted_sum / $total_weights)*100;
+        $DB->update_record('advwork_assessments', $data);
     }
-        #crea l'assessemnt
-            #con che voto?
-        #salva l'assessment
 }
 
 #LIG DEBUG
@@ -1003,9 +1028,7 @@ function get_distinct_user_ids($courseid, $advworkid, $capid) {
 
 echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
-if (isloggedin() && $iscourseteacher) {
-    get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
-}
+
 ?>
 
 <div class="container INFO">
@@ -1188,12 +1211,12 @@ if (isloggedin() && $iscourseteacher) {
             <div class="row d-flex align-items-center">
                 <div class ="col-5">Grades Rules: </div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_grades_random_btn">Random Grades</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_k_grades_btn">Grades by Knowledge</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_j_grades_btn">Grades by Judge</button></div>
+                <div class ="col"><button type="submit" class="btn btn-disabled" name="create_k_grades_btn">Grades by Knowledge</button></div>
+                <div class ="col"><button type="submit" class="btn btn-disabled" name="create_j_grades_btn">Grades by Judge</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
-        <?php echo display_function_message($message_teacher);?>
+        <?php echo display_function_message($message_grades);?>
     </p>
 </div>
 
@@ -1203,7 +1226,7 @@ if (isloggedin() && $iscourseteacher) {
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">Automatic Teacher Grades number: </div>
-                <div class ="col-2"><input type="number" value = 10 name="teacher_number"></div>
+                <div class ="col-2"><input type="number" value = 1 name="teacher_number"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="teacher_evaluation">Evaluate</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
