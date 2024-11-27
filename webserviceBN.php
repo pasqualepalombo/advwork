@@ -48,7 +48,9 @@ class WebServiceBN {
     function post_session_data($sessiondata)
     {
         
-		
+		$myfile1 = fopen("webserviceBN_sessiondata_from_bn.txt", "a") or die("Unable to open file!");
+        fwrite($myfile1, $sessiondata);
+
         $jsonsessiondata = json_encode($sessiondata, JSON_NUMERIC_CHECK );
 
         $opts = array(
