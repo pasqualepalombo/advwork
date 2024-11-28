@@ -125,13 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['create_grades_random_btn'])) {
         process_grades($advwork->id);
     }
-    elseif (isset($_POST['create_k_grades_btn'])) {
-        #TODO
-        return;
+    elseif (isset($_POST['create_lig_students_btn'])) {
+        process_lig_students($advwork->id);
     }
-    elseif (isset($_POST['create_j_grades_btn'])) {
-        #TODO
-        return;
+    elseif (isset($_POST['create_lig_grades_btn'])) {
+        process_lig_grades($advwork->id);
     }
     elseif (isset($_POST['teacher_evaluation'])) {
         $num = intval($_POST['teacher_number']);
@@ -825,8 +823,195 @@ function process_grades($advworkid) {
     }
 }
 
-# AUTOMATIC TEACHER GRADES
+function process_lig_students($advworkid) {
+    global $DB;
+    global $message_grades;
 
+    #ottengo le submission
+    $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
+    if (!$submissions) {
+        $message_grades = 'Non ci sono submission per questo advwork';
+        return;
+    }
+    $submission_ids = array_keys($submissions);
+
+    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
+    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
+
+    if (!$assessments) {
+        $message_grades = 'Non ci sono assessment per questo advwork';
+        return;
+    }
+
+    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
+
+    if (!$aspects) {
+        $message_grades = 'Assessment Form non configurato';
+        return;
+    }
+
+    $aspect_ids = array_keys($aspects);
+    
+    foreach ($assessments as $assessment) {
+        #da submissionid posso ottenere lo studente con authorid
+        $title = get_submission_title($assessment->submissionid);
+        $type = get_lig_student_type($title);
+
+        if ($type==0) {
+            $message_grades = 'Errore nella suddivisione in categorie LIG';
+            return;
+        }
+
+        $sum_weighted_grades = 0;
+        $sum_weights = 0;
+
+        foreach ($aspect_ids as $aspect_id) {
+            $aspect = $aspects[$aspect_id];
+            $grade = 0;
+
+            if($type == 1) {$grade = rand(9, 10);}
+            if($type == 2) {$grade = rand(7, 8);}
+            if($type == 3) {$grade = rand(3, 6);}            
+
+            $grade_record = (object) [
+                'assessmentid' => $assessment->id,
+                'strategy' => 'acc_mod',
+                'dimensionid' => $aspect_id,
+                'grade' => $grade,
+                'timecreated' => time(),
+                'timemodified' => time(),
+            ];
+
+            $DB->insert_record('advwork_grades', $grade_record);
+
+            $max_grade = $aspect->grade;
+            $weight = $aspect->weight; 
+            $sum_weighted_grades += ($grade / $max_grade) * $weight;
+            $sum_weights += $weight;
+        }
+
+        if ($sum_weights > 0) {
+            $final_grade = $sum_weighted_grades / $sum_weights;
+            $final_grade = $final_grade * 100;
+        } else {
+            #evitare la divisione per zero
+            $final_grade = 0;
+        }
+
+        $assessment->grade = $final_grade;
+        $assessment->timemodified = time();
+
+        $DB->update_record('advwork_assessments', $assessment);
+    }
+}
+
+function process_lig_grades($advworkid) {
+    global $DB;
+    global $message_grades;
+
+    #ottengo le submission
+    $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
+    if (!$submissions) {
+        $message_grades = 'Non ci sono submission per questo advwork';
+        return;
+    }
+    $submission_ids = array_keys($submissions);
+
+    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
+    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
+
+    if (!$assessments) {
+        $message_grades = 'Non ci sono assessment per questo advwork';
+        return;
+    }
+
+    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
+
+    if (!$aspects) {
+        $message_grades = 'Assessment Form non configurato';
+        return;
+    }
+
+    $aspect_ids = array_keys($aspects);
+    
+    foreach ($assessments as $assessment) {
+
+        $sum_weighted_grades = 0;
+        $sum_weights = 0;
+        $counter = 1;
+        foreach ($aspect_ids as $aspect_id) {
+            $aspect = $aspects[$aspect_id];
+            $grade = 0;
+
+            if($counter == 1) {$grade = rand(9, 10);}
+            if($counter == 2) {$grade = rand(7, 8);}
+            if($counter == 3) {$grade = rand(3, 6);}            
+
+            $counter += 1;
+            
+            $grade_record = (object) [
+                'assessmentid' => $assessment->id,
+                'strategy' => 'acc_mod',
+                'dimensionid' => $aspect_id,
+                'grade' => $grade,
+                'timecreated' => time(),
+                'timemodified' => time(),
+            ];
+
+            $DB->insert_record('advwork_grades', $grade_record);
+
+            $max_grade = $aspect->grade;
+            $weight = $aspect->weight; 
+            $sum_weighted_grades += ($grade / $max_grade) * $weight;
+            $sum_weights += $weight;
+        }
+
+        if ($sum_weights > 0) {
+            $final_grade = $sum_weighted_grades / $sum_weights;
+            $final_grade = $final_grade * 100;
+        } else {
+            #evitare la divisione per zero
+            $final_grade = 0;
+        }
+
+        $assessment->grade = $final_grade;
+        $assessment->timemodified = time();
+
+        $DB->update_record('advwork_assessments', $assessment);
+    }
+}
+
+function get_submission_title($submissionid) {
+    global $DB;
+    $record = $DB->get_record('advwork_submissions', ['id' => $submissionid], 'title', MUST_EXIST);
+    return $record->title;
+}
+
+function get_lig_student_type($title) {
+    #estrai il numero finale dal titolo
+    if (preg_match('/_student_(\d+)$/', $title, $matches)) {
+        $number = (int)$matches[1];
+        $remainder = $number % 3;
+        switch ($remainder) {
+            case 1:
+                return 1;
+            case 2:
+                return 2;
+            case 0:
+                return 3;
+            default:
+                return 0;
+        }
+    }
+    else {
+        return 0;
+    }
+}
+
+# AUTOMATIC TEACHER GRADES
+# poichè ho aggiunto un'assesssment dove uno studente è bravo, uno è medio, uno insufficiente
+# credo sia utile che il voto del prof debba confermare l'ipotesi della bravura dell'alunno.
+# cioè studenti 1, 4, 7... sono tutti da A e B. I 2,5,8... sono C e D e cosi via.
 function get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid) {
     global $message_teacher;
 
@@ -1211,8 +1396,8 @@ echo $output->heading(format_string('Simulated Students'));
             <div class="row d-flex align-items-center">
                 <div class ="col-5">Grades Rules: </div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_grades_random_btn">Random Grades</button></div>
-                <div class ="col"><button type="submit" class="btn btn-disabled" name="create_k_grades_btn">Grades by Knowledge</button></div>
-                <div class ="col"><button type="submit" class="btn btn-disabled" name="create_j_grades_btn">Grades by Judge</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_students_btn">L.I.G. Students</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_grades_btn">L.I.G. Grades</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
@@ -1239,19 +1424,19 @@ echo $output->heading(format_string('Simulated Students'));
     <div class="row"><div class="col"><p></br></p></div></div>
         <div class="row d-flex align-items-center">
             <div class ="col-3">
-                <h3>K LIG</h3>
+                <h3>K Skill</h3>
                 <?php echo get_distinct_user_ids($courseid, $advwork->id,1); ?>
             </div>
             <div class ="col-3">
-                <h3>J LIG</h3>
+                <h3>J Skill</h3>
                 <?php echo get_distinct_user_ids($courseid, $advwork->id,2); ?>
             </div>
             <div class ="col-3">
-                <h3>3J:1K LIG</h3>
+                <h3>3J|1K Skill</h3>
                 <?php echo get_distinct_user_ids($courseid, $advwork->id,4); ?>
             </div>
             <div class ="col-3">
-                <h3>2J:1K LIG</h3>
+                <h3>2J|1K Skill</h3>
                 <?php echo get_distinct_user_ids($courseid, $advwork->id,5); ?>
             </div>
         </div>
