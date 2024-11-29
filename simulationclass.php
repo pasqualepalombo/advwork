@@ -135,6 +135,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $num = intval($_POST['teacher_number']);
         automatic_teacher_evaluation($num,$output, $advwork, $courseid);
     }
+    elseif (isset($_POST['update_bn_models'])) {
+        $bn_radio = intval($_POST['bn_radio']);
+        update_bn_models($courseid, $advwork->id, $bn_radio);
+    }
 }
 
 #SIM FUNCTIONS
@@ -1008,6 +1012,22 @@ function get_lig_student_type($title) {
     }
 }
 
+# STUDENT MODELS
+function update_bn_models($courseid, $advworkid, $bn_radio){
+    #Not Selected
+    if ($bn_radio==0){
+        return;
+    }
+    #Use BN
+    if ($bn_radio==1){
+        return;
+    }
+    #Not Use BN
+    if ($bn_radio==2){
+        return;
+    }
+}
+
 # AUTOMATIC TEACHER GRADES
 # poichè ho aggiunto un'assesssment dove uno studente è bravo, uno è medio, uno insufficiente
 # credo sia utile che il voto del prof debba confermare l'ipotesi della bravura dell'alunno.
@@ -1413,6 +1433,34 @@ echo $output->heading(format_string('Simulated Students'));
                 <div class ="col-3">Automatic Teacher Grades number: </div>
                 <div class ="col-2"><input type="number" value = 1 name="teacher_number"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="teacher_evaluation">Evaluate</button></div>
+            </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
+        </form>
+        <?php echo display_function_message($message_teacher);?>
+    </p>
+</div>
+
+<div class="container bg-light STUD_MODELS">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row"><div class="col"><p></br></p></div></div>
+            <div class="row d-flex align-items-center">
+                <div class ="col-3">BN Models </div>
+                <div class ="col-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bn_radio" value="1">
+                        <label class="form-check-label" for="flexRadioDefault1">
+                            Use Previous BN Models
+                        </label>
+                        </div>
+                        <div class="form-check">
+                        <input class="form-check-input" type="radio" name="bn_radio" value="2">
+                        <label class="form-check-label" for="flexRadioDefault2">
+                            Do not use Previous BN Models
+                        </label>
+                    </div>
+                </div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="update_bn_models">Update</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
