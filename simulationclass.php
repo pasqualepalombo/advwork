@@ -85,7 +85,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'second_aspect_desc' => $_POST['second_aspect_desc'],
             'second_weight' => intval($_POST['second_weight']),
             'third_aspect_desc' => $_POST['third_aspect_desc'],
-            'third_weight' => intval($_POST['third_weight'])
+            'third_weight' => intval($_POST['third_weight']),
+            'sub_grades' => intval($_POST['sub_grades']),
+            'asm_grades' => intval($_POST['asm_grades'])
         ];
         update_assessment_form($values_array, $advwork->id);
     }
@@ -187,7 +189,21 @@ function update_assessment_form($values, $advworkid) {
             $DB->insert_record('advworkform_acc_mod', $row);
         }
     }
-    $message_form = "Assessment Form aggiornato con successo";
+
+    #impostazione con votazione 100 per submission e assessment
+    $newGrade = intval($values['sub_grades']);
+    $newGradingGrade = intval($values['asm_grades']);
+    $recordsUpdated = $DB->execute(
+        "UPDATE {advwork}
+         SET grade = :grade, gradinggrade = :gradinggrade
+         WHERE id = :advworkid",
+        [
+            'grade' => $newGrade,
+            'gradinggrade' => $newGradingGrade,
+            'advworkid' => $advworkid,
+        ]
+    );
+    $message_form = "Assessment Form e Votazione aggiornati con successo";
 }
 
 function read_how_many_sim_students_already_exists($prefix = 'sim_student', $return_array = true){
@@ -1014,17 +1030,29 @@ function get_lig_student_type($title) {
 
 # STUDENT MODELS
 function update_bn_models($courseid, $advworkid, $bn_radio){
+    #Se viene specificato di non toccare i modelli precedenti allora prende tutti i modelli 
+    #salvati in mdl_advwork_student_models che sono presenti nel corso e setta il corseid a 9999
+    #cosi da non prenderli in considerazione.
+    
+    #BUG il problema è che in realtà ogni modellazione sembra a se stante. Anche cancellando tutti 
+    #i modelli precedenti, la votazione della BN non cambia di una virgola. Dunque è praticamente inutile
+    #includere questa modifica per ora.
+
     #Not Selected
     if ($bn_radio==0){
         return;
     }
     #Use BN
     if ($bn_radio==1){
-        return;
+        #ottieni tutti gli studenti del corso
+        #ottieni gli id degli studenti
+        #aggiorna la tabella con advworkid=advworkid attuale
     }
     #Not Use BN
     if ($bn_radio==2){
-        return;
+        #ottieni tutti gli studenti del corso
+        #ottieni gli id degli studenti
+        #aggiorna la tabella con advworkid=9999 
     }
 }
 
@@ -1245,12 +1273,14 @@ echo $output->heading(format_string('Simulated Students'));
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row d-flex align-items-center">
-                <div class ="col-3">Edit Form Assessment and weights:</div>
-                <div class ="col-9">
+                <div class ="col"><h4>Edit Form Assessment, Weights, Submission Grades, Assessment Grades:</h4></div>
+            </div>
+            <div class="row d-flex align-items-center">
+                <div class ="col">
                     <div class="row"><div class="col"><p></br></p></div></div>
                     <div class="row">
-                        <div class="col">Aspect 1 Desc: <input type="text" value = "SIMA1D" name="first_aspect_desc"></div>
-                        <div class="col">Weight:
+                        <div class="col-4">Aspect 1 Description: <input type="text" value = "SIMA1D" name="first_aspect_desc"></div>
+                        <div class="col-4">Weight:
                             <select name="first_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
@@ -1264,10 +1294,24 @@ echo $output->heading(format_string('Simulated Students'));
                                 <option value="100">100%</option>
                             </select>
                         </div>
+                        <div class="col-4">Submission Grades: 
+                            <select name="sub_grades" class="form-select">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                                <option value="50">50</option>
+                                <option value="60">60</option>
+                                <option value="70">70</option>
+                                <option value="80">80</option>
+                                <option value="90">90</option>
+                                <option value="100" selected >100</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col">Aspect 2 Desc: <input type="text" value = "SIMA2D" name="second_aspect_desc"></div>
-                        <div class="col">Weight:
+                        <div class="col-4">Aspect 2 Description: <input type="text" value = "SIMA2D" name="second_aspect_desc"></div>
+                        <div class="col-4">Weight:
                             <select name="second_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
@@ -1281,10 +1325,24 @@ echo $output->heading(format_string('Simulated Students'));
                                 <option value="100">100%</option>
                             </select>
                         </div>
+                        <div class="col-4">Assessment Grades:
+                            <select name="asm_grades" class="form-select">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                                <option value="50">50</option>
+                                <option value="60">60</option>
+                                <option value="70">70</option>
+                                <option value="80">80</option>
+                                <option value="90">90</option>
+                                <option value="100" selected>100</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col">Aspect 3 Desc: <input type="text" value = "SIMA3D" name="third_aspect_desc"></div>
-                        <div class="col">Weight:
+                        <div class="col-4">Aspect 3 Description: <input type="text" value = "SIMA3D" name="third_aspect_desc"></div>
+                        <div class="col-4">Weight:
                             <select name="third_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
@@ -1299,6 +1357,7 @@ echo $output->heading(format_string('Simulated Students'));
                             </select>
                         </div>
                     </div>
+                    
                     <div class="row"><div class="col"><p></br></p></div></div>
                     <div class="row">
                         <div class="col-4"></div>
@@ -1318,7 +1377,7 @@ echo $output->heading(format_string('Simulated Students'));
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to create:</div>
-                <div class ="col-2"><input type="number" name="students_number_to_create"></div>
+                <div class ="col-2"><input type="number" value=4 name="students_number_to_create"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_students_btn">Create Simulated Students</button></div>
             </div>
         </form>
@@ -1332,7 +1391,7 @@ echo $output->heading(format_string('Simulated Students'));
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to enroll in total:</div>
-                <div class ="col-2"><input type="number" name="students_number_to_enroll"></div>
+                <div class ="col-2"><input type="number" value=4 name="students_number_to_enroll"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="enroll_students_btn">Enroll Simulated Students</button></div>
             </div>
         </form>
