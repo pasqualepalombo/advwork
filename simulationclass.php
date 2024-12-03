@@ -81,6 +81,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['start_new_model'])) {
         start_new_model($courseid, $advwork->id);
     }
+    elseif (isset($_POST['update_json_data'])) {
+        read_update_models($courseid, $advwork->id);
+    }
     elseif (isset($_POST['update_assessment_btn'])) {
         $values_array = [
             'first_aspect_desc' => $_POST['first_aspect_desc'],
@@ -199,13 +202,13 @@ function start_new_model($courseid, $advworkid) {
     }
 
     # Salva i dati in un file JSON
-    save_to_json($courseid, $advworkid, $all_records);
+    save_to_json_new_model($courseid, $advworkid, $all_records);
 
     return true; # Restituisce true se l'operazione è completata con successo
 }
 
 # Funzione per salvare i dati in un file JSON
-function save_to_json($courseid, $advworkid, $records) {
+function save_to_json_new_model($courseid, $advworkid, $records) {
     # Percorso del file JSON con m0 perchè è il modello base di partenza
     $filename = __DIR__ . "/jsonsimulation/student_models_course_{$courseid}_advwork_{$advworkid}_m0.json";
 
@@ -216,6 +219,66 @@ function save_to_json($courseid, $advworkid, $records) {
     if (file_put_contents($filename, $json_data) === false) {
         throw new Exception("Errore nel salvataggio del file JSON: $filename");
     }
+}
+
+function read_update_models($courseid, $advworkid) {
+    global $DB;
+
+    // Recupera i dati dalla tabella mdl_advwork_student_models
+    $records = $DB->get_records('advwork_student_models', [
+        'courseid' => $courseid,
+        'advworkid' => $advworkid
+    ]);
+
+    if (empty($records)) {
+        throw new Exception("Nessun record trovato per il corso $courseid e il lavoro avanzato $advworkid.");
+    }
+
+    // Rimuove il campo 'id' da ogni record
+    foreach ($records as &$record) {
+        unset($record->id);
+    }
+    
+    // Chiama la funzione per salvare i dati in un file JSON
+    save_to_json_update_model($courseid, $advworkid, $records);
+}
+
+function save_to_json_update_model($courseid, $advworkid, $records) {
+    // Determina il percorso base dei file JSON
+    $base_dir = __DIR__ . '/jsonsimulation'; // Cartella di destinazione per i file JSON
+
+    // Crea la cartella se non esiste
+    if (!is_dir($base_dir)) {
+        if (!mkdir($base_dir, 0777, true) && !is_dir($base_dir)) {
+            throw new Exception("Errore nella creazione della cartella $base_dir");
+        }
+    }
+
+    $base_filename = "student_models_course_{$courseid}_advwork_{$advworkid}";
+
+    // Trova il numero incrementale più alto
+    $existing_files = glob("$base_dir/{$base_filename}_m*.json");
+    $max_number = 0;
+
+    foreach ($existing_files as $file) {
+        if (preg_match("/_m([0-9]+)\.json$/", $file, $matches)) {
+            $max_number = max($max_number, (int)$matches[1]);
+        }
+    }
+
+    // Incrementa il numero per il prossimo file
+    $next_number = $max_number + 1;
+    $filename = "$base_dir/{$base_filename}_m{$next_number}.json";
+
+    // Converte i dati in JSON
+    $json_data = json_encode(array_values($records), JSON_PRETTY_PRINT);
+
+    // Salva i dati nel file
+    if (file_put_contents($filename, $json_data) === false) {
+        throw new Exception("Errore nel salvataggio del file JSON: $filename");
+    }
+
+    echo "File JSON salvato: $filename\n";
 }
 
 function update_assessment_form($values, $advworkid) {
@@ -1355,6 +1418,7 @@ echo $output->heading(format_string('Simulated Students'));
                     <div class="row">
                         <div class="col-4"></div>
                         <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
+                        <div class="col"><button type="submit" class="btn btn-primary" name="update_json_data">Save new Json Data</button></div>
                     </div>
                     <div class="row"><div class="col"><p></br></p></div></div>
                 </div>
