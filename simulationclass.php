@@ -66,6 +66,7 @@ $output = $PAGE->get_renderer('mod_advwork');
 $PAGE->set_title('Simulation Class');
 
 #SIM MESSAGES
+$message_model = '';
 $message_form = '';
 $message_create = '';
 $message_enroll = '';
@@ -133,6 +134,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['create_grades_random_btn'])) {
         process_grades($advwork->id);
     }
+    elseif (isset($_POST['create_fkj_grades_btn'])) {
+        process_fkj_grades($advwork->id);
+    }
     elseif (isset($_POST['create_lig_students_btn'])) {
         process_lig_students($advwork->id);
     }
@@ -151,12 +155,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 #SIM FUNCTIONS
 function start_new_model($courseid, $advworkid) {
-    global $DB; # Accesso al database Moodle
+    global $DB;
+    global $message_model;
 
     $students_array = [25,26,27,28];
 
     # Controlla che gli array forniti siano validi
     if (empty($courseid) || empty($advworkid) || empty($students_array)) {
+        $message_model = 'Parametri forniti invalidi';
         throw new InvalidArgumentException("Parametri invalidi forniti alla funzione.");
     }
 
@@ -204,7 +210,9 @@ function start_new_model($courseid, $advworkid) {
     # Salva i dati in un file JSON
     save_to_json_new_model($courseid, $advworkid, $all_records);
 
-    return true; # Restituisce true se l'operazione è completata con successo
+    $message_model = "Fornito un modello default e salvato in json";
+
+    return true;
 }
 
 # Funzione per salvare i dati in un file JSON
@@ -224,7 +232,7 @@ function save_to_json_new_model($courseid, $advworkid, $records) {
 function read_update_models($courseid, $advworkid) {
     global $DB;
 
-    // Recupera i dati dalla tabella mdl_advwork_student_models
+    # Recupera i dati dalla tabella mdl_advwork_student_models
     $records = $DB->get_records('advwork_student_models', [
         'courseid' => $courseid,
         'advworkid' => $advworkid
@@ -234,20 +242,20 @@ function read_update_models($courseid, $advworkid) {
         throw new Exception("Nessun record trovato per il corso $courseid e il lavoro avanzato $advworkid.");
     }
 
-    // Rimuove il campo 'id' da ogni record
+    # Rimuove il campo 'id' da ogni record
     foreach ($records as &$record) {
         unset($record->id);
     }
     
-    // Chiama la funzione per salvare i dati in un file JSON
+    # Chiama la funzione per salvare i dati in un file JSON
     save_to_json_update_model($courseid, $advworkid, $records);
 }
 
 function save_to_json_update_model($courseid, $advworkid, $records) {
-    // Determina il percorso base dei file JSON
-    $base_dir = __DIR__ . '/jsonsimulation'; // Cartella di destinazione per i file JSON
+    # Determina il percorso base dei file JSON
+    $base_dir = __DIR__ . '/jsonsimulation'; # Cartella di destinazione per i file JSON
 
-    // Crea la cartella se non esiste
+    # Crea la cartella se non esiste
     if (!is_dir($base_dir)) {
         if (!mkdir($base_dir, 0777, true) && !is_dir($base_dir)) {
             throw new Exception("Errore nella creazione della cartella $base_dir");
@@ -256,30 +264,38 @@ function save_to_json_update_model($courseid, $advworkid, $records) {
 
     $base_filename = "student_models_course_{$courseid}_advwork_{$advworkid}";
 
-    // Trova il numero incrementale più alto
-    $existing_files = glob("$base_dir/{$base_filename}_m*.json");
-    $max_number = 0;
+    # Controlla se esiste già un file che termina con "_mpa"
+    $mpa_file = "$base_dir/{$base_filename}_mpa.json";
+    if (!file_exists($mpa_file)) {
+        # Salva il primo file come "_mpa"
+        $filename = $mpa_file;
+    } else {
+        # Trova il numero incrementale più alto per i file successivi
+        $existing_files = glob("$base_dir/{$base_filename}_m*.json");
+        $max_number = 0;
 
-    foreach ($existing_files as $file) {
-        if (preg_match("/_m([0-9]+)\.json$/", $file, $matches)) {
-            $max_number = max($max_number, (int)$matches[1]);
+        foreach ($existing_files as $file) {
+            if (preg_match("/_m([0-9]+)\.json$/", $file, $matches)) {
+                $max_number = max($max_number, (int)$matches[1]);
+            }
         }
+
+        # Incrementa il numero per il prossimo file
+        $next_number = $max_number + 1;
+        $filename = "$base_dir/{$base_filename}_m{$next_number}.json";
     }
 
-    // Incrementa il numero per il prossimo file
-    $next_number = $max_number + 1;
-    $filename = "$base_dir/{$base_filename}_m{$next_number}.json";
-
-    // Converte i dati in JSON
+    # Converte i dati in JSON
     $json_data = json_encode(array_values($records), JSON_PRETTY_PRINT);
 
-    // Salva i dati nel file
+    # Salva i dati nel file
     if (file_put_contents($filename, $json_data) === false) {
         throw new Exception("Errore nel salvataggio del file JSON: $filename");
     }
 
     echo "File JSON salvato: $filename\n";
 }
+
 
 function update_assessment_form($values, $advworkid) {
     global $DB;
@@ -551,7 +567,7 @@ function create_submissions($courseid, $advwork_id) {
     
     foreach ($latest_students as $student){
         $title = 'Submission_title_by_' .$student->username;
-        $content = '<p dir="ltr" style="text-align: left;">Sumission_content_by_' .$student->username .'</p>';
+        $content = '<p dir="ltr" style="text-align: left;">Submission_content_by_' .$student->username .'</p>';
         $authorid = $student->id;
         $data = new stdClass();
         $data->advworkid = $advwork_id;
@@ -912,13 +928,8 @@ function create_sequential_allocation_among_groups($courseid, $advworkid, $revie
 function process_grades($advworkid) {
     global $DB;
     global $message_grades;
-
-    $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
-
-    if (!$submissions) {
-        $message_grades = 'Non ci sono submission per questo advwork';
-        return;
-    }
+    
+    $submissions = get_submissions($advworkid);
 
     $submission_ids = array_keys($submissions);
 
@@ -980,16 +991,189 @@ function process_grades($advworkid) {
     }
 }
 
+function get_author_k_value($assessment) {
+    global $DB;
+
+    # Ottieni il valore di submissionid dall'oggetto assessment
+    if (!isset($assessment->submissionid)) {
+        throw new Exception("Errore: submissionid non trovato nell'oggetto assessment.");
+    }
+    $submissionid = $assessment->submissionid;
+
+    # Cerca il valore di authorid dalla tabella mdl_advwork_submissions
+    $authorid = $DB->get_field('advwork_submissions', 'authorid', ['id' => $submissionid], IGNORE_MISSING);
+    if ($authorid === false) {
+        throw new Exception("Errore: authorid non trovato per submissionid $submissionid.");
+    }
+
+    # Cerca il valore di capabilityoverallvalue nella tabella mdl_advwork_student_models
+    $capabilityoverallvalue = $DB->get_field('advwork_student_models', 'capabilityoverallvalue', [
+        'userid' => $authorid,
+        'capabilityid' => 1,
+        'domainvalueid' => 1
+    ], IGNORE_MISSING);
+
+    if ($capabilityoverallvalue === false) {
+        throw new Exception("Errore: capabilityoverallvalue non trovato per authorid $authorid con capabilityid 1 e domainvalueid 1.");
+    }
+
+    return $capabilityoverallvalue;
+}
+
+function get_reviewer_j_value($assessment) {
+    global $DB;
+
+    # Ottieni il valore di reviewerid dall'oggetto assessment
+    if (!isset($assessment->reviewerid)) {
+        throw new Exception("Errore: reviewerid non trovato nell'oggetto assessment.");
+    }
+    $reviewerid = $assessment->reviewerid;
+
+    # Cerca il valore di capabilityoverallvalue nella tabella mdl_advwork_student_models
+    $capabilityoverallvalue = $DB->get_field('advwork_student_models', 'capabilityoverallvalue', [
+        'userid' => $reviewerid,
+        'capabilityid' => 2,
+        'domainvalueid' => 1
+    ], IGNORE_MISSING);
+
+    if ($capabilityoverallvalue === false) {
+        throw new Exception("Errore: capabilityoverallvalue non trovato per reviewerid $reviewerid con capabilityid 2 e domainvalueid 1.");
+    }
+
+    return $capabilityoverallvalue;
+}
+
+function count_assessments_with_same_submission($assessment) {
+    global $DB;
+
+    # Verifica che l'oggetto $assessment contenga il campo submissionid
+    if (!isset($assessment->submissionid)) {
+        throw new Exception("Errore: submissionid non trovato nell'oggetto assessment.");
+    }
+
+    # Estrai il submissionid dall'oggetto assessment
+    $submissionid = $assessment->submissionid;
+
+    # Conta gli assessments con lo stesso submissionid
+    $count = $DB->count_records('advwork_assessments', ['submissionid' => $submissionid]);
+
+    if ($count === false) {
+        throw new Exception("Errore: impossibile contare gli assessments per submissionid $submissionid.");
+    }
+
+    return $count;
+}
+
+function calculate_score($k_author, $j_reviewer, $assessments_per_submission) {
+    # Controllo dei parametri
+    if ($k_author < 0 || $k_author > 1) {
+        throw new InvalidArgumentException("k_author deve essere compreso tra 0 e 1");
+    }
+    if ($j_reviewer < 0 || $j_reviewer > 1) {
+        throw new InvalidArgumentException("j_reviewer deve essere compreso tra 0 e 1");
+    }
+    if ($assessments_per_submission <= 0) {
+        throw new InvalidArgumentException("assessments_per_submission deve essere maggiore di 0");
+    }
+
+    # Suddividi il range [0, 1] in fasce
+    $thresholds = [];
+    for ($i = 1; $i <= $assessments_per_submission; $i++) {
+        $thresholds[] = $i / $assessments_per_submission;
+    }
+
+    # Determina la fascia di bravura in base a k_author
+    $category = 0;
+    foreach ($thresholds as $i => $threshold) {
+        if ($k_author <= $threshold) {
+            $category = $i;
+            break;
+        }
+    }
+
+    # Imposta le incertezze in base alla fascia
+    $uncertainties = [0.35, 0.2, 0.1]; # Incertezze per fasce bassa, media e alta
+    $uncertainty = $uncertainties[min($category, count($uncertainties) - 1)];
+
+    # Calcola il voto base
+    $base_score = ($k_author + $j_reviewer) / 2 * 100;
+
+    # Applica l'incertezza
+    $lower_bound = $base_score * (1 - $uncertainty);
+    $upper_bound = $base_score * (1 + $uncertainty);
+    $final_score = mt_rand($lower_bound * 100, $upper_bound * 100) / 100;
+
+    return round($final_score, 2);
+}
+
+function process_fkj_grades($advworkid) {
+    global $DB;
+    global $message_grades;
+    
+    $submissions = get_submissions($advworkid);
+    $submission_ids = array_keys($submissions);
+    
+    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
+    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
+    if (!$assessments) {$message_grades = 'Non ci sono assessment per questo advwork';return;}
+
+    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
+    if (!$aspects) {$message_grades = 'Assessment Form non configurato';return;}
+    $aspect_ids = array_keys($aspects);
+
+    foreach ($assessments as $assessment) {
+        $sum_weighted_grades = 0;
+        $sum_weights = 0;
+
+        $assessments_per_submission = count_assessments_with_same_submission($assessment);
+
+        foreach ($aspect_ids as $aspect_id) {
+            $aspect = $aspects[$aspect_id];
+
+            $k_author = get_author_k_value($assessment);
+            $j_reviewer = get_reviewer_j_value($assessment);
+
+            $grade = calculate_score($k_author, $j_reviewer, $assessments_per_submission);
+            
+            $grade_record = (object) [
+                'assessmentid' => $assessment->id,
+                'strategy' => 'acc_mod',
+                'dimensionid' => $aspect_id,
+                'grade' => $grade,
+                'timecreated' => time(),
+                'timemodified' => time(),
+            ];
+
+            $DB->insert_record('advwork_grades', $grade_record);
+
+            $max_grade = $aspect->grade;
+            $weight = $aspect->weight; 
+            $sum_weighted_grades += ($grade / $max_grade) * $weight;
+            $sum_weights += $weight;
+            
+        }
+
+        if ($sum_weights > 0) {
+            $final_grade = $sum_weighted_grades / $sum_weights;
+            $final_grade = $final_grade * 10;
+        } else {
+            #evitare la divisione per zero
+            $final_grade = 0;
+        }
+
+        $assessment->grade = $final_grade;
+        $assessment->timemodified = time();
+
+        $DB->update_record('advwork_assessments', $assessment);
+    }
+}
+
 function process_lig_students($advworkid) {
     global $DB;
     global $message_grades;
 
-    #ottengo le submission
-    $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
-    if (!$submissions) {
-        $message_grades = 'Non ci sono submission per questo advwork';
-        return;
-    }
+    $submissions = get_submissions($advworkid);
+
     $submission_ids = array_keys($submissions);
 
     list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
@@ -1066,12 +1250,8 @@ function process_lig_grades($advworkid) {
     global $DB;
     global $message_grades;
 
-    #ottengo le submission
-    $submissions = $DB->get_records('advwork_submissions', ['advworkid' => $advworkid]);
-    if (!$submissions) {
-        $message_grades = 'Non ci sono submission per questo advwork';
-        return;
-    }
+    $submissions = get_submissions($advworkid);
+
     $submission_ids = array_keys($submissions);
 
     list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
@@ -1424,7 +1604,7 @@ echo $output->heading(format_string('Simulated Students'));
                 </div>
             </div>
         </form>
-        <?php echo display_function_message($message_form); ?>
+        <?php echo display_function_message($message_model); ?>
     </p>
 </div>
 
@@ -1633,6 +1813,7 @@ echo $output->heading(format_string('Simulated Students'));
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
                 <div class ="col-5">Grades Rules: </div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_fkj_grades_btn">K(A) | J(B)</button></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_grades_random_btn">Random Grades</button></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_students_btn">L.I.G. Students</button></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_grades_btn">L.I.G. Grades</button></div>
