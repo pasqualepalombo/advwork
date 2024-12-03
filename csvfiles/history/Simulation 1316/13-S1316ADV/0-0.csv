@@ -1,0 +1,5 @@
+Userid,Firstname,Lastname,"Grade received 1","Userid received 1","Grade received 2","Userid received 2","Grade received 3","Userid received 3","Grade given 1","Userid given 1","Grade given 2","Userid given 2","Grade given 3","Userid given 3","Submission grade teacherid","Submission grade","Competence (single session)","Assessment capability (single session)","Competence (cumulated)","Assessment capability (cumulated)"
+29,"SIM 13",STUDENT,NULL,30,NULL,31,NULL,32,NULL,30,NULL,31,NULL,32,,29.54,57.97,78.29,NULL,NULL
+30,"SIM 14",STUDENT,NULL,29,NULL,31,NULL,32,NULL,29,NULL,31,NULL,32,,29.54,57.97,78.29,NULL,NULL
+31,"SIM 15",STUDENT,NULL,29,NULL,30,NULL,32,NULL,29,NULL,30,NULL,32,,29.54,57.97,78.29,NULL,NULL
+32,"SIM 16",STUDENT,NULL,29,NULL,30,NULL,31,NULL,29,NULL,30,NULL,31,,29.54,57.97,78.29,NULL,NULL

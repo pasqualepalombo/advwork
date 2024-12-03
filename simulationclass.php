@@ -78,7 +78,10 @@ $random_tries = 0;
 
 #SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['update_assessment_btn'])) {
+    if (isset($_POST['start_new_model'])) {
+        start_new_model($courseid, $advwork->id);
+    }
+    elseif (isset($_POST['update_assessment_btn'])) {
         $values_array = [
             'first_aspect_desc' => $_POST['first_aspect_desc'],
             'first_weight' => intval($_POST['first_weight']),
@@ -144,6 +147,77 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 #SIM FUNCTIONS
+function start_new_model($courseid, $advworkid) {
+    global $DB; # Accesso al database Moodle
+
+    $students_array = [25,26,27,28];
+
+    # Controlla che gli array forniti siano validi
+    if (empty($courseid) || empty($advworkid) || empty($students_array)) {
+        throw new InvalidArgumentException("Parametri invalidi forniti alla funzione.");
+    }
+
+    # Definizione dei valori fissi (al momento è oscura la modellazione base che da la BN, devo chiedere a Sterbini)
+    # Tutti questi dati sono i default della BN
+    $probabilities = [0.05446, 0.16073, 0.14386, 0.11835, 0.12399, 0.39862];
+    $capability_grades = ['E', 'E', 'E', 'E', 'E', 'E', 'C', 'C', 'C', 'C', 'C', 'C', 'F', 'F', 'F', 'F', 'F', 'F'];
+    $capability_values = [0.57970, 0.57878, 0.29539]; # Valori predefiniti per ogni dominio
+    $iscumulated = 0; # Fisso a 0
+
+    $capability_ids = range(1, 6); # Da 1 a 6 (per ogni capacità)
+    $domain_value_ids = range(1, 3); # Da 1 a 3 (per ogni dominio)
+
+    $all_records = []; # Array per salvare tutti i dati per il JSON
+
+    foreach ($students_array as $student_id) {
+        $grade_index = 0; # Indice per le capabilityoverallgrade e probabilità
+
+        # Loop per ogni capabilityid e domainvalueid
+        foreach ($capability_ids as $capability_id) {
+            foreach ($domain_value_ids as $domain_value_id) {
+                # Prepara i dati per l'inserimento
+                $record = new stdClass();
+                $record->courseid = $courseid;
+                $record->advworkid = $advworkid;
+                $record->userid = $student_id;
+                $record->capabilityid = $capability_id;
+                $record->domainvalueid = $domain_value_id;
+                $record->probability = $probabilities[$grade_index % count($probabilities)];
+                $record->capabilityoverallgrade = $capability_grades[$grade_index];
+                $record->capabilityoverallvalue = $capability_values[$domain_value_id - 1];
+                $record->iscumulated = $iscumulated;
+
+                # Inserisce la riga nel database
+                $DB->insert_record('advwork_student_models', $record);
+                
+                # Aggiunge il record all'array per il JSON
+                $all_records[] = $record;
+
+                $grade_index++; # Incrementa l'indice per la prossima riga
+            }
+        }
+    }
+
+    # Salva i dati in un file JSON
+    save_to_json($courseid, $advworkid, $all_records);
+
+    return true; # Restituisce true se l'operazione è completata con successo
+}
+
+# Funzione per salvare i dati in un file JSON
+function save_to_json($courseid, $advworkid, $records) {
+    # Percorso del file JSON con m0 perchè è il modello base di partenza
+    $filename = __DIR__ . "/jsonsimulation/student_models_course_{$courseid}_advwork_{$advworkid}_m0.json";
+
+    # Codifica i dati in JSON
+    $json_data = json_encode($records, JSON_PRETTY_PRINT);
+
+    # Scrive i dati nel file
+    if (file_put_contents($filename, $json_data) === false) {
+        throw new Exception("Errore nel salvataggio del file JSON: $filename");
+    }
+}
+
 function update_assessment_form($values, $advworkid) {
     global $DB;
     global $message_form;
@@ -1269,6 +1343,27 @@ echo $output->heading(format_string('Simulated Students'));
     <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
 </div>
 
+<div class="container bg-light MODELS">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row d-flex align-items-center">
+                <div class ="col"><h4>BN Model preset:</h4></div>
+            </div>
+            <div class="row d-flex align-items-center">
+                <div class ="col">
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                    <div class="row">
+                        <div class="col-4"></div>
+                        <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
+                    </div>
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                </div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_form); ?>
+    </p>
+</div>
+
 <div class="container bg-light FORM">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
@@ -1519,7 +1614,7 @@ echo $output->heading(format_string('Simulated Students'));
                         </label>
                     </div>
                 </div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="update_bn_models">Update</button></div>
+                <div class ="col"><button type="submit" class="btn btn-disabled" name="#update_bn_models">Update - not working</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
