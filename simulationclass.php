@@ -1469,131 +1469,14 @@ function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
     }
 }
 
-#LIG DEBUG
-function get_capability_grades($userid, $capid) {
-    global $DB;
-
-    $sql = "SELECT capabilityoverallgrade
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = :capid AND domainvalueid = 1";
-    $params = ['userid' => $userid, 'capid' => $capid];
-    $records = $DB->get_records_sql($sql, $params);
-    if (!empty($records)) {
-            echo " " . reset($records)->capabilityoverallgrade;
-    }
-}
-
-function get_var_capability_grades($userid, $capid) {
-    global $DB;
-    
-    $sql = "SELECT capabilityoverallgrade
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = 1 AND domainvalueid = 1";
-    $params = ['userid' => $userid];
-    $records = $DB->get_records_sql($sql, $params);
-    $k_value = reset($records)->capabilityoverallgrade;
-
-    $sql = "SELECT capabilityoverallgrade
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = 2 AND domainvalueid = 1";
-    $params = ['userid' => $userid];
-    $records = $DB->get_records_sql($sql, $params);
-    $j_value = reset($records)->capabilityoverallgrade;
-
-    echo " " . $k_value . " " . $j_value;
-
-}
-
-function get_capability_value($userid, $capid) {
-    global $DB;
-
-    $sql = "SELECT capabilityoverallvalue
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = :capid AND domainvalueid = 1";
-    $params = ['userid' => $userid, 'capid' => $capid];
-    $records = $DB->get_records_sql($sql, $params);
-    if (empty($records)) {return;}
-    
-    get_lig_assignment(reset($records)->capabilityoverallvalue);
-}
-
-function get_var_capability_value($userid, $capid) {
-    global $DB;
-    
-    $sql = "SELECT capabilityoverallvalue
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = 1 AND domainvalueid = 1";
-    $params = ['userid' => $userid];
-    $records = $DB->get_records_sql($sql, $params);
-    $k_value = reset($records)->capabilityoverallvalue;
-
-    $sql = "SELECT capabilityoverallvalue
-            FROM {advwork_student_models}
-            WHERE userid = :userid AND capabilityid = 2 AND domainvalueid = 1";
-    $params = ['userid' => $userid];
-    $records = $DB->get_records_sql($sql, $params);
-    $j_value = reset($records)->capabilityoverallvalue;
-    
-    if ($capid == 4){
-        # 3J:1K
-        #echo " " .$k_value . " " . $j_value;
-        $calc = ((3*$j_value + 1*$k_value)/4);
-        get_lig_assignment($calc);
-    }
-    if ($capid == 5){
-        # 2J:1K
-        #echo " " .$k_value . " " . $j_value;
-        $calc = ((2*$j_value + 1*$k_value)/3);
-        get_lig_assignment($calc);
-    }
-}
-
-function get_lig_assignment($capovval){
-    if ($capovval>=0.95){
-        echo " GOOD";
-    }
-    elseif($capovval>=0.75){
-        echo " INTERMEDIATE";
-    }
-    else {
-        echo " LOWER";
-    }
-
-    #for groups logic
-    return $capovval;
-}
-
-function get_distinct_user_ids($courseid, $advworkid, $capid) {
-    global $DB;
-
-    $sql = "SELECT DISTINCT userid 
-            FROM {advwork_student_models} 
-            WHERE courseid = :courseid AND advworkid = :advworkid";
-
-    $params = [
-        'courseid' => $courseid,
-        'advworkid' => $advworkid
-    ];
-
-    $userids = $DB->get_records_sql($sql, $params);
-
-    $userid_array = [];
-
-    if (!empty($userids)) {
-        foreach ($userids as $userid) {
-            $userid_array[] = $userid->userid;
-            echo "<p> ID: " .$userid->userid;
-            if ($capid == 4 or $capid == 5){
-                echo get_var_capability_grades($userid->userid, $capid);
-                echo get_var_capability_value($userid->userid, $capid);
-            }
-            else {
-                echo get_capability_grades($userid->userid, $capid);
-                echo get_capability_value($userid->userid, $capid);
-            }
-            echo "</p>";
-        }
-    }
+# OVERVIEW FUNCTIONS
+function check_if_json_data_exists($courseid, $advworkid) {
+    $directory = __DIR__ . '/jsonsimulation/';
+    $pattern = "student_models_course_{$courseid}_advwork_{$advworkid}_m*";
+    # Uso glob per cercare i file corrispondenti al pattern
+    $files = glob($directory . $pattern);
+    # Ritorna true se esiste almeno un file, altrimenti false
+    return !empty($files);
 }
 
 #OUTPUT STARTS HERE
@@ -1862,28 +1745,37 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light LIG">
-    <div class="row"><div class="col"><p></br></p></div></div>
-        <div class="row d-flex align-items-center">
+<?php 
+    if (check_if_json_data_exists($courseid, $advwork->id)){
+        # Inizio container
+        echo '<div class="container bg-light OVERVIEW">
+                <div class="row"><div class="col"><p></br></p></div></div>
+                <div class="row d-flex align-items-center text-center">
+                    <div class ="col"><h4>Overview:</h4></div>
+                </div>
+                <div class="row"><div class="col"><p></br></p></div></div>';
+        
+        $students_array = array_keys(get_students_in_course($courseid, true));
+        
+        foreach ($students_array as $student) {
+            echo '<div class="row d-flex align-items-center">
             <div class ="col-3">
-                <h3>K Skill</h3>
-                <?php echo get_distinct_user_ids($courseid, $advwork->id,1); ?>
-            </div>
-            <div class ="col-3">
-                <h3>J Skill</h3>
-                <?php echo get_distinct_user_ids($courseid, $advwork->id,2); ?>
-            </div>
-            <div class ="col-3">
-                <h3>3J|1K Skill</h3>
-                <?php echo get_distinct_user_ids($courseid, $advwork->id,4); ?>
-            </div>
-            <div class ="col-3">
-                <h3>2J|1K Skill</h3>
-                <?php echo get_distinct_user_ids($courseid, $advwork->id,5); ?>
-            </div>
-        </div>
-    <div class="row"><div class="col"><p></br></p></div></div>
-</div>
+                <div>Active groups: 1</div>
+                <div>Group dimension:</div>
+                <div>Active grouping: sim</div>
+            </div></div>';
+        }
+        
+        # Fine container
+        echo '</div></div>';
+    }
+
+
+
+    
+
+?>
+
 
 <div class="container bg-light RETURN">
     <p>
