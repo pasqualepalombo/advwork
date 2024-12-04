@@ -131,17 +131,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
     }
-    elseif (isset($_POST['create_grades_random_btn'])) {
-        process_grades($advwork->id);
+    elseif (isset($_POST['create_fkj_lig_grades_btn'])) {
+        process_fkj_grades($advwork->id, true);
     }
     elseif (isset($_POST['create_fkj_grades_btn'])) {
-        process_fkj_grades($advwork->id);
-    }
-    elseif (isset($_POST['create_lig_students_btn'])) {
-        process_lig_students($advwork->id);
-    }
-    elseif (isset($_POST['create_lig_grades_btn'])) {
-        process_lig_grades($advwork->id);
+        process_fkj_grades($advwork->id, false);
     }
     elseif (isset($_POST['teacher_evaluation'])) {
         $num = intval($_POST['teacher_number']);
@@ -158,7 +152,7 @@ function start_new_model($courseid, $advworkid) {
     global $DB;
     global $message_model;
 
-    $students_array = [25,26,27,28];
+    $students_array = array_keys(get_students_in_course($courseid, true));
 
     # Controlla che gli array forniti siano validi
     if (empty($courseid) || empty($advworkid) || empty($students_array)) {
@@ -1106,7 +1100,23 @@ function calculate_score($k_author, $j_reviewer, $assessments_per_submission) {
     return round($final_score, 2);
 }
 
-function process_fkj_grades($advworkid) {
+function get_reviewer_j_lig_value($assessment_per_submission, $ligc) {
+    # Validazione dei parametri
+    if ($assessment_per_submission <= 0) {
+        throw new Exception("Il numero di reviewer deve essere maggiore di zero.");
+    }
+    if ($ligc < 1 || $ligc > $assessment_per_submission) {
+        throw new Exception("Il contatore \$ligc deve essere compreso tra 1 e il numero di reviewer.");
+    }
+
+    # Calcolo degli intervalli
+    $step = 1 / $assessment_per_submission; # Lunghezza di ogni intervallo
+    $j_value = $step * $ligc; # Calcolo del valore stimato j
+
+    return round($j_value, 2); # Restituisce il valore con due cifre decimali
+}
+
+function process_fkj_grades($advworkid, $lig = true) {
     global $DB;
     global $message_grades;
     
@@ -1120,6 +1130,8 @@ function process_fkj_grades($advworkid) {
     $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
     if (!$aspects) {$message_grades = 'Assessment Form non configurato';return;}
     $aspect_ids = array_keys($aspects);
+    
+    $ligc = 1;
 
     foreach ($assessments as $assessment) {
         $sum_weighted_grades = 0;
@@ -1129,10 +1141,17 @@ function process_fkj_grades($advworkid) {
 
         foreach ($aspect_ids as $aspect_id) {
             $aspect = $aspects[$aspect_id];
-
+            
+            $j_reviewer = 0;
             $k_author = get_author_k_value($assessment);
-            $j_reviewer = get_reviewer_j_value($assessment);
 
+            if($lig){
+                $j_reviewer = get_reviewer_j_lig_value($assessments_per_submission, $ligc);
+            }
+            else{
+                $j_reviewer = get_reviewer_j_value($assessment);
+            }
+            
             $grade = calculate_score($k_author, $j_reviewer, $assessments_per_submission);
             
             $grade_record = (object) [
@@ -1165,6 +1184,9 @@ function process_fkj_grades($advworkid) {
         $assessment->timemodified = time();
 
         $DB->update_record('advwork_assessments', $assessment);
+
+        # Incrementa il contatore e riparti da 1 se necessario
+        $ligc = ($ligc % $assessments_per_submission) + 1;
     }
 }
 
@@ -1586,28 +1608,6 @@ echo $output->heading(format_string('Simulated Students'));
     <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
 </div>
 
-<div class="container bg-light MODELS">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row d-flex align-items-center">
-                <div class ="col"><h4>BN Model preset:</h4></div>
-            </div>
-            <div class="row d-flex align-items-center">
-                <div class ="col">
-                    <div class="row"><div class="col"><p></br></p></div></div>
-                    <div class="row">
-                        <div class="col-4"></div>
-                        <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
-                        <div class="col"><button type="submit" class="btn btn-primary" name="update_json_data">Save new Json Data</button></div>
-                    </div>
-                    <div class="row"><div class="col"><p></br></p></div></div>
-                </div>
-            </div>
-        </form>
-        <?php echo display_function_message($message_model); ?>
-    </p>
-</div>
-
 <div class="container bg-light FORM">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
@@ -1698,8 +1698,7 @@ echo $output->heading(format_string('Simulated Students'));
                     </div>
                     
                     <div class="row"><div class="col"><p></br></p></div></div>
-                    <div class="row">
-                        <div class="col-4"></div>
+                    <div class="row text-center">
                         <div class="col"><button type="submit" class="btn btn-primary" name="update_assessment_btn">Update Assessment Info</button></div>
                     </div>
                     <div class="row"><div class="col"><p></br></p></div></div>
@@ -1711,6 +1710,9 @@ echo $output->heading(format_string('Simulated Students'));
 </div>
 
 <div class="container CREATE">
+    <div class="row d-flex align-items-center">
+        <div class ="col"><h4>Class Settings:</h4></div>
+    </div>
     <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
@@ -1751,7 +1753,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light GROUPS">
+<div class="container GROUPS">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -1779,7 +1781,28 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light ALLOCATION">
+<div class="container bg-light MODELS">
+    <p>
+        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <div class="row d-flex align-items-center">
+                <div class ="col"><h4>BN Model preset:</h4></div>
+            </div>
+            <div class="row d-flex align-items-center">
+                <div class ="col">
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                    <div class="row text-center">
+                        <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
+                        <div class="col"><button type="submit" class="btn btn-primary" name="update_json_data">Save new Json Data</button></div>
+                    </div>
+                    <div class="row"><div class="col"><p></br></p></div></div>
+                </div>
+            </div>
+        </form>
+        <?php echo display_function_message($message_model); ?>
+    </p>
+</div>
+
+<div class="container ALLOCATION">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -1812,11 +1835,11 @@ echo $output->heading(format_string('Simulated Students'));
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
-                <div class ="col-5">Grades Rules: </div>
+                <div class ="col"><h4>Assessment Grade Rule:</h4></div>
+            </div>
+            <div class="row d-flex align-items-center text-center">
                 <div class ="col"><button type="submit" class="btn btn-primary" name="create_fkj_grades_btn">K(A) | J(B)</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_grades_random_btn">Random Grades</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_students_btn">L.I.G. Students</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_lig_grades_btn">L.I.G. Grades</button></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="create_fkj_lig_grades_btn">K(A) | J(L.I.G.)</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
@@ -1824,7 +1847,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
-<div class="container bg-light TEACHER_GRADES">
+<div class="container TEACHER_GRADES">
     <p>
         <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
             <div class="row"><div class="col"><p></br></p></div></div>
@@ -1832,34 +1855,6 @@ echo $output->heading(format_string('Simulated Students'));
                 <div class ="col-3">Automatic Teacher Grades number: </div>
                 <div class ="col-2"><input type="number" value = 1 name="teacher_number"></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="teacher_evaluation">Evaluate</button></div>
-            </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-        </form>
-        <?php echo display_function_message($message_teacher);?>
-    </p>
-</div>
-
-<div class="container bg-light STUD_MODELS">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">BN Models </div>
-                <div class ="col-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="bn_radio" value="1">
-                        <label class="form-check-label" for="flexRadioDefault1">
-                            Use Previous BN Models
-                        </label>
-                        </div>
-                        <div class="form-check">
-                        <input class="form-check-input" type="radio" name="bn_radio" value="2">
-                        <label class="form-check-label" for="flexRadioDefault2">
-                            Do not use Previous BN Models
-                        </label>
-                    </div>
-                </div>
-                <div class ="col"><button type="submit" class="btn btn-disabled" name="#update_bn_models">Update - not working</button></div>
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
         </form>
