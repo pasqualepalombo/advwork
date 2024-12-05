@@ -1470,13 +1470,77 @@ function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
 }
 
 # OVERVIEW FUNCTIONS
-function check_if_json_data_exists($courseid, $advworkid) {
+function check_if_json_data_exists($courseid, $advworkid, $return_count = false) {
     $directory = __DIR__ . '/jsonsimulation/';
+    # Costruisce il pattern per i file
     $pattern = "student_models_course_{$courseid}_advwork_{$advworkid}_m*";
-    # Uso glob per cercare i file corrispondenti al pattern
+    # Usa glob per cercare i file corrispondenti al pattern
     $files = glob($directory . $pattern);
-    # Ritorna true se esiste almeno un file, altrimenti false
+    
+    # Se $return_count è true, restituisci il numero di file trovati
+    if ($return_count) {return count($files);}
+    # Altrimenti restituisci true se esiste almeno un file, altrimenti false
     return !empty($files);
+}
+
+
+function get_student_name($id) {
+    global $DB;
+
+    # Verifica se l'ID esiste nella tabella mdl_user
+    $user = $DB->get_record('user', ['id' => $id], 'firstname, lastname');
+
+    if (!$user) {
+        throw new Exception("Studente con ID $id non trovato.");
+    }
+
+    return [
+        'firstname' => $user->firstname,
+        'lastname' => $user->lastname,
+    ];
+}
+
+function get_k_j_from_specific_json_of_this_course_advwork($courseid, $advworkid, $post, $userid) {
+    $base_dir = __DIR__ . '/jsonsimulation';
+    $filename = "$base_dir/student_models_course_{$courseid}_advwork_{$advworkid}_{$post}.json";
+
+    if (!file_exists($filename)) {
+        throw new Exception("File JSON non trovato: $filename");
+    }
+
+    $json_data = file_get_contents($filename);
+    $records = json_decode($json_data, true);
+
+    if ($records === null) {
+        throw new Exception("Errore nella decodifica del file JSON: $filename");
+    }
+
+    $k_value = null;
+    $j_value = null;
+
+    foreach ($records as $record) {
+        # Verifica che l'userid corrisponda e il domainvalueid sia 1
+        if ($record['userid'] == $userid && $record['domainvalueid'] == 1) {
+            # Ottieni il valore di capabilityoverallvalue con capabilityid=1 per k_value
+            if ($record['capabilityid'] == 1) {
+                $k_value = $record['capabilityoverallvalue'];
+            }
+            # Ottieni il valore di capabilityoverallvalue con capabilityid=2 per j_value
+            if ($record['capabilityid'] == 2) {
+                $j_value = $record['capabilityoverallvalue'];
+            }
+        }
+    }
+
+    # Controlla che entrambi i valori siano stati trovati
+    if ($k_value === null || $j_value === null) {
+        throw new Exception("Valori non trovati per userid=$userid, courseid=$courseid, advworkid=$advworkid, post=$post");
+    }
+
+    return [
+        'k_value' => $k_value,
+        'j_value' => $j_value,
+    ];
 }
 
 #OUTPUT STARTS HERE
@@ -1747,23 +1811,59 @@ echo $output->heading(format_string('Simulated Students'));
 
 <?php 
     if (check_if_json_data_exists($courseid, $advwork->id)){
+        $students_array = array_keys(get_students_in_course($courseid, true));
+        $saved_models_number = check_if_json_data_exists($courseid, $advwork->id, true);
         # Inizio container
         echo '<div class="container bg-light OVERVIEW">
                 <div class="row"><div class="col"><p></br></p></div></div>
                 <div class="row d-flex align-items-center text-center">
                     <div class ="col"><h4>Overview:</h4></div>
                 </div>
-                <div class="row"><div class="col"><p></br></p></div></div>';
-        
-        $students_array = array_keys(get_students_in_course($courseid, true));
+                <div class="row"><div class="col"><p></br></p></div></div>
+                <div class="row d-flex align-items-center">
+                    <div class="col"><h4>STUDENTS</h4></div>
+                    <div class="col"><h4>M0</h4></div>
+                    <div class="col"><h4>MPA</h4></div>';
+        for ($i = 1; $i <= $saved_models_number - 2; $i++) {
+            $post = "M{$i}";
+            echo '<div class="col"><h4>'.$post .'</h4></div>';
+        }
+        echo '<div class="col"><h4>DISTANCE</h4></div>
+                </div>';
         
         foreach ($students_array as $student) {
-            echo '<div class="row d-flex align-items-center">
-            <div class ="col-3">
-                <div>Active groups: 1</div>
-                <div>Group dimension:</div>
-                <div>Active grouping: sim</div>
-            </div></div>';
+            $student_name = get_student_name($student);
+            $k_j_values = get_k_j_from_specific_json_of_this_course_advwork($courseid, $advwork->id,"m0", $student);
+            $k_j_initial_value = $k_j_values;
+            echo '<div class="row d-flex align-items-center">';
+            echo '<div class ="col">' .$student_name['firstname'] . ' ' .$student_name['lastname'] . '</div>';
+            echo '<div class ="col">
+                        <p>K: '.$k_j_values['k_value'] .'</p>
+                        <p>J: '.$k_j_values['j_value'] .'</p>
+                    </div>
+                ';
+            $k_j_values = get_k_j_from_specific_json_of_this_course_advwork($courseid, $advwork->id,"mpa", $student);
+            echo '<div class ="col">
+                        <p>K: '.$k_j_values['k_value'] .'</p>
+                        <p>J: '.$k_j_values['j_value'] .'</p>
+                    </div>
+                ';
+            for ($i = 1; $i <= $saved_models_number - 2; $i++) {
+                $post = "m{$i}";
+                $k_j_values = get_k_j_from_specific_json_of_this_course_advwork($courseid, $advwork->id, $post, $student);
+                echo '<div class="col">
+                            <p>K: ' . $k_j_values['k_value'] . '</p>
+                            <p>J: ' . $k_j_values['j_value'] . '</p>
+                        </div>';
+            }
+            $k_j_values['k_value']=$k_j_values['k_value']-$k_j_initial_value['k_value'];
+            $k_j_values['j_value']=$k_j_values['j_value']-$k_j_initial_value['j_value'];
+            echo '<div class="col">';
+            if ($k_j_values['k_value']>=0){echo '<p style="color: green; font-weight: bold;">K: ' . $k_j_values['k_value'] . '</p>';}
+            else {echo '<p style="color: red; font-weight: bold;">K: ' . $k_j_values['k_value'] . '</p>';}
+            if ($k_j_values['j_value']>=0){echo '<p style="color: green; font-weight: bold;">K: ' . $k_j_values['j_value'] . '</p>';}
+            else {echo '<p style="color: red; font-weight: bold;">K: ' . $k_j_values['j_value'] . '</p>';}
+            echo '</div></div>';
         }
         
         # Fine container
@@ -1780,7 +1880,7 @@ echo $output->heading(format_string('Simulated Students'));
 <div class="container bg-light RETURN">
     <p>
     <div class="row d-flex align-items-center">
-        <div class="col">
+        <div class="col text-center">
             <button type="button" class="btn btn-light" id=""><a href="view.php?id=<?php echo $id; ?>">Back to ADVWORKER: View</a></button>
         </div>
     </div>
