@@ -2,7 +2,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
+        "userid": 17,
         "capabilityid": 1,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -13,7 +13,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
+        "userid": 17,
         "capabilityid": 1,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -24,7 +24,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
+        "userid": 17,
         "capabilityid": 1,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -35,7 +35,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
+        "userid": 17,
         "capabilityid": 2,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -46,7 +46,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
+        "userid": 17,
         "capabilityid": 2,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -57,205 +57,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 2,
-        "domainvalueid": 3,
-        "probability": 0.39861999999999997,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 3,
-        "domainvalueid": 1,
-        "probability": 0.054460000000000001,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 3,
-        "domainvalueid": 2,
-        "probability": 0.16073000000000001,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 3,
-        "domainvalueid": 3,
-        "probability": 0.14385999999999999,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 4,
-        "domainvalueid": 1,
-        "probability": 0.11835,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 4,
-        "domainvalueid": 2,
-        "probability": 0.12399,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 4,
-        "domainvalueid": 3,
-        "probability": 0.39861999999999997,
-        "capabilityoverallgrade": "C",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 5,
-        "domainvalueid": 1,
-        "probability": 0.054460000000000001,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 5,
-        "domainvalueid": 2,
-        "probability": 0.16073000000000001,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 5,
-        "domainvalueid": 3,
-        "probability": 0.14385999999999999,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 6,
-        "domainvalueid": 1,
-        "probability": 0.11835,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 6,
-        "domainvalueid": 2,
-        "probability": 0.12399,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 48,
-        "capabilityid": 6,
-        "domainvalueid": 3,
-        "probability": 0.39861999999999997,
-        "capabilityoverallgrade": "F",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
-        "capabilityid": 1,
-        "domainvalueid": 1,
-        "probability": 0.054460000000000001,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
-        "capabilityid": 1,
-        "domainvalueid": 2,
-        "probability": 0.16073000000000001,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
-        "capabilityid": 1,
-        "domainvalueid": 3,
-        "probability": 0.14385999999999999,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.29538999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
-        "capabilityid": 2,
-        "domainvalueid": 1,
-        "probability": 0.11835,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.57969999999999999,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
-        "capabilityid": 2,
-        "domainvalueid": 2,
-        "probability": 0.12399,
-        "capabilityoverallgrade": "E",
-        "capabilityoverallvalue": 0.57877999999999996,
-        "iscumulated": 0
-    },
-    {
-        "courseid": "15",
-        "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 2,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -266,7 +68,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 3,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -277,7 +79,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 3,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -288,7 +90,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 3,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -299,7 +101,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 4,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -310,7 +112,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 4,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -321,7 +123,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 4,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -332,7 +134,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 5,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -343,7 +145,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 5,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -354,7 +156,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 5,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -365,7 +167,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 6,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -376,7 +178,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 6,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -387,7 +189,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 49,
+        "userid": 17,
         "capabilityid": 6,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -398,7 +200,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 1,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -409,7 +211,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 1,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -420,7 +222,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 1,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -431,7 +233,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 2,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -442,7 +244,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 2,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -453,7 +255,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 2,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -464,7 +266,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 3,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -475,7 +277,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 3,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -486,7 +288,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 3,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -497,7 +299,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 4,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -508,7 +310,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 4,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -519,7 +321,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 4,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -530,7 +332,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 5,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -541,7 +343,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 5,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -552,7 +354,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 5,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -563,7 +365,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 6,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -574,7 +376,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 6,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -585,7 +387,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 50,
+        "userid": 18,
         "capabilityid": 6,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -596,7 +398,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 1,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -607,7 +409,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 1,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -618,7 +420,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 1,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -629,7 +431,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 2,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -640,7 +442,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 2,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -651,7 +453,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 2,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -662,7 +464,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 3,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -673,7 +475,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 3,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -684,7 +486,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 3,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -695,7 +497,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 4,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -706,7 +508,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 4,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -717,7 +519,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 4,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,
@@ -728,7 +530,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 5,
         "domainvalueid": 1,
         "probability": 0.054460000000000001,
@@ -739,7 +541,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 5,
         "domainvalueid": 2,
         "probability": 0.16073000000000001,
@@ -750,7 +552,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 5,
         "domainvalueid": 3,
         "probability": 0.14385999999999999,
@@ -761,7 +563,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 6,
         "domainvalueid": 1,
         "probability": 0.11835,
@@ -772,7 +574,7 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
         "capabilityid": 6,
         "domainvalueid": 2,
         "probability": 0.12399,
@@ -783,7 +585,205 @@
     {
         "courseid": "15",
         "advworkid": "17",
-        "userid": 51,
+        "userid": 19,
+        "capabilityid": 6,
+        "domainvalueid": 3,
+        "probability": 0.39861999999999997,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 1,
+        "domainvalueid": 1,
+        "probability": 0.054460000000000001,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 1,
+        "domainvalueid": 2,
+        "probability": 0.16073000000000001,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 1,
+        "domainvalueid": 3,
+        "probability": 0.14385999999999999,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 2,
+        "domainvalueid": 1,
+        "probability": 0.11835,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 2,
+        "domainvalueid": 2,
+        "probability": 0.12399,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 2,
+        "domainvalueid": 3,
+        "probability": 0.39861999999999997,
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 3,
+        "domainvalueid": 1,
+        "probability": 0.054460000000000001,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 3,
+        "domainvalueid": 2,
+        "probability": 0.16073000000000001,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 3,
+        "domainvalueid": 3,
+        "probability": 0.14385999999999999,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 4,
+        "domainvalueid": 1,
+        "probability": 0.11835,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 4,
+        "domainvalueid": 2,
+        "probability": 0.12399,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 4,
+        "domainvalueid": 3,
+        "probability": 0.39861999999999997,
+        "capabilityoverallgrade": "C",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 5,
+        "domainvalueid": 1,
+        "probability": 0.054460000000000001,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 5,
+        "domainvalueid": 2,
+        "probability": 0.16073000000000001,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 5,
+        "domainvalueid": 3,
+        "probability": 0.14385999999999999,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.29538999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 6,
+        "domainvalueid": 1,
+        "probability": 0.11835,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.57969999999999999,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
+        "capabilityid": 6,
+        "domainvalueid": 2,
+        "probability": 0.12399,
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": 0.57877999999999996,
+        "iscumulated": 0
+    },
+    {
+        "courseid": "15",
+        "advworkid": "17",
+        "userid": 20,
         "capabilityid": 6,
         "domainvalueid": 3,
         "probability": 0.39861999999999997,

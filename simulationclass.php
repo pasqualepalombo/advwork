@@ -93,6 +93,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $students_number_to_create = intval($_POST["students_number_to_create"]);
         $students_number_to_enroll= intval($_POST["students_number_to_enroll"]);
         $groups_size = intval($_POST["group_size_to_create"]);
+        $reviewers_size = intval($_POST["reviewers_size"]);
+        if ($reviewers_size < 3) {$reviewers_size = 3;}
+        $random_attempts = intval($_POST["random_attempts"]);
+        $allocation_mode = intval($_POST['alloc_mode']);
+        $grade_mode = intval($_POST['grade_mode']);
+        #warning: $num oltre 1 non va bene: vedi descrizione funzione automatic_teacher_evaluation
+        $num = intval($_POST['teacher_number']);
+
         update_assessment_form($values_array, $advwork->id);
         create_simulation_students($students_number_to_create);
         enroll_simulated_users($students_number_to_enroll, $courseid);
@@ -100,23 +108,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         create_groups_for_course($courseid, $groups_size);
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
         start_new_model($courseid, $advwork->id);
-        $reviewers_size = intval($_POST["reviewers_size"]);
-        if ($reviewers_size < 3) {
-            $reviewers_size = 3;
-        }
-        $random_attempts = intval($_POST["random_attempts"]);
-        create_allocation_among_groups($courseid, $advwork->id,$reviewers_size, $random_attempts);
-        # Devi mettere il radio per random o allocation
-        # create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
-        process_fkj_grades($advwork->id, false);
-        # devi mettere il radio per la funzione con lig
-        # process_fkj_grades($advwork->id, true);
+        if($allocation_mode==0){create_allocation_among_groups($courseid, $advwork->id,$reviewers_size, $random_attempts);}
+        else {create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);}
+        if($grade_mode==0){process_fkj_grades($advwork->id, false);}
+        else {process_fkj_grades($advwork->id, true);}
         recalculate_data($advwork, $courseid, $cm);
         read_update_models($courseid, $advwork->id);
-    }
-    elseif (isset($_POST['teacher_evaluation'])) {
-        $num = intval($_POST['teacher_number']);
         automatic_teacher_evaluation($num,$output, $advwork, $courseid);
+        recalculate_data($advwork, $courseid, $cm);
+        read_update_models($courseid, $advwork->id);
     }
 }
 
@@ -259,8 +259,6 @@ function save_to_json_update_model($courseid, $advworkid, $records) {
     if (file_put_contents($filename, $json_data) === false) {
         throw new Exception("Errore nel salvataggio del file JSON: $filename");
     }
-
-    echo "File JSON salvato: $filename\n";
 }
 
 function recalculate_data($advwork, $courseid, $cm){
@@ -1204,7 +1202,7 @@ function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
 
         #prendo l'id della submission
         $submission_id = get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid);
-        echo "<script type='text/javascript'>alert('$submission_id');</script>";
+        #echo "<script type='text/javascript'>alert('$submission_id');</script>";
 
         #creazione riga su advwork_assessments
         $new_record = new stdClass();
@@ -1333,21 +1331,24 @@ function get_k_j_from_specific_json_of_this_course_advwork($courseid, $advworkid
 #OUTPUT STARTS HERE
 
 echo $output->header();
-echo $output->heading(format_string('Simulated Students'));
+#echo $output->heading(format_string('Simulated Students'));
 
 ?>
 <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
     <div class="container INFO">
             <div class="row d-flex align-items-center">
+                <div class ="col"><h2>Simulated class</h2></div>
+            </div>
+            <div class="row d-flex align-items-center">
                 <div class="col"><p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p></div>
                 <div class="col"><p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="process_data_btn">Process Data</button></div>
             </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
     </div>
     <div class="container bg-light FORM">
-        <p>
             <div class="row d-flex align-items-center">
-                <div class ="col"><h4>Edit Form Assessment, Weights, Submission Grades, Assessment Grades:</h4></div>
+                <div class ="col"><h4>Edit Form Aspects, Weights, Submission Grades, Assessment Grades:</h4></div>
             </div>
             <div class="row d-flex align-items-center">
                 <div class ="col">
@@ -1358,7 +1359,7 @@ echo $output->heading(format_string('Simulated Students'));
                             <select name="first_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
-                                <option value="30">30%</option>
+                                <option value="30" selected>30%</option>
                                 <option value="40">40%</option>
                                 <option value="50">50%</option>
                                 <option value="60">60%</option>
@@ -1389,7 +1390,7 @@ echo $output->heading(format_string('Simulated Students'));
                             <select name="second_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
-                                <option value="30">30%</option>
+                                <option value="30" selected>30%</option>
                                 <option value="40">40%</option>
                                 <option value="50">50%</option>
                                 <option value="60">60%</option>
@@ -1420,7 +1421,7 @@ echo $output->heading(format_string('Simulated Students'));
                             <select name="third_weight" class="form-select">
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
-                                <option value="30">30%</option>
+                                <option value="30" selected>30%</option>
                                 <option value="40">40%</option>
                                 <option value="50">50%</option>
                                 <option value="60">60%</option>
@@ -1431,131 +1432,99 @@ echo $output->heading(format_string('Simulated Students'));
                             </select>
                         </div>
                     </div>
-                    
-                    <div class="row"><div class="col"><p></br></p></div></div>
                     <div class="row"><div class="col"><p></br></p></div></div>
                 </div>
             </div>
             <?php echo display_function_message($message_form); ?>
-        </p>
     </div>
-    <div class="container CREATE">
+    <div class="container CLASS">
         <div class="row d-flex align-items-center">
             <div class ="col"><h4>Class Settings:</h4></div>
         </div>
-        <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
-        <p>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">How many students to create:</div>
-                <div class ="col-2"><input type="number" value=4 name="students_number_to_create"></div>
-            </div>
-            <?php echo display_function_message($message_create); ?>
-        </p>
-    </div>
-    <div class="container ENROLL">
-        <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
-        <p>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">How many students to enroll in total:</div>
-                <div class ="col-2"><input type="number" value=4 name="students_number_to_enroll"></div>
-            </div>
-            <?php echo display_function_message($message_enroll); ?>
-        </p>
-    </div>
-    <div class="container SUBMISSIONS">
-        <p>
-            <div class="row d-flex align-items-center">
-                <div class ="col-5">Submissions number: <?php echo get_submissions($advwork->id, false);?> / <?php 
-                    echo get_students_in_course($courseid, false); ?></div>
-            </div>
-            <?php echo display_function_message($message_submission);?>
-        </p>
-    </div>
-    <div class="container GROUPS">
-        <p>
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">
-                    <div>Active groups: <?php echo count_groups_in_course($courseid);?></div>
-                    <div>Group dimension:</div>
-                    <div>Active grouping: <?php echo get_course_grouping_name($courseid); ?></div>
+        <div class="row d-flex align-items-center">
+            <div class="col">
+                <div>Already simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></div>
+                <div class="row d-flex align-items-center">
+                    <div class ="col">How many students to create:</div>
+                    <div class ="col"><input type="number" value=4 name="students_number_to_create"></div>
                 </div>
-                <div class ="col-2">
-                    <div><p></p></div>
-                    <div><input type="number" value = 4 name="group_size_to_create"></div>
-                    <div><p></p></div>
+                <div class="row"><div class="col"><p></br></p></div></div>
+                <?php echo display_function_message($message_create); ?>
+                <div>Students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></div>
+                <div class="row d-flex align-items-center">
+                    <div class ="col">How many students to enroll in total:</div>
+                    <div class ="col"><input type="number" value=4 name="students_number_to_enroll"></div>
                 </div>
-                <div class="col">
-                    <div><p></p></div>
+                <?php echo display_function_message($message_enroll); ?>
+            </div>
+            <div class="col">
+                <div class="row d-flex align-items-center">
+                    <div class ="col">
+                        <div>Active groups: <?php echo count_groups_in_course($courseid);?></div>
+                        <div>Group dimension:</div>
+                        <div>Active grouping: <?php echo get_course_grouping_name($courseid); ?></div>
+                    </div>
+                    <div class ="col">
+                        <div><p></p></div>
+                        <div><input type="number" value = 4 name="group_size_to_create"></div>
+                        <div><p></p></div>
+                    </div>
                 </div>
-
-            </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <?php echo display_function_message($message_groups);?>
-        </p>
-    </div>
-    <div class="container bg-light MODELS">
-        <p>
-            <div class="row d-flex align-items-center">
-                <div class ="col"><h4>BN Model preset:</h4></div>
-            </div>
-            <div class="row d-flex align-items-center">
-                <div class ="col">
-                    <div class="row"><div class="col"><p></br></p></div></div>
-                    <div class="row"><div class="col"><p></br></p></div></div>
+                <div class="row"><div class="col"><p></br></p></div></div>
+                <?php echo display_function_message($message_groups);?>
+                <div class="row d-flex align-items-center">
+                    <div class ="col-5">Submissions number: <?php echo get_submissions($advwork->id, false);?> / <?php 
+                        echo get_students_in_course($courseid, false); ?></div>
                 </div>
+                <?php echo display_function_message($message_submission);?>
             </div>
-            <?php echo display_function_message($message_model); ?>
-        </p>
+        </div>
     </div>
     <div class="container ALLOCATION">
-        <p>
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">
-                    <div><p>Allocation:</p></div>
-                    <div><p>Reviewers number:</p></div>
-                    <div><p>Random Attempts before Sequential:</p></div>
-                </div>
-                <div class ="col-2">
-                    <div><p></p></div>
-                    <div><p><input type="number" value = 3 name="reviewers_size"></p></div>
-                    <div><p><input type="number" value = 10 name="random_attempts"></p></div>
-                    <div><p></p></div>
+        <div class="row"><div class="col"><p></br></p></div></div>
+        <div class="row d-flex align-items-center">
+            <div class ="col"><h4>Allocation and Grade Settings:</h4></div>
+        </div>
+        <div class="row d-flex">
+            <div class ="col">Allocation Mode: 
+                <select name="alloc_mode" class="form-select">
+                    <option value="0" selected>Random</option>
+                    <option value="1">Sequential</option>
+                </select>
+            </div>
+            <div class ="col">
+                <div class="row d-flex">
+                    <div>Reviewers number: <input type="number" value = 3 name="reviewers_size"></div>
                 </div>
             </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <?php echo display_function_message($message_allocation);?>
-        </p>
-    </div>
-    <div class="container bg-light GRADES">
-        <p>
-                <div class="row"><div class="col"><p></br></p></div></div>
-                <div class="row d-flex align-items-center">
-                    <div class ="col"><h4>Assessment Grade Rule:</h4></div>
+            <div class ="col">
+                <div class="row d-flex">
+                    <div>Random Attempts: <input type="number" value = 10 name="random_attempts"></div>
                 </div>
-                <div class="row"><div class="col"><p></br></p></div></div>
-            <?php echo display_function_message($message_grades);?>
-        </p>
-</div>
-</form>
-
-
-
-<div class="container TEACHER_GRADES">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <div class="row d-flex align-items-center">
-                <div class ="col-3">Automatic Teacher Grades number: </div>
-                <div class ="col-2"><input type="number" value = 1 name="teacher_number"></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="teacher_evaluation">Evaluate</button></div>
             </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-        </form>
+        </div>
+        <div class="row"><div class="col"><p></br></p></div></div>
+        <div class="row d-flex">
+            <div class ="col">Grade Mode: 
+                <select name="grade_mode" class="form-select">
+                    <option value="0" selected>K | J (model)</option>
+                    <option value="1">K | J (thresholds)</option>
+                </select>
+            </div>
+            <div class="col">
+                <div class="row d-flex">
+                    <div>Teacher Grades:  <input type="number" value = 1 name="teacher_number"></div>
+                </div>
+            </div>
+            <div class="col"></div>
+        </div>
+        <?php echo display_function_message($message_allocation);?>
+        <?php echo display_function_message($message_grades);?>
+        <?php echo display_function_message($message_model); ?>
         <?php echo display_function_message($message_teacher);?>
-    </p>
-</div>
+    </div>
+
+</form>
 
 <!--OVERVIEW-->
 <?php 
