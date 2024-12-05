@@ -96,3 +96,4 @@ class advwork_evaluation_settings_form extends moodleform {
     protected function definition_sub() {
     }
 }
+ 

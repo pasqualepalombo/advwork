@@ -85,6 +85,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     elseif (isset($_POST['update_json_data'])) {
         read_update_models($courseid, $advwork->id);
     }
+    elseif (isset($_POST['recalculate_data'])) {
+        recalculate_data($advwork, $courseid, $cm);
+    }
     elseif (isset($_POST['update_assessment_btn'])) {
         $values_array = [
             'first_aspect_desc' => $_POST['first_aspect_desc'],
@@ -290,6 +293,17 @@ function save_to_json_update_model($courseid, $advworkid, $records) {
     echo "File JSON salvato: $filename\n";
 }
 
+function recalculate_data($advwork, $courseid, $cm){
+    $advwork->aggregate_submission_grades();           // updates 'grade' in {advwork_submissions}
+    $advwork->aggregate_grading_grades();              // updates 'gradinggrade' in {advwork_aggregations}
+    $advwork->aggregate_overall_grades();              // updates overall grades in {advwork_overall_grades}
+
+    // send the session data to the BNS
+    $courseid = $advwork->course->id;
+    $courseteachersid = $advwork->get_course_teachers($courseid);
+    $iscourseteacher = in_array($USER->id, $courseteachersid);
+    $advwork->send_session_data($courseid, $advwork, $courseteachersid, $cm);
+}
 
 function update_assessment_form($values, $advworkid) {
     global $DB;
@@ -1740,6 +1754,7 @@ echo $output->heading(format_string('Simulated Students'));
                     <div class="row text-center">
                         <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
                         <div class="col"><button type="submit" class="btn btn-primary" name="update_json_data">Save new Json Data</button></div>
+                        <div class="col"><button type="submit" class="btn btn-primary" name="recalculate_data">Recalculate Grades</button></div>
                     </div>
                     <div class="row"><div class="col"><p></br></p></div></div>
                 </div>
@@ -1809,6 +1824,7 @@ echo $output->heading(format_string('Simulated Students'));
     </p>
 </div>
 
+<!--OVERVIEW-->
 <?php 
     if (check_if_json_data_exists($courseid, $advwork->id)){
         $students_array = array_keys(get_students_in_course($courseid, true));
@@ -1869,13 +1885,7 @@ echo $output->heading(format_string('Simulated Students'));
         # Fine container
         echo '</div></div>';
     }
-
-
-
-    
-
 ?>
-
 
 <div class="container bg-light RETURN">
     <p>
