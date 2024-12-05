@@ -20,7 +20,7 @@ require_once(__DIR__.'/allocation/random/lib.php');
 require_once($CFG->libdir . '/moodlelib.php'); # Include il user_create_user
 require_once($CFG->dirroot . '/user/lib.php'); # Include la libreria utenti di Moodle.
 require_once($CFG->libdir . '/datalib.php'); # Include le funzioni del database di Moodle.
-require_once($CFG->libdir . '/enrollib.php'); // Include le funzioni di iscrizione.
+require_once($CFG->libdir . '/enrollib.php'); # Include le funzioni di iscrizione.
 
 #Moodle Library for managing groups and grouping
 require_once($CFG->dirroot . '/group/lib.php');
@@ -79,16 +79,7 @@ $random_tries = 0;
 
 #SIM FORM HANDLER
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['start_new_model'])) {
-        start_new_model($courseid, $advwork->id);
-    }
-    elseif (isset($_POST['update_json_data'])) {
-        read_update_models($courseid, $advwork->id);
-    }
-    elseif (isset($_POST['recalculate_data'])) {
-        recalculate_data($advwork, $courseid, $cm);
-    }
-    elseif (isset($_POST['update_assessment_btn'])) {
+    if (isset($_POST['process_data_btn'])) {
         $values_array = [
             'first_aspect_desc' => $_POST['first_aspect_desc'],
             'first_weight' => intval($_POST['first_weight']),
@@ -99,54 +90,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'sub_grades' => intval($_POST['sub_grades']),
             'asm_grades' => intval($_POST['asm_grades'])
         ];
-        update_assessment_form($values_array, $advwork->id);
-    }
-    elseif (isset($_POST['create_students_btn'])) {
         $students_number_to_create = intval($_POST["students_number_to_create"]);
-        create_simulation_students($students_number_to_create);
-    }
-    elseif (isset($_POST['enroll_students_btn'])) {
         $students_number_to_enroll= intval($_POST["students_number_to_enroll"]);
-        enroll_simulated_users($students_number_to_enroll, $courseid);
-    }
-    elseif (isset($_POST['create_submissions_btn'])) {
-        create_submissions($courseid, $advwork->id);
-    }
-    elseif (isset($_POST['create_groups_btn'])) {
         $groups_size = intval($_POST["group_size_to_create"]);
+        update_assessment_form($values_array, $advwork->id);
+        create_simulation_students($students_number_to_create);
+        enroll_simulated_users($students_number_to_enroll, $courseid);
+        create_submissions($courseid, $advwork->id);
         create_groups_for_course($courseid, $groups_size);
-    }
-    elseif (isset($_POST['create_grouping_btn'])) {
         create_grouping_with_all_groups($courseid, 'SIM Grouping');
-    }
-    elseif (isset($_POST['create_random_allocation_btn'])) {
+        start_new_model($courseid, $advwork->id);
         $reviewers_size = intval($_POST["reviewers_size"]);
         if ($reviewers_size < 3) {
             $reviewers_size = 3;
         }
         $random_attempts = intval($_POST["random_attempts"]);
         create_allocation_among_groups($courseid, $advwork->id,$reviewers_size, $random_attempts);
-    }
-    elseif (isset($_POST['create_sequential_allocation_btn'])) {
-        $reviewers_size = intval($_POST["reviewers_size"]);
-        if ($reviewers_size < 3) {
-            $reviewers_size = 3;
-        }
-        create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
-    }
-    elseif (isset($_POST['create_fkj_lig_grades_btn'])) {
-        process_fkj_grades($advwork->id, true);
-    }
-    elseif (isset($_POST['create_fkj_grades_btn'])) {
+        # Devi mettere il radio per random o allocation
+        # create_sequential_allocation_among_groups($courseid, $advwork->id,$reviewers_size);
         process_fkj_grades($advwork->id, false);
+        # devi mettere il radio per la funzione con lig
+        # process_fkj_grades($advwork->id, true);
+        recalculate_data($advwork, $courseid, $cm);
+        read_update_models($courseid, $advwork->id);
     }
     elseif (isset($_POST['teacher_evaluation'])) {
         $num = intval($_POST['teacher_number']);
         automatic_teacher_evaluation($num,$output, $advwork, $courseid);
-    }
-    elseif (isset($_POST['update_bn_models'])) {
-        $bn_radio = intval($_POST['bn_radio']);
-        update_bn_models($courseid, $advwork->id, $bn_radio);
     }
 }
 
@@ -1204,215 +1174,18 @@ function process_fkj_grades($advworkid, $lig = true) {
     }
 }
 
-function process_lig_students($advworkid) {
-    global $DB;
-    global $message_grades;
-
-    $submissions = get_submissions($advworkid);
-
-    $submission_ids = array_keys($submissions);
-
-    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
-    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
-
-    if (!$assessments) {
-        $message_grades = 'Non ci sono assessment per questo advwork';
-        return;
-    }
-
-    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
-
-    if (!$aspects) {
-        $message_grades = 'Assessment Form non configurato';
-        return;
-    }
-
-    $aspect_ids = array_keys($aspects);
-    
-    foreach ($assessments as $assessment) {
-        #da submissionid posso ottenere lo studente con authorid
-        $title = get_submission_title($assessment->submissionid);
-        $type = get_lig_student_type($title);
-
-        if ($type==0) {
-            $message_grades = 'Errore nella suddivisione in categorie LIG';
-            return;
-        }
-
-        $sum_weighted_grades = 0;
-        $sum_weights = 0;
-
-        foreach ($aspect_ids as $aspect_id) {
-            $aspect = $aspects[$aspect_id];
-            $grade = 0;
-
-            if($type == 1) {$grade = rand(9, 10);}
-            if($type == 2) {$grade = rand(7, 8);}
-            if($type == 3) {$grade = rand(3, 6);}            
-
-            $grade_record = (object) [
-                'assessmentid' => $assessment->id,
-                'strategy' => 'acc_mod',
-                'dimensionid' => $aspect_id,
-                'grade' => $grade,
-                'timecreated' => time(),
-                'timemodified' => time(),
-            ];
-
-            $DB->insert_record('advwork_grades', $grade_record);
-
-            $max_grade = $aspect->grade;
-            $weight = $aspect->weight; 
-            $sum_weighted_grades += ($grade / $max_grade) * $weight;
-            $sum_weights += $weight;
-        }
-
-        if ($sum_weights > 0) {
-            $final_grade = $sum_weighted_grades / $sum_weights;
-            $final_grade = $final_grade * 100;
-        } else {
-            #evitare la divisione per zero
-            $final_grade = 0;
-        }
-
-        $assessment->grade = $final_grade;
-        $assessment->timemodified = time();
-
-        $DB->update_record('advwork_assessments', $assessment);
-    }
-}
-
-function process_lig_grades($advworkid) {
-    global $DB;
-    global $message_grades;
-
-    $submissions = get_submissions($advworkid);
-
-    $submission_ids = array_keys($submissions);
-
-    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
-    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
-
-    if (!$assessments) {
-        $message_grades = 'Non ci sono assessment per questo advwork';
-        return;
-    }
-
-    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
-
-    if (!$aspects) {
-        $message_grades = 'Assessment Form non configurato';
-        return;
-    }
-
-    $aspect_ids = array_keys($aspects);
-    
-    foreach ($assessments as $assessment) {
-
-        $sum_weighted_grades = 0;
-        $sum_weights = 0;
-        $counter = 1;
-        foreach ($aspect_ids as $aspect_id) {
-            $aspect = $aspects[$aspect_id];
-            $grade = 0;
-
-            if($counter == 1) {$grade = rand(9, 10);}
-            if($counter == 2) {$grade = rand(7, 8);}
-            if($counter == 3) {$grade = rand(3, 6);}            
-
-            $counter += 1;
-            
-            $grade_record = (object) [
-                'assessmentid' => $assessment->id,
-                'strategy' => 'acc_mod',
-                'dimensionid' => $aspect_id,
-                'grade' => $grade,
-                'timecreated' => time(),
-                'timemodified' => time(),
-            ];
-
-            $DB->insert_record('advwork_grades', $grade_record);
-
-            $max_grade = $aspect->grade;
-            $weight = $aspect->weight; 
-            $sum_weighted_grades += ($grade / $max_grade) * $weight;
-            $sum_weights += $weight;
-        }
-
-        if ($sum_weights > 0) {
-            $final_grade = $sum_weighted_grades / $sum_weights;
-            $final_grade = $final_grade * 100;
-        } else {
-            #evitare la divisione per zero
-            $final_grade = 0;
-        }
-
-        $assessment->grade = $final_grade;
-        $assessment->timemodified = time();
-
-        $DB->update_record('advwork_assessments', $assessment);
-    }
-}
-
 function get_submission_title($submissionid) {
     global $DB;
     $record = $DB->get_record('advwork_submissions', ['id' => $submissionid], 'title', MUST_EXIST);
     return $record->title;
 }
 
-function get_lig_student_type($title) {
-    #estrai il numero finale dal titolo
-    if (preg_match('/_student_(\d+)$/', $title, $matches)) {
-        $number = (int)$matches[1];
-        $remainder = $number % 3;
-        switch ($remainder) {
-            case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 0:
-                return 3;
-            default:
-                return 0;
-        }
-    }
-    else {
-        return 0;
-    }
-}
-
-# STUDENT MODELS
-function update_bn_models($courseid, $advworkid, $bn_radio){
-    #Se viene specificato di non toccare i modelli precedenti allora prende tutti i modelli 
-    #salvati in mdl_advwork_student_models che sono presenti nel corso e setta il corseid a 9999
-    #cosi da non prenderli in considerazione.
-    
-    #BUG il problema è che in realtà ogni modellazione sembra a se stante. Anche cancellando tutti 
-    #i modelli precedenti, la votazione della BN non cambia di una virgola. Dunque è praticamente inutile
-    #includere questa modifica per ora.
-
-    #Not Selected
-    if ($bn_radio==0){
-        return;
-    }
-    #Use BN
-    if ($bn_radio==1){
-        #ottieni tutti gli studenti del corso
-        #ottieni gli id degli studenti
-        #aggiorna la tabella con advworkid=advworkid attuale
-    }
-    #Not Use BN
-    if ($bn_radio==2){
-        #ottieni tutti gli studenti del corso
-        #ottieni gli id degli studenti
-        #aggiorna la tabella con advworkid=9999 
-    }
-}
-
 # AUTOMATIC TEACHER GRADES
 # poichè ho aggiunto un'assesssment dove uno studente è bravo, uno è medio, uno insufficiente
 # credo sia utile che il voto del prof debba confermare l'ipotesi della bravura dell'alunno.
 # cioè studenti 1, 4, 7... sono tutti da A e B. I 2,5,8... sono C e D e cosi via.
+# Al momento non funziona bene, fa solo un voto. E advwork non capisce però che è stato dato,
+# perciò continua a consigliare sempre lo stesso.
 function get_most_appropriate_answer_to_grade_next($output, $advwork, $courseid) {
     global $message_teacher;
 
@@ -1563,15 +1336,16 @@ echo $output->header();
 echo $output->heading(format_string('Simulated Students'));
 
 ?>
-
-<div class="container INFO">
-    <p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p>
-    <p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p>
-</div>
-
-<div class="container bg-light FORM">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+<form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+    <div class="container INFO">
+            <div class="row d-flex align-items-center">
+                <div class="col"><p>Course Name: <?php echo $course->fullname;?>, ID: <?php echo $courseid;?></p></div>
+                <div class="col"><p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p></div>
+                <div class ="col"><button type="submit" class="btn btn-primary" name="process_data_btn">Process Data</button></div>
+            </div>
+    </div>
+    <div class="container bg-light FORM">
+        <p>
             <div class="row d-flex align-items-center">
                 <div class ="col"><h4>Edit Form Assessment, Weights, Submission Grades, Assessment Grades:</h4></div>
             </div>
@@ -1659,64 +1433,46 @@ echo $output->heading(format_string('Simulated Students'));
                     </div>
                     
                     <div class="row"><div class="col"><p></br></p></div></div>
-                    <div class="row text-center">
-                        <div class="col"><button type="submit" class="btn btn-primary" name="update_assessment_btn">Update Assessment Info</button></div>
-                    </div>
                     <div class="row"><div class="col"><p></br></p></div></div>
                 </div>
             </div>
-        </form>
-        <?php echo display_function_message($message_form); ?>
-    </p>
-</div>
-
-<div class="container CREATE">
-    <div class="row d-flex align-items-center">
-        <div class ="col"><h4>Class Settings:</h4></div>
+            <?php echo display_function_message($message_form); ?>
+        </p>
     </div>
-    <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+    <div class="container CREATE">
+        <div class="row d-flex align-items-center">
+            <div class ="col"><h4>Class Settings:</h4></div>
+        </div>
+        <p>Total number of simulated students: <?php echo read_how_many_sim_students_already_exists('sim_student', false); ?></p>
+        <p>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to create:</div>
                 <div class ="col-2"><input type="number" value=4 name="students_number_to_create"></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_students_btn">Create Simulated Students</button></div>
             </div>
-        </form>
-        <?php echo display_function_message($message_create); ?>
-    </p>
-</div>
-
-<div class="container ENROLL">
-    <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <?php echo display_function_message($message_create); ?>
+        </p>
+    </div>
+    <div class="container ENROLL">
+        <p>How many simulated students enrolled on this course: <?php echo get_students_in_course($courseid, false); ?></p>
+        <p>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">How many students to enroll in total:</div>
                 <div class ="col-2"><input type="number" value=4 name="students_number_to_enroll"></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="enroll_students_btn">Enroll Simulated Students</button></div>
             </div>
-        </form>
-        <?php echo display_function_message($message_enroll); ?>
-    </p>
-</div>
-
-<div class="container SUBMISSIONS">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <?php echo display_function_message($message_enroll); ?>
+        </p>
+    </div>
+    <div class="container SUBMISSIONS">
+        <p>
             <div class="row d-flex align-items-center">
                 <div class ="col-5">Submissions number: <?php echo get_submissions($advwork->id, false);?> / <?php 
                     echo get_students_in_course($courseid, false); ?></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_submissions_btn">Create Simulated Submissions</button></div>
             </div>
-        </form>
-        <?php echo display_function_message($message_submission);?>
-    </p>
-</div>
-
-<div class="container GROUPS">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <?php echo display_function_message($message_submission);?>
+        </p>
+    </div>
+    <div class="container GROUPS">
+        <p>
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">
@@ -1730,43 +1486,30 @@ echo $output->heading(format_string('Simulated Students'));
                     <div><p></p></div>
                 </div>
                 <div class="col">
-                    <div><button type="submit" class="btn btn-primary" name="create_groups_btn">Create Groups</button></br></div>
                     <div><p></p></div>
-                    <div><button type="submit" class="btn btn-primary" name="create_grouping_btn">Create Grouping</button></div>
                 </div>
 
             </div>
             <div class="row"><div class="col"><p></br></p></div></div>
-        </form>
-        <?php echo display_function_message($message_groups);?>
-    </p>
-</div>
-
-<div class="container bg-light MODELS">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <?php echo display_function_message($message_groups);?>
+        </p>
+    </div>
+    <div class="container bg-light MODELS">
+        <p>
             <div class="row d-flex align-items-center">
                 <div class ="col"><h4>BN Model preset:</h4></div>
             </div>
             <div class="row d-flex align-items-center">
                 <div class ="col">
                     <div class="row"><div class="col"><p></br></p></div></div>
-                    <div class="row text-center">
-                        <div class="col"><button type="submit" class="btn btn-primary" name="start_new_model">Start a new model</button></div>
-                        <div class="col"><button type="submit" class="btn btn-primary" name="update_json_data">Save new Json Data</button></div>
-                        <div class="col"><button type="submit" class="btn btn-primary" name="recalculate_data">Recalculate Grades</button></div>
-                    </div>
                     <div class="row"><div class="col"><p></br></p></div></div>
                 </div>
             </div>
-        </form>
-        <?php echo display_function_message($message_model); ?>
-    </p>
-</div>
-
-<div class="container ALLOCATION">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
+            <?php echo display_function_message($message_model); ?>
+        </p>
+    </div>
+    <div class="container ALLOCATION">
+        <p>
             <div class="row"><div class="col"><p></br></p></div></div>
             <div class="row d-flex align-items-center">
                 <div class ="col-3">
@@ -1780,34 +1523,24 @@ echo $output->heading(format_string('Simulated Students'));
                     <div><p><input type="number" value = 10 name="random_attempts"></p></div>
                     <div><p></p></div>
                 </div>
-                <div class="col">
-                    <div><button type="submit" class="btn btn-primary" name="create_random_allocation_btn">Random Reviewers Allocation</button></br></div>
-                    <div><p></p></div>
-                    <div><button type="submit" class="btn btn-primary" name="create_sequential_allocation_btn">Sequential Reviewers Allocation</button></div>
+            </div>
+            <div class="row"><div class="col"><p></br></p></div></div>
+            <?php echo display_function_message($message_allocation);?>
+        </p>
+    </div>
+    <div class="container bg-light GRADES">
+        <p>
+                <div class="row"><div class="col"><p></br></p></div></div>
+                <div class="row d-flex align-items-center">
+                    <div class ="col"><h4>Assessment Grade Rule:</h4></div>
                 </div>
-            </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-        </form>
-        <?php echo display_function_message($message_allocation);?>
-    </p>
+                <div class="row"><div class="col"><p></br></p></div></div>
+            <?php echo display_function_message($message_grades);?>
+        </p>
 </div>
+</form>
 
-<div class="container bg-light GRADES">
-    <p>
-        <form action="simulationclass.php?id=<?php echo $id; ?>" method="POST">
-            <div class="row"><div class="col"><p></br></p></div></div>
-            <div class="row d-flex align-items-center">
-                <div class ="col"><h4>Assessment Grade Rule:</h4></div>
-            </div>
-            <div class="row d-flex align-items-center text-center">
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_fkj_grades_btn">K(A) | J(B)</button></div>
-                <div class ="col"><button type="submit" class="btn btn-primary" name="create_fkj_lig_grades_btn">K(A) | J(L.I.G.)</button></div>
-            </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
-        </form>
-        <?php echo display_function_message($message_grades);?>
-    </p>
-</div>
+
 
 <div class="container TEACHER_GRADES">
     <p>
