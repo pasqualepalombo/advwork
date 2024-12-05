@@ -206,7 +206,7 @@ function read_update_models($courseid, $advworkid) {
     ]);
 
     if (empty($records)) {
-        throw new Exception("Nessun record trovato per il corso $courseid e il lavoro avanzato $advworkid.");
+        throw new Exception("Nessun record trovato per il corso $courseid e il modulo $advworkid.");
     }
 
     # Rimuove il campo 'id' da ogni record
@@ -262,11 +262,11 @@ function save_to_json_update_model($courseid, $advworkid, $records) {
 }
 
 function recalculate_data($advwork, $courseid, $cm){
-    $advwork->aggregate_submission_grades();           // updates 'grade' in {advwork_submissions}
-    $advwork->aggregate_grading_grades();              // updates 'gradinggrade' in {advwork_aggregations}
-    $advwork->aggregate_overall_grades();              // updates overall grades in {advwork_overall_grades}
+    $advwork->aggregate_submission_grades();           # updates 'grade' in {advwork_submissions}
+    $advwork->aggregate_grading_grades();              # updates 'gradinggrade' in {advwork_aggregations}
+    $advwork->aggregate_overall_grades();              # updates overall grades in {advwork_overall_grades}
 
-    // send the session data to the BNS
+    # send the session data to the BNS
     $courseid = $advwork->course->id;
     $courseteachersid = $advwork->get_course_teachers($courseid);
     $iscourseteacher = in_array($USER->id, $courseteachersid);
@@ -319,7 +319,7 @@ function update_assessment_form($values, $advworkid) {
         }
     }
 
-    #impostazione con votazione 100 per submission e assessment
+    #impostazione con votazione per submission e assessment
     $newGrade = intval($values['sub_grades']);
     $newGradingGrade = intval($values['asm_grades']);
     $recordsUpdated = $DB->execute(
@@ -901,72 +901,6 @@ function create_sequential_allocation_among_groups($courseid, $advworkid, $revie
 
 }
 
-function process_grades($advworkid) {
-    global $DB;
-    global $message_grades;
-    
-    $submissions = get_submissions($advworkid);
-
-    $submission_ids = array_keys($submissions);
-
-    list($in_sql, $params) = $DB->get_in_or_equal($submission_ids);
-    $assessments = $DB->get_records_select('advwork_assessments', "submissionid $in_sql", $params);
-
-    if (!$assessments) {
-        $message_grades = 'Non ci sono assessment per questo advwork';
-        return;
-    }
-
-    $aspects = $DB->get_records('advworkform_acc_mod', ['advworkid' => $advworkid]);
-
-    if (!$aspects) {
-        $message_grades = 'Assessment Form non configurato';
-        return;
-    }
-
-    $aspect_ids = array_keys($aspects);
-    
-    foreach ($assessments as $assessment) {
-        $sum_weighted_grades = 0;
-        $sum_weights = 0;
-
-        foreach ($aspect_ids as $aspect_id) {
-            $aspect = $aspects[$aspect_id];
-
-            $grade = rand(0, 10);
-
-            $grade_record = (object) [
-                'assessmentid' => $assessment->id,
-                'strategy' => 'acc_mod',
-                'dimensionid' => $aspect_id,
-                'grade' => $grade,
-                'timecreated' => time(),
-                'timemodified' => time(),
-            ];
-
-            $DB->insert_record('advwork_grades', $grade_record);
-
-            $max_grade = $aspect->grade;
-            $weight = $aspect->weight; 
-            $sum_weighted_grades += ($grade / $max_grade) * $weight;
-            $sum_weights += $weight;
-        }
-
-        if ($sum_weights > 0) {
-            $final_grade = $sum_weighted_grades / $sum_weights;
-            $final_grade = $final_grade * 100;
-        } else {
-            #evitare la divisione per zero
-            $final_grade = 0;
-        }
-
-        $assessment->grade = $final_grade;
-        $assessment->timemodified = time();
-
-        $DB->update_record('advwork_assessments', $assessment);
-    }
-}
-
 function get_author_k_value($assessment) {
     global $DB;
 
@@ -1039,8 +973,37 @@ function count_assessments_with_same_submission($assessment) {
 
     return $count;
 }
+function get_advwork_gradinggrade($advworkid) {
+    global $DB;
 
-function calculate_score($k_author, $j_reviewer, $assessments_per_submission) {
+    # Poichè advwork stratta l'id come stringa
+    $advworkid = (int)$advworkid; 
+    $record = $DB->get_record('advwork', ['id' => $advworkid], 'gradinggrade');
+
+    # Controlla se è stato trovato un record e restituisci gradinggrade
+    if ($record) {
+        return $record->gradinggrade;
+    }
+
+    return null;
+}
+
+function get_advwork_grade($advworkid) {
+    global $DB;
+
+    # Poichè advwork stratta l'id come stringa
+    $advworkid = (int)$advworkid; 
+    $record = $DB->get_record('advwork', ['id' => $advworkid], 'grade');
+
+    # Controlla se è stato trovato un record e restituisci grade
+    if ($record) {
+        return $record->grade;
+    }
+
+    return null;
+}
+
+function calculate_score($k_author, $j_reviewer, $assessments_per_submission, $advworkid) {
     # Controllo dei parametri
     if ($k_author < 0 || $k_author > 1) {
         throw new InvalidArgumentException("k_author deve essere compreso tra 0 e 1");
@@ -1051,7 +1014,7 @@ function calculate_score($k_author, $j_reviewer, $assessments_per_submission) {
     if ($assessments_per_submission <= 0) {
         throw new InvalidArgumentException("assessments_per_submission deve essere maggiore di 0");
     }
-
+    
     # Suddividi il range [0, 1] in fasce
     $thresholds = [];
     for ($i = 1; $i <= $assessments_per_submission; $i++) {
@@ -1071,13 +1034,16 @@ function calculate_score($k_author, $j_reviewer, $assessments_per_submission) {
     $uncertainties = [0.35, 0.2, 0.1]; # Incertezze per fasce bassa, media e alta
     $uncertainty = $uncertainties[min($category, count($uncertainties) - 1)];
 
+    # Vede quale è il voto massimo della submission e assessment
+    $agrade = get_advwork_gradinggrade($advworkid);
+
     # Calcola il voto base
-    $base_score = ($k_author + $j_reviewer) / 2 * 100;
+    $base_score = ($k_author + $j_reviewer) / 2 * $agrade;
 
     # Applica l'incertezza
     $lower_bound = $base_score * (1 - $uncertainty);
     $upper_bound = $base_score * (1 + $uncertainty);
-    $final_score = mt_rand($lower_bound * 100, $upper_bound * 100) / 100;
+    $final_score = mt_rand($lower_bound * $agrade, $upper_bound * $agrade) / $agrade;
 
     return round($final_score, 2);
 }
@@ -1134,7 +1100,7 @@ function process_fkj_grades($advworkid, $lig = true) {
                 $j_reviewer = get_reviewer_j_value($assessment);
             }
             
-            $grade = calculate_score($k_author, $j_reviewer, $assessments_per_submission);
+            $grade = calculate_score($k_author, $j_reviewer, $assessments_per_submission, $advworkid);
             
             $grade_record = (object) [
                 'assessmentid' => $assessment->id,
@@ -1222,8 +1188,8 @@ function automatic_teacher_evaluation($num,$output, $advwork, $courseid){
             $dimension_grades[] = $record->grade;
             $dimension_weights[] = $record->weight;
         }
-        
-        $grades = [rand(6, 10), rand(6, 10), rand(6, 10)];
+        #TODO teoricamente si potrebbe chiamare una variante di process_fkj con J massimo visto che è il professore
+        $grades = [rand(4, 10), rand(4, 10), rand(4, 10)];
 
         foreach ($dimension_ids as $index => $dimension_id) {
             $new_record = new stdClass();
