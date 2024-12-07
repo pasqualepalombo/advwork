@@ -72,11 +72,7 @@ function create_new_class_gaussian($studentsNumber, $median, $standardeviation, 
     }
 
     // Salvataggio in un file JSON
-    $class_name = create_new_class('gaussian');
-    $jsonFile = $class_name . "/" . $class_name . "_mr.json";
-    file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT));
-
-    return $jsonFile;
+    create_new_class('gaussian',$data);
 }
 
 function generate_gaussian($mean, $stdDev) {
@@ -124,11 +120,7 @@ function create_new_class_random($studentsNumber) {
     }
 
     // Salvataggio in un file JSON
-    $class_name = create_new_class('random');
-    $jsonFile = $class_name . "/" . $class_name . "_mr.json";
-    file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT));
-
-    return $jsonFile;
+    create_new_class('random',$data);
 }
 
 function generate_normalized_probabilities($count) {
@@ -142,21 +134,27 @@ function generate_normalized_probabilities($count) {
     }, $values);
 }
 
-function create_new_class($distribution) {
+function create_new_class($distribution, $data) {
     // Inizializza il contatore per il numero incrementale
     $counter = 1;
 
     // Crea il prefisso della cartella utilizzando la stringa $distribution e il contatore
-    $baseFolderName = "{$distribution}_class_{$counter}";
+    $baseFolderName = "simulatedclass/{$distribution}_class_{$counter}";
 
     // Verifica se la cartella esiste già
     while (is_dir($baseFolderName)) {
         $counter++;  // Incrementa il contatore
-        $baseFolderName = "{$distribution}_class_{$counter}";  // Crea un nuovo nome per la cartella
+        $baseFolderName = "simulatedclass/{$distribution}_class_{$counter}";  // Crea un nuovo nome per la cartella
     }
 
     // Crea la cartella con il nome corretto
-    mkdir($baseFolderName);
+    mkdir($baseFolderName, 0777, true);  // Aggiunto il flag 'true' per creare anche le cartelle superiori se necessario
+
+    // Definisci il percorso del file JSON
+    $jsonFile = $baseFolderName . "/" . $distribution . "_class_{$counter}_mr.json";
+
+    // Scrivi il file JSON nella cartella appena creata
+    file_put_contents($jsonFile, json_encode($data, JSON_PRETTY_PRINT));
 
     // Restituisce il nome della cartella creata
     return $baseFolderName;
