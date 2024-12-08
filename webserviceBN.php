@@ -83,8 +83,8 @@ class WebServiceBN {
         $json_student_models = file_get_contents($url, false, $context);
 
         $output = var_export($json_student_models, true);
-        file_put_contents('wb_post_session_data2.txt', $output);
-        file_put_contents('wb_post_session_data2.json', json_encode($json_student_models, JSON_PRETTY_PRINT));
+        file_put_contents('wb_post_models.txt', $output);
+        file_put_contents('wb_post_models.json', json_encode($json_student_models, JSON_PRETTY_PRINT));
         $studentmodels = json_decode($json_student_models);
         $output = var_export($studentmodels, true);
         file_put_contents('wb_post_session_data_dec.txt', $output);

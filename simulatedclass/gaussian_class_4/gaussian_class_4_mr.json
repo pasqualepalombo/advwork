@@ -1,0 +1,3242 @@
+[
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.26720",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.11269",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.29347",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.13490",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.09045",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.10129",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.50562",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.25459",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.23929",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.07488",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.22386",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.05805",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.14933",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.09947",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.27293",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.20934",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.13958",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.08637",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "8",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.19231",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.28954",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.28781",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.28861",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.03840",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.03869",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.05695",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49715",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.26593",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.13697",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.23904",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.14646",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.15140",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.06020",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.12685",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.19333",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.06150",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.12447",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.25999",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "9",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.23386",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.51756",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.06398",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.27801",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.08673",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.24600",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.07507",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.25021",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39972",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.18961",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.23127",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.09341",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.01382",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.24589",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.22600",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.20707",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.31482",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.08300",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.19934",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.09668",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "10",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.09909",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.48021",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.21938",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.05955",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.19023",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.19189",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.11898",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.21997",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.42219",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.19654",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.17355",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.08063",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.25506",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.02296",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.27126",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.16508",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.06903",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.17989",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.14546",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.27749",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "11",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.16305",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43349",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.14383",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.36388",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.03197",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.14852",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.08888",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.22292",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43790",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.20350",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.15491",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.00810",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.19883",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.10987",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.32479",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.06656",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.06182",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.20588",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.29131",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.09786",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "12",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.27658",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.49568",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.19415",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.25011",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.26477",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.13190",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.08888",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.07019",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55492",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.15651",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.17332",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.10918",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.21340",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.26009",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.08750",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.16563",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.22945",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.08900",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.20984",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.15027",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "13",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.15582",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58648",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.31076",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.20077",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.20263",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.18105",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.07153",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.03326",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66184",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.34534",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.01317",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.13527",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.08534",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.19075",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.23014",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.26987",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.17416",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.09659",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.15576",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.14985",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "14",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.15378",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58588",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.14431",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.10899",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.24411",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.16659",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.16722",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.16877",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.27703",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.08284",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.30677",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.11743",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.12703",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.35274",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.01319",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.17463",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.34637",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.11495",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.21232",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.11363",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "15",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.03809",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.04061",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.02704",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.44200",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.25083",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.06510",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.17442",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52632",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.16954",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.13142",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.20380",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.18088",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.15357",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.16080",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.29281",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.13693",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.09776",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.22774",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.18954",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "16",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.05523",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47866",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.11960",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.03537",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.26375",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.26149",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.08780",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.23199",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.41231",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.15392",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.18187",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.14119",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.22903",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.18335",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.11063",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.18167",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.21248",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.14411",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.21512",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.17579",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "17",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.07082",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.36725",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.11868",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.16657",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.24832",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.20423",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.24285",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.01935",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.61622",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.32640",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.01912",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.16000",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.05812",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.41378",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.02258",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.12407",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.14344",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.17740",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.20561",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.14562",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "18",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.20386",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.58604",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.14185",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.20040",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.17579",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.21653",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.18084",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.08459",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59489",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.02357",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.37295",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.04053",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.04752",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.25266",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.26276",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.46812",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.13006",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.11584",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.07672",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.08187",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "19",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.12739",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59810",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.30454",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.07331",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.02516",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.00208",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.26221",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.33270",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.21738",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.09593",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.18462",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.20726",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.19436",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.15484",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.16299",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.12401",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.26273",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.25711",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.10426",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.22396",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "20",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.02793",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.16948",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.32572",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.05425",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.00611",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.08414",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.36030",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.52410",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.18161",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.10329",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.14102",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.20441",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.18332",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.18634",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.01534",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.25274",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.15186",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.13274",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.27576",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "21",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.17156",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.55109",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.15525",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.13603",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.15568",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.19097",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.13541",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.22666",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53761",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.15129",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.20106",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.03077",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.16149",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.14650",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.30889",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.18731",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.22087",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.03899",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.20693",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.11509",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "22",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.23081",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.47515",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.17225",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.25023",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.07743",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.18150",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.14314",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.17545",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43039",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.24694",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.30931",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.10858",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.11083",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.17693",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.04742",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.01248",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.10617",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.32608",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.11209",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.16288",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "23",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.28029",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.44264",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.16614",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.12220",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.18260",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.26606",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.24133",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.02167",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.43587",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.05529",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.26648",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.10627",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.10466",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.31716",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.15012",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.17527",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.28872",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.19972",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.14430",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.08854",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "24",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.10345",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.39243",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.20308",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.20175",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.24865",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.21745",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.01013",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.11894",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.34615",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.21278",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.11410",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.12591",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.23487",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.14033",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.17202",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.05867",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.28112",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.07354",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.06644",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.49446",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "25",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.02578",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.33428",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.02835",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.36085",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.29274",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.22235",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.04092",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.05479",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.59263",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.04384",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.23891",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.21751",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.08119",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.29498",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.12357",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.19677",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.19815",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.22500",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.21365",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.03697",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "26",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.12946",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.53900",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "1",
+        "probability": "0.17952",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "2",
+        "probability": "0.00597",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "3",
+        "probability": "0.24699",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "4",
+        "probability": "0.26672",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "5",
+        "probability": "0.11540",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "1",
+        "domainvalueid": "6",
+        "probability": "0.18539",
+        "capabilityoverallgrade": "E",
+        "capabilityoverallvalue": "0.63669",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "1",
+        "probability": "0.08349",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "2",
+        "probability": "0.01109",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "3",
+        "probability": "0.25151",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "4",
+        "probability": "0.04109",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "5",
+        "probability": "0.32823",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "2",
+        "domainvalueid": "6",
+        "probability": "0.28459",
+        "capabilityoverallgrade": "F",
+        "capabilityoverallvalue": "0.30000",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "1",
+        "probability": "0.27209",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "2",
+        "probability": "0.31212",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "3",
+        "probability": "0.16072",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "4",
+        "probability": "0.02038",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "5",
+        "probability": "0.13176",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    },
+    {
+        "userid": "27",
+        "capabilityid": "3",
+        "domainvalueid": "6",
+        "probability": "0.10293",
+        "capabilityoverallgrade": "D",
+        "capabilityoverallvalue": "0.66494",
+        "iscumulated": "0"
+    }
+]

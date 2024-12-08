@@ -27,14 +27,153 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
     elseif (isset($_POST['pas_settings_btn'])) {
-        $classSelection = $_POST['classSelection'];
         $m0Model = $_POST['m0Model'];
         $peerNumber = (int)$_POST['peerNumber'];
+        $classSelection = $_POST['classSelection'];
+        $sessionSelection;
+        if (isset($_POST['sessionSelection'])) {
+            $sessionSelection = $_POST['sessionSelection'];
+        }
+
+        if ($m0Model=="flat"){
+            if(isset($_POST['sessionSelection'])) {
+                create_flat_allocation_on_that_class($peerNumber, $classSelection, true);
+            } else {
+                create_flat_allocation_on_that_class($peerNumber, $classSelection, false);
+            }
+        }
     }
     elseif (isset($_POST['teacher_settings_btn'])) {
         echo "Peer Number: Teacher<br>";
     }
 }
+
+function create_flat_allocation_on_that_class($peerNumber, $classSelection, $continue_session = true) {
+    if ($continue_session) {
+        // TODO: Implementare la gestione della sessione
+    }
+
+    // Ottieni gli studenti ordinati usando la funzione già esistente
+    $ordered_students = models_ordering_for_flat($classSelection);
+
+    // Estrai gli 'userid' distinti
+    $userids = [];
+    foreach ($ordered_students as $key => $student_group) {
+        // Cicliamo su ogni gruppo di studenti per estrarre gli 'userid'
+        foreach ($student_group as $student) {
+            if (!in_array($student['userid'], $userids)) {
+                $userids[] = $student['userid'];
+            }
+        }
+    }
+
+    // Inizializza l'array per tracciare quante volte un 'userid' è stato scelto
+    $peer_assignment_count = array_fill_keys($userids, 0);
+
+    // Cicla per ogni userid
+    foreach ($userids as $current_userid) {
+        // Crea l'array $remain_student con tutti gli id tranne quello corrente
+        $remain_students = array_filter($userids, function($userid) use ($current_userid) {
+            return $userid !== $current_userid;
+        });
+
+        // Crea un array di peer assegnati per il current_userid
+        $assigned_peers = [];
+        
+        // Limita la selezione dei peer per ogni userid
+        $attempts = 0; // Contatore per evitare cicli infiniti
+        while (count($assigned_peers) < $peerNumber && $attempts < 100) {
+            // Seleziona un peer casuale tra i restanti che non ha ancora raggiunto il limite
+            $available_peers = array_filter($remain_students, function($peer) use ($peer_assignment_count, $peerNumber) {
+                return $peer_assignment_count[$peer] < $peerNumber;
+            });
+
+            // Se non ci sono peer disponibili, esci dal ciclo
+            if (empty($available_peers)) {
+                break;
+            }
+
+            // Scegli un peer casuale
+            $random_peer = $available_peers[array_rand($available_peers)];
+
+            // Aggiungi il peer alla lista di assegnazione per il current_userid
+            $assigned_peers[$current_userid][$random_peer] = "0.00";
+
+            // Incrementa il contatore di assegnazioni per questo peer
+            $peer_assignment_count[$random_peer]++;
+
+            // Rimuovi il peer selezionato dalla lista dei restanti
+            $remain_students = array_filter($remain_students, function($userid) use ($random_peer) {
+                return $userid !== $random_peer;
+            });
+
+            $attempts++;
+        }
+
+        // Stampa i peer assegnati per ogni current_userid
+        echo "For User ID $current_userid:\n";
+        foreach ($assigned_peers[$current_userid] as $peer_id => $value) {
+            echo "Peer ID $peer_id: $value\n";
+        }
+        echo "--------------------------\n";
+    }
+}
+
+
+
+function models_ordering_for_flat($classSelection) {
+    // Costruisci il percorso del file JSON
+    $filePath = "simulatedclass/$classSelection/{$classSelection}_mr.json";
+
+    // Controlla se il file esiste
+    if (!file_exists($filePath)) {
+        echo "File not found: $filePath";
+        return;
+    }
+
+    echo "File found: $filePath<br>";
+
+    // Leggi il contenuto del file JSON
+    $jsonData = file_get_contents($filePath);
+    $data = json_decode($jsonData, true);
+
+    // Controllo di validità del contenuto
+    if (!$data || !is_array($data)) {
+        echo "Invalid JSON data.";
+        return;
+    }
+
+    // Raggruppa i dati per userid
+    $groupedData = [];
+    foreach ($data as $entry) {
+        $userid = $entry['userid'];
+        $groupedData[$userid][] = $entry;
+    }
+
+    // Estrai il valore J per ogni utente
+    $userValues = [];
+    foreach ($groupedData as $userid => $entries) {
+        foreach ($entries as $entry) {
+            if ($entry['domainvalueid'] == "1" && $entry['capabilityid'] == "2") {
+                $userValues[$userid] = floatval($entry['capabilityoverallvalue']);
+                break;
+            }
+        }
+    }
+
+    // Ordina gli utenti per il valore J
+    asort($userValues);
+
+    // Riorganizza i dati ordinati
+    $orderedData = [];
+    foreach (array_keys($userValues) as $userid) {
+        $orderedData[$userid] = $groupedData[$userid];
+    }
+
+    // Puoi ora restituire $orderedData per ulteriore elaborazione
+    return $orderedData;
+}
+
 
 function create_new_class_gaussian($studentsNumber, $median, $standardeviation, $skewness){
     # $median, $standarddeviation e $skewness ancora non vengono usati
@@ -178,64 +317,30 @@ function create_new_class($distribution, $data) {
 
 # PEERASESSMENTSESSION
 function generate_class_options() {
-
-    // Imposta il percorso della cartella contenente i file JSON
-
-    $folder_path = 'simulatedclass'; // Sostituisci con il percorso corretto
-
-
-
-    // Ottieni tutti i file nella cartella
-
-    $files = scandir($folder_path);
-
+    $folder_path = 'simulatedclass';
+    $directories = array_filter(glob($folder_path . '/*'), 'is_dir');
     $classes = [];
 
-
-
-    // Filtra i file che corrispondono al nuovo pattern "string_class_#_model"
-
-    foreach ($files as $file) {
-
-        // Verifica se il file corrisponde al pattern "any_string_class_#_model.json"
-
-        if (preg_match('/^(.*)_class_(\d+)_model\.json$/', $file, $matches)) {
-
-            // Aggiungi la parte iniziale del nome e il numero della classe
-
+    foreach ($directories as $dir) {
+        if (preg_match('/^(.*)_class_(\d+)$/', basename($dir), $matches)) {
             $classes[] = [
-
-                'prefix' => $matches[1],  // Parte prima di "_class_"
-
-                'id' => $matches[2]       // Numero della classe
-
+                'prefix' => $matches[1],
+                'id' => $matches[2]
             ];
-
         }
-
     }
-
-
-
-    // Se non ci sono classi, aggiungi l'opzione "no class available"
 
     if (empty($classes)) {
-
         echo '<option value="no_class">no class available</option>';
-
     } else {
-
-        // Crea un'opzione per ogni classe trovata
-
         foreach ($classes as $class) {
-
             echo '<option value="' . $class['prefix'] . '_class_' . $class['id'] . '">' . $class['prefix'] . '_class_' . $class['id'] . '</option>';
-
         }
-
     }
-
 }
+
+
+
 # DEBUG
 function write_log($message, $log_file = 'logfile.log') {
     // Apre il file di log in modalità append (aggiunge alla fine del file)
@@ -397,8 +502,15 @@ function send_data() {
                 <!-- Class Selection -->
                 <div class="mb-3">
                     <label for="classSelection" class="form-label">Class Selection</label>
-                    <select class="form-select" id="classSelection" name="classSelection">
+                    <select class="form-select" id="classSelection" name="classSelection" onchange="checkSessionFiles()">
                         <?php generate_class_options(); ?>
+                    </select>
+                </div>
+                <div id="sessionFiles"></div>
+                <div id="sessionSelectionContainer" style="display: none;" class="mb-3">
+                    <label for="sessionSelection" class="form-label">Continue on which session?</label>
+                    <select class="form-select" id="sessionSelection" name="sessionSelection">
+                        <!-- Popolato dinamicamente -->
                     </select>
                 </div>
 
@@ -418,7 +530,7 @@ function send_data() {
 
                 <!-- Process PA Button -->
                 <div class="mb-3">
-                    <button type="submit" class="btn btn-primary" name="pas_settings">Process PA</button>
+                    <button type="submit" class="btn btn-primary" name="pas_settings_btn">Process PA</button>
                 </div>
             </form>
         </section>
@@ -639,6 +751,54 @@ function send_data() {
 
         // Initialize form visibility on page load
         document.addEventListener("DOMContentLoaded", updateFormFields);
+
+        function checkSessionFiles() {
+            const selectedClass = document.getElementById('classSelection').value;
+            const sessionContainer = document.getElementById('sessionSelectionContainer');
+            const sessionDropdown = document.getElementById('sessionSelection');
+            const sessionFilesDiv = document.getElementById('sessionFiles');
+
+            if (selectedClass === "no_class") {
+                sessionContainer.style.display = "none";
+                sessionFilesDiv.innerText = "No class selected.";
+                return;
+            }
+
+            fetch(`check_sessions.php?class=${encodeURIComponent(selectedClass)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.sessions && data.sessions.length > 0) {
+                        sessionFilesDiv.innerHTML = "Sessions found.";
+                        sessionDropdown.innerHTML = ""; // Svuota eventuali opzioni precedenti
+
+                        // Aggiungi l'opzione "Create a new session"
+                        const createOption = document.createElement('option');
+                        createOption.value = "create_new";
+                        createOption.textContent = "Create a new session";
+                        sessionDropdown.appendChild(createOption);
+
+                        // Aggiungi le altre sessioni trovate
+                        data.sessions.forEach(session => {
+                            const option = document.createElement('option');
+                            option.value = session;
+                            option.textContent = session;
+                            sessionDropdown.appendChild(option);
+                        });
+
+                        sessionContainer.style.display = "block";
+                    } else {
+                        sessionFilesDiv.innerHTML = `No session files found for ${selectedClass}. It will create a new one.`;
+                        sessionContainer.style.display = "none";
+                    }
+                })
+                .catch(error => {
+                    sessionFilesDiv.innerText = "Error checking files.";
+                    sessionContainer.style.display = "none";
+                    console.error("Error:", error);
+                });
+        }
+
+
     </script>
 </body>
 

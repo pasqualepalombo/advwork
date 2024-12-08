@@ -1,0 +1,5 @@
+Userid,Firstname,Lastname,"Grade received 1","Userid received 1","Grade received 2","Userid received 2","Grade received 3","Userid received 3","Grade given 1","Userid given 1","Grade given 2","Userid given 2","Grade given 3","Userid given 3","Submission grade teacherid","Submission grade","Competence (single session)","Assessment capability (single session)","Competence (cumulated)","Assessment capability (cumulated)"
+5,Ludovica,Antenato,NULL,6,NULL,3,NULL,4,NULL,6,NULL,3,NULL,4,,29.54,57.97,78.29,NULL,NULL
+6,Gianluca,Bertaccia,NULL,5,NULL,3,NULL,4,NULL,5,NULL,3,NULL,4,,29.54,57.97,78.29,NULL,NULL
+3,Pasquale,Palombo,NULL,5,NULL,6,NULL,4,NULL,5,NULL,6,NULL,4,,29.54,57.97,78.29,NULL,NULL
+4,Valerio,Primulfo,NULL,5,NULL,6,NULL,3,NULL,5,NULL,6,NULL,3,,29.54,57.97,78.29,NULL,NULL
