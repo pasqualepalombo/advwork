@@ -3303,7 +3303,9 @@ class advwork {
 
 
         $studentmodels = json_decode($studentmodelsjsonresponse);
-
+        $output = var_export($sessiondata, true);
+        file_put_contents('locallib_send_bns_session.txt', $output);
+        file_put_contents('locallib_send_bns_session.json', json_encode($sessiondata, JSON_PRETTY_PRINT));
         if ($deleteStudent==1) {
             // delete if student models exist for the current advwork session
             $this->delete_student_models($courseid, $advwork->id, $cumulated);
@@ -3537,6 +3539,9 @@ class advwork {
 
             $capabilityentry = reset($capabilityentries);
             $studentgrades[] = $capabilityentry->capabilityoverallvalue;
+            $output = var_export($capabilityentry, true);
+            file_put_contents('generalstudentmodel_data.txt', $output);
+            file_put_contents('generalstudentmodel_data.json', json_encode($capabilityentry, JSON_PRETTY_PRINT));
         }
 
         return $studentgrades;

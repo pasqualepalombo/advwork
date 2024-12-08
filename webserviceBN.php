@@ -29,12 +29,7 @@ class WebServiceBN {
 
         $json_parameters = file_get_contents("http://twiki.di.uniroma1.it/BNservice/v0", false, $context);
         $parameters = json_decode($json_parameters);
-		
-        $myfile1 = fopen("webserviceBN_parameters_from_bn.txt", "a") or die("Unable to open file!");
-        fwrite($myfile1, $parameters);
-
-
-
+	
         return $parameters;
     }
 
@@ -47,9 +42,27 @@ class WebServiceBN {
      */
     function post_session_data($sessiondata)
     {
-        
-		$myfile1 = fopen("webserviceBN_sessiondata_from_bn.txt", "a") or die("Unable to open file!");
-        fwrite($myfile1, $sessiondata);
+        $output = var_export($sessiondata, true);
+        file_put_contents('wb_post_session_data1.txt', $output);
+        file_put_contents('wb_post_session_data1.json', json_encode($sessiondata, JSON_PRETTY_PRINT));
+		/* si mostra cosi sessiondata:
+        {
+            "parameters": {
+                "strategy": "maxEntropy",
+                "termination": "corrected30",
+                "mapping": "weightedSum",
+                "domain": [
+                    1,
+                    0.94999999999999996,
+                    0.84999999999999998,
+                    0.75,
+                    0.65000000000000002,
+                    0.55000000000000004,
+                    0
+                ]
+            },
+            "peer-assessments": []
+        } */
 
         $jsonsessiondata = json_encode($sessiondata, JSON_NUMERIC_CHECK );
 
@@ -69,6 +82,13 @@ class WebServiceBN {
 	
         $json_student_models = file_get_contents($url, false, $context);
 
+        $output = var_export($json_student_models, true);
+        file_put_contents('wb_post_session_data2.txt', $output);
+        file_put_contents('wb_post_session_data2.json', json_encode($json_student_models, JSON_PRETTY_PRINT));
+        $studentmodels = json_decode($json_student_models);
+        $output = var_export($studentmodels, true);
+        file_put_contents('wb_post_session_data_dec.txt', $output);
+        file_put_contents('wb_post_session_data_dec.json', json_encode($studentmodels, JSON_PRETTY_PRINT));
         //fwrite($myfile, $json_student_models);
         return $json_student_models;
     }

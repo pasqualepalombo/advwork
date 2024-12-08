@@ -9,6 +9,8 @@ error_reporting(E_ALL);
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  **/
 
+require_once (__DIR__.'/webserviceBN.php');
+
 # FORM HANDLING
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['class_settings_btn'])) {
@@ -53,22 +55,36 @@ function create_new_class_gaussian($studentsNumber, $median, $standardeviation, 
         $c = max(0.3, min(1.0, $c));
 
         foreach ([1 => $k, 2 => $j, 3 => $c] as $capabilityId => $capabilityValue) {
+            // Assegna il grade in base al valore di capabilityValue
+            if ($capabilityValue >= 0.95) {
+                $grade = "A";
+            } elseif ($capabilityValue >= 0.85) {
+                $grade = "B";
+            } elseif ($capabilityValue >= 0.75) {
+                $grade = "C";
+            } elseif ($capabilityValue >= 0.65) {
+                $grade = "D";
+            } elseif ($capabilityValue >= 0.55) {
+                $grade = "E";
+            } else {
+                $grade = "F";
+            }
+        
             $domainProbabilities = generate_normalized_probabilities(6);
-
+        
             foreach ($domainProbabilities as $domainValueId => $probability) {
                 $data[] = [
-                    "courseid" => "21",
-                    "advworkid" => "23",
                     "userid" => (string)$userId,
                     "capabilityid" => (string)$capabilityId,
                     "domainvalueid" => (string)($domainValueId + 1),
                     "probability" => number_format($probability, 5),
-                    "capabilityoverallgrade" => ($capabilityId === 3 ? "B" : "C"),
+                    "capabilityoverallgrade" => $grade,  // Assegna il grade calcolato
                     "capabilityoverallvalue" => number_format($capabilityValue, 5),
                     "iscumulated" => "0"
                 ];
             }
         }
+        
     }
 
     // Salvataggio in un file JSON
@@ -160,6 +176,66 @@ function create_new_class($distribution, $data) {
     return $baseFolderName;
 }
 
+# PEERASESSMENTSESSION
+function generate_class_options() {
+
+    // Imposta il percorso della cartella contenente i file JSON
+
+    $folder_path = 'simulatedclass'; // Sostituisci con il percorso corretto
+
+
+
+    // Ottieni tutti i file nella cartella
+
+    $files = scandir($folder_path);
+
+    $classes = [];
+
+
+
+    // Filtra i file che corrispondono al nuovo pattern "string_class_#_model"
+
+    foreach ($files as $file) {
+
+        // Verifica se il file corrisponde al pattern "any_string_class_#_model.json"
+
+        if (preg_match('/^(.*)_class_(\d+)_model\.json$/', $file, $matches)) {
+
+            // Aggiungi la parte iniziale del nome e il numero della classe
+
+            $classes[] = [
+
+                'prefix' => $matches[1],  // Parte prima di "_class_"
+
+                'id' => $matches[2]       // Numero della classe
+
+            ];
+
+        }
+
+    }
+
+
+
+    // Se non ci sono classi, aggiungi l'opzione "no class available"
+
+    if (empty($classes)) {
+
+        echo '<option value="no_class">no class available</option>';
+
+    } else {
+
+        // Crea un'opzione per ogni classe trovata
+
+        foreach ($classes as $class) {
+
+            echo '<option value="' . $class['prefix'] . '_class_' . $class['id'] . '">' . $class['prefix'] . '_class_' . $class['id'] . '</option>';
+
+        }
+
+    }
+
+}
 # DEBUG
 function write_log($message, $log_file = 'logfile.log') {
     // Apre il file di log in modalità append (aggiunge alla fine del file)
@@ -190,6 +266,18 @@ function check_directories() {
         // Se la cartella non esiste, la crea
         mkdir($directory);
     }
+}
+
+function send_data() {
+    $webservice = new WebServiceBN();
+    $jsonFile = 'data.json';
+    $jsonContent = file_get_contents($jsonFile);
+    $sessiondata = json_decode($jsonContent, true);
+    $studentmodelsjsonresponse = $webservice->post_session_data($sessiondata);
+    $output = var_export($studentmodelsjsonresponse, true);
+        file_put_contents('simulation_response.txt', $output);
+        file_put_contents('simulation_response.json', json_encode($studentmodelsjsonresponse, JSON_PRETTY_PRINT));
+
 }
 ?>
 
@@ -310,7 +398,7 @@ function check_directories() {
                 <div class="mb-3">
                     <label for="classSelection" class="form-label">Class Selection</label>
                     <select class="form-select" id="classSelection" name="classSelection">
-                        <option value="class_1">class_1</option>
+                        <?php generate_class_options(); ?>
                     </select>
                 </div>
 

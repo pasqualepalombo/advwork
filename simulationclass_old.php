@@ -1358,7 +1358,9 @@ echo $output->header();
                 <div class="col"><p>Module Name: <?php echo $advwork->name;?>, ID: <?php echo $advwork->id; ?></p></div>
                 <div class ="col"><button type="submit" class="btn btn-primary" name="process_data_btn">Process Data</button></div>
             </div>
-            <div class="row"><div class="col"><p></br></p></div></div>
+            <div class="row"><div class="col"><p>
+                
+            </br></p></div></div>
     </div>
     <div class="container bg-light FORM">
             <div class="row d-flex align-items-center">

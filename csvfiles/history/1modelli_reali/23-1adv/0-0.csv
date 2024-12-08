@@ -1,0 +1,3 @@
+Userid,Firstname,Lastname,"Grade received 1","Grade received 1 Aspect 1","Grade received 1 Aspect 2","Userid received 1","Grade given 1","Grade given 1 Aspect 1","Grade given 1 Aspect 2","Userid given 1","Max Grade Aspect 1","Weight % Aspect 1","Max Grade Aspect 2","Weight % Aspect 2","Submission grade Aspect 1","Submission grade Aspect 2","Submission grade teacherid","Submission grade","Competence (single session)","Assessment capability (single session)","Competence (cumulated)","Assessment capability (cumulated)"
+5,Ludovica,Antenato,100,10,10,3,80,8,8,3,10,0.1,10,0.1,0,0,,93.74,87.64,85.27,NULL,NULL
+3,Pasquale,Palombo,80,8,8,5,100,10,10,5,10,0.1,10,0.1,0,0,,79.45,76.84,80.38,NULL,NULL
