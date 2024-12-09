@@ -1,4 +1,6 @@
 <?php
+ // Start the session once at the beginning
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 /**
@@ -12,6 +14,14 @@ error_reporting(E_ALL);
 require_once (__DIR__.'/webserviceBN.php');
 
 # FORM HANDLING
+ // Inizializza la sessione
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['classSelection'])) {
+        $_SESSION['classSelection'] = $_POST['classSelection']; // Salva nella sessione
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['class_settings_btn'])) {
         $studentsNumber = $_POST['studentsNumber'];
@@ -34,21 +44,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['sessionSelection'])) {
             $sessionSelection = $_POST['sessionSelection'];
         }
+        $randomMin = isset($_POST['randomMin']) ? (float)$_POST['randomMin'] : 0.0;
+        $randomMax = isset($_POST['randomMax']) ? (float)$_POST['randomMax'] : 0.1;
 
+        // Calcola il valore casuale
+        $randomness;
+        if ($randomMin < $randomMax) {
+            $randomness = mt_rand($randomMin * 100, $randomMax * 100) / 100; // Genera un numero tra min e max
+        } else {
+            $randomness = $randomMin; // Fallback se i valori non sono validi
+        }
         if ($m0Model=="flat"){
             if(isset($_POST['sessionSelection'])) {
-                create_flat_allocation_on_that_class($peerNumber, $classSelection, true);
+                create_flat_allocation_on_that_class($peerNumber, $classSelection, true, $randomness);
             } else {
-                create_flat_allocation_on_that_class($peerNumber, $classSelection, false);
+                create_flat_allocation_on_that_class($peerNumber, $classSelection, false, $randomness);
             }
         }
+
+        # ottenuto il peer assessment relativo alla distribuzione si ottiene il modello m0
+
     }
     elseif (isset($_POST['teacher_settings_btn'])) {
         echo "Peer Number: Teacher<br>";
     }
 }
 
-function create_flat_allocation_on_that_class($peerNumber, $classSelection, $continue_session = true) {
+function create_flat_allocation_on_that_class($peerNumber, $classSelection, $continue_session = true, $randomness) {
     if ($continue_session) {
         // TODO: Implementare la gestione della sessione
     }
@@ -70,6 +92,25 @@ function create_flat_allocation_on_that_class($peerNumber, $classSelection, $con
     // Inizializza l'array per tracciare quante volte un 'userid' è stato scelto
     $peer_assignment_count = array_fill_keys($userids, 0);
 
+    // JSON da costruire
+    $json_output = [
+        "parameters" => [
+            "strategy" => "maxEntropy",
+            "termination" => "corrected30",
+            "mapping" => "weightedSum",
+            "domain" => [
+                1,
+                0.95,
+                0.85,
+                0.75,
+                0.65,
+                0.55,
+                0
+            ]
+        ],
+        "peer-assessments" => []
+    ];
+
     // Cicla per ogni userid
     foreach ($userids as $current_userid) {
         // Crea l'array $remain_student con tutti gli id tranne quello corrente
@@ -79,7 +120,7 @@ function create_flat_allocation_on_that_class($peerNumber, $classSelection, $con
 
         // Crea un array di peer assegnati per il current_userid
         $assigned_peers = [];
-        
+
         // Limita la selezione dei peer per ogni userid
         $attempts = 0; // Contatore per evitare cicli infiniti
         while (count($assigned_peers) < $peerNumber && $attempts < 100) {
@@ -97,7 +138,7 @@ function create_flat_allocation_on_that_class($peerNumber, $classSelection, $con
             $random_peer = $available_peers[array_rand($available_peers)];
 
             // Aggiungi il peer alla lista di assegnazione per il current_userid
-            $assigned_peers[$current_userid][$random_peer] = "0.00";
+            $assigned_peers[$random_peer] = "0.00";
 
             // Incrementa il contatore di assegnazioni per questo peer
             $peer_assignment_count[$random_peer]++;
@@ -110,14 +151,162 @@ function create_flat_allocation_on_that_class($peerNumber, $classSelection, $con
             $attempts++;
         }
 
-        // Stampa i peer assegnati per ogni current_userid
-        echo "For User ID $current_userid:\n";
-        foreach ($assigned_peers[$current_userid] as $peer_id => $value) {
-            echo "Peer ID $peer_id: $value\n";
+        // Aggiungi i peer assegnati al JSON
+        $json_output["peer-assessments"][$current_userid] = $assigned_peers;
+    }
+
+    $filePath = "simulatedclass/$classSelection/";
+    $fileName = "{$classSelection}_peerassessment.json";
+
+    // Crea la directory se non esiste
+    if (!file_exists($filePath)) {
+        mkdir($filePath, 0777, true); // Crea la directory con permessi completi
+    }
+
+    // Salva il file JSON
+    $json_string = json_encode($json_output, JSON_PRETTY_PRINT);
+    file_put_contents($filePath . $fileName, $json_string);
+
+    // Creazione del modello m0 
+    send_data($filePath, $classSelection);
+
+    //Assegnazione voti
+    make_the_peer_assessment_session($classSelection, $randomness);
+
+    // Creazione del modello M1
+    send_data_for_model($filePath, $classSelection);
+}
+
+function make_the_peer_assessment_session($classSelection, $randomness) {
+    
+    // Percorso del file JSON
+    $filePath = "simulatedclass/{$classSelection}/{$classSelection}_peerassessment.json";
+    
+    // Verifica se il file esiste
+    if (!file_exists($filePath)) {
+        throw new Exception("File $filePath non trovato.");
+    }
+
+    // Leggi il contenuto del file
+    $jsonData = file_get_contents($filePath);
+    $data = json_decode($jsonData, true);
+
+    if (!$data || !isset($data['peer-assessments'])) {
+        throw new Exception("Struttura JSON non valida nel file $filePath.");
+    }
+
+    // Itera su ogni ID nella sezione "peer-assessments"
+    foreach ($data['peer-assessments'] as $userId => $assessments) {
+        foreach ($assessments as $assignedId => $score) {
+            // Calcola il voto utilizzando calcolate_score_k_by_j()
+            $newScore = calcolate_score_k_by_j($userId, $assignedId, $classSelection, $randomness);
+            
+            // Aggiorna il voto nel JSON
+            $data['peer-assessments'][$userId][$assignedId] = $newScore;
         }
-        echo "--------------------------\n";
+    }
+    // Scrivi i dati modificati nuovamente nel file JSON
+    $updatedJsonData = json_encode($data, JSON_PRETTY_PRINT);
+    
+    // Salva nel file
+    if (file_put_contents($filePath, $updatedJsonData) === false) {
+        throw new Exception("Impossibile salvare il file $filePath.");
+    }
+
+    echo "Peer assessment sessione aggiornata con successo.\n";
+}
+
+function calcolate_score_k_by_j($userId, $assignedId, $classSelection, $randomness) {
+    // Recupera i valori k_real e j_sim
+    $k_real = get_k_real($userId, $classSelection);
+    $j_sim = get_j_sim($assignedId, $classSelection);
+
+    // Calcola un voto base come la media ponderata tra k_real e j_sim
+    $base_score = ($k_real + $j_sim) / 2;
+
+    // Calcola una piccola variazione casuale attorno al voto base
+    $random_factor = 1 + (rand(-100, 100) / 10000) * $randomness;
+
+    // Applica la variabilità al voto
+    $score = $base_score * $random_factor;
+
+    // Assicurati che il punteggio finale sia tra 0 e 1
+    $score = max(0, min(1, $score));
+
+    // Ritorna il voto finale
+    return $score;
+}
+
+
+function get_k_real($userID, $classSelection) {
+    // Percorso del file JSON
+    $filePath = "simulatedclass/{$classSelection}/{$classSelection}_mr.json";
+
+    // Verifica se il file esiste
+    if (!file_exists($filePath)) {
+        throw new Exception("File $filePath non trovato.");
+    }
+
+    // Leggi il contenuto del file
+    $jsonData = file_get_contents($filePath);
+    $data = json_decode($jsonData, true);
+
+    if (!$data || !is_array($data)) {
+        throw new Exception("Struttura JSON non valida nel file $filePath.");
+    }
+
+    // Cerca il valore di capabilityoverallvalue per l'utente specifico
+    foreach ($data as $entry) {
+        if (
+            isset($entry['userid'], $entry['capabilityid'], $entry['domainvalueid'], $entry['capabilityoverallvalue']) &&
+            $entry['userid'] == $userID &&
+            $entry['capabilityid'] == "1" &&
+            $entry['domainvalueid'] == "1"
+        ) {
+            return $entry['capabilityoverallvalue'];
+        }
     }
 }
+
+function get_j_sim($userID, $classSelection) {
+    // Percorso del file JSON
+    $filePath = "simulatedclass/{$classSelection}/{$classSelection}_m0.json";
+
+    // Verifica se il file esiste
+    if (!file_exists($filePath)) {
+        throw new Exception("File $filePath non trovato.");
+    }
+
+    // Leggi il contenuto del file
+    $jsonData = file_get_contents($filePath);
+    $data = json_decode($jsonData, true);
+
+    // Debug per verificare la struttura del JSON
+    if (!$data) {
+        throw new Exception("Errore nel parsing del JSON: " . json_last_error_msg());
+    }
+
+    // Verifica la presenza della chiave 'student-models'
+    if (!isset($data['student-models'])) {
+        throw new Exception("Chiave 'student-models' non trovata nel file $filePath. Contenuto del JSON: " . json_encode($data));
+    }
+
+    // Verifica se l'utente specificato esiste
+    if (!isset($data['student-models'][$userID])) {
+        throw new Exception("Dati per l'utente con ID $userID non trovati.");
+    }
+
+    // Recupera i dati dello studente
+    $studentData = $data['student-models'][$userID];
+
+    // Verifica se il campo 'J' esiste per l'utente specificato
+    if (isset($studentData['J']['value'])) {
+        return $studentData['J']['value']; // Restituisce il valore di 'J'
+    } else {
+        throw new Exception("Valore 'J' non trovato per l'utente con ID $userID.");
+    }
+}
+
 
 
 
@@ -373,17 +562,88 @@ function check_directories() {
     }
 }
 
-function send_data() {
+function send_data($filePath, $classSelection) {
     $webservice = new WebServiceBN();
-    $jsonFile = 'data.json';
-    $jsonContent = file_get_contents($jsonFile);
-    $sessiondata = json_decode($jsonContent, true);
-    $studentmodelsjsonresponse = $webservice->post_session_data($sessiondata);
-    $output = var_export($studentmodelsjsonresponse, true);
-        file_put_contents('simulation_response.txt', $output);
-        file_put_contents('simulation_response.json', json_encode($studentmodelsjsonresponse, JSON_PRETTY_PRINT));
 
+    // Costruisce il percorso completo del file JSON da leggere
+    $jsonFilePath = $filePath . $classSelection . "_peerassessment.json";
+
+    // Controlla se il file esiste
+    if (!file_exists($jsonFilePath)) {
+        throw new Exception("Il file $jsonFilePath non esiste.");
+    }
+
+    // Legge il contenuto del file JSON
+    $jsonContent = file_get_contents($jsonFilePath);
+    $sessiondata = json_decode($jsonContent, true);
+
+    // Invia i dati al servizio web
+    $studentmodelsjsonresponse = $webservice->post_session_data($sessiondata);
+
+    // Costruisce il percorso per salvare la risposta
+    $responseFilePath = $filePath . $classSelection;
+
+    // Salva la risposta in due formati
+    $output = var_export($studentmodelsjsonresponse, true);
+    $output = trim($output, "'");
+    file_put_contents($responseFilePath . "_m0.json", $output);
+    file_put_contents($responseFilePath, json_encode($studentmodelsjsonresponse, JSON_PRETTY_PRINT));
 }
+
+function send_data_for_model($filePath, $classSelection) {
+    $webservice = new WebServiceBN();
+
+    // Costruisce il percorso completo del file JSON da leggere
+    $jsonFilePath = $filePath . $classSelection . "_peerassessment.json";
+
+    // Controlla se il file esiste
+    if (!file_exists($jsonFilePath)) {
+        throw new Exception("Il file $jsonFilePath non esiste.");
+    }
+
+    // Legge il contenuto del file JSON
+    $jsonContent = file_get_contents($jsonFilePath);
+    $sessiondata = json_decode($jsonContent, true);
+
+    // Invia i dati al servizio web
+    $studentmodelsjsonresponse = $webservice->post_session_data($sessiondata);
+
+    // Trova il prossimo numero disponibile per il file _m#
+    $nextModelNumber = get_next_model_number($filePath, $classSelection);
+
+    // Costruisce il nome del file
+    $responseFilePath = $filePath . $classSelection . "_m" . $nextModelNumber . ".json";
+
+    // Salva la risposta
+    $output = var_export($studentmodelsjsonresponse, true);
+    $output = trim($output, "'");
+    file_put_contents($responseFilePath, $output);
+
+    echo "Risultato salvato correttamente in $responseFilePath.\n";
+}
+
+/**
+ * Trova il prossimo numero disponibile per un file _m#.
+ */
+function get_next_model_number($filePath, $classSelection) {
+    $modelNumber = 1;
+
+    // Scansiona i file nella directory
+    $files = scandir($filePath);
+
+    // Cerca i file con il pattern $classSelection_m#
+    foreach ($files as $file) {
+        if (preg_match('/' . preg_quote($classSelection) . '_m(\d+)\.json$/', $file, $matches)) {
+            $number = intval($matches[1]);
+            if ($number >= $modelNumber) {
+                $modelNumber = $number + 1; // Incrementa al numero successivo
+            }
+        }
+    }
+
+    return $modelNumber;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -445,6 +705,9 @@ function send_data() {
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" data-target="teacher-settings">Teacher Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-target="overview">Overview</a>
                     </li>
                 </ul>
             </div>
@@ -527,6 +790,21 @@ function send_data() {
                     <label for="peerNumber" class="form-label">Peer Number</label>
                     <input type="number" class="form-control" id="peerNumber" name="peerNumber" value="3" required>
                 </div>
+                
+                <!-- Randomness -->
+                <div class="mb-3">
+                    <label class="form-label">Randomness</label>
+                    <div class="row">
+                        <div class="col">
+                            <input type="number" class="form-control" id="randomMin" name="randomMin" value="0" step="0.01" required>
+                            <small class="form-text">Minimum</small>
+                        </div>
+                        <div class="col">
+                            <input type="number" class="form-control" id="randomMax" name="randomMax" value="0.1" step="0.01" required>
+                            <small class="form-text">Maximum</small>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Process PA Button -->
                 <div class="mb-3">
@@ -558,13 +836,23 @@ function send_data() {
                             </select>
                         </label>
                     </div>
+                    <!-- Randomness -->
+                    <div class="mb-3">
+                        <label class="form-label">Randomness</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="number" class="form-control" id="randomMin" name="randomMin" value="0" step="0.01" required>
+                                <small class="form-text">Minimum</small>
+                            </div>
+                            <div class="col">
+                                <input type="number" class="form-control" id="randomMax" name="randomMax" value="0.1" step="0.01" required>
+                                <small class="form-text">Maximum</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Randomness -->
-                <div class="mb-3">
-                    <label for="randomnessSlider" class="form-label">Randomness (0,0.2)</label>
-                    <input type="range" class="form-range" id="randomnessSlider" name="randomness" min="0" max="0.2" step="0.01" value="0.1">
-                </div>
+                
 
                 <!-- Grade Button -->
                 <div class="mb-3">
@@ -575,116 +863,161 @@ function send_data() {
 
         <section id="overview" class="mb-5">
             <h2>Overview</h2>
-            <table class="table table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>Student</th>
-                        <th>MR</th>
-                        <th>M0</th>
-                        <th>MPA</th>
-                        <th>M1</th>
-                        <th>M1-MR</th>
-                        <th>M1-M0</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Row 1 -->
-                    <tr>
-                        <td>John Doe</td>
-                        <td>K: 0.85<br>J: 0.12</td>
-                        <td>K: 0.44<br>J: 0.56</td>
-                        <td>K: 0.76<br>J: 0.33</td>
-                        <td>K: 0.67<br>J: 0.45</td>
-                        <td class="fw-bold">K: 0.21<br>J: 0.15</td>
-                        <td class="fw-bold">K: 0.39<br>J: 0.27</td>
-                    </tr>
-                    <!-- Row 2 -->
-                    <tr>
-                        <td>Jane Smith</td>
-                        <td>K: 0.90<br>J: 0.43</td>
-                        <td>K: 0.62<br>J: 0.18</td>
-                        <td>K: 0.72<br>J: 0.29</td>
-                        <td>K: 0.88<br>J: 0.31</td>
-                        <td class="fw-bold">K: 0.13<br>J: 0.05</td>
-                        <td class="fw-bold">K: 0.22<br>J: 0.11</td>
-                    </tr>
-                    <!-- Row 3 -->
-                    <tr>
-                        <td>Emma Brown</td>
-                        <td>K: 0.65<br>J: 0.34</td>
-                        <td>K: 0.59<br>J: 0.49</td>
-                        <td>K: 0.74<br>J: 0.22</td>
-                        <td>K: 0.81<br>J: 0.26</td>
-                        <td class="fw-bold">K: 0.16<br>J: 0.08</td>
-                        <td class="fw-bold">K: 0.42<br>J: 0.10</td>
-                    </tr>
-                    <!-- Additional rows -->
-                    <tr>
-                        <td>Chris Johnson</td>
-                        <td>K: 0.89<br>J: 0.32</td>
-                        <td>K: 0.45<br>J: 0.54</td>
-                        <td>K: 0.68<br>J: 0.25</td>
-                        <td>K: 0.79<br>J: 0.15</td>
-                        <td class="fw-bold">K: 0.23<br>J: 0.11</td>
-                        <td class="fw-bold">K: 0.36<br>J: 0.09</td>
-                    </tr>
-                    <tr>
-                        <td>Sophia Davis</td>
-                        <td>K: 0.71<br>J: 0.27</td>
-                        <td>K: 0.39<br>J: 0.62</td>
-                        <td>K: 0.84<br>J: 0.47</td>
-                        <td>K: 0.66<br>J: 0.29</td>
-                        <td class="fw-bold">K: 0.14<br>J: 0.07</td>
-                        <td class="fw-bold">K: 0.51<br>J: 0.20</td>
-                    </tr>
-                    <tr>
-                        <td>Daniel Wilson</td>
-                        <td>K: 0.83<br>J: 0.23</td>
-                        <td>K: 0.51<br>J: 0.33</td>
-                        <td>K: 0.79<br>J: 0.44</td>
-                        <td>K: 0.61<br>J: 0.30</td>
-                        <td class="fw-bold">K: 0.19<br>J: 0.12</td>
-                        <td class="fw-bold">K: 0.27<br>J: 0.13</td>
-                    </tr>
-                    <tr>
-                        <td>Olivia Martinez</td>
-                        <td>K: 0.75<br>J: 0.31</td>
-                        <td>K: 0.58<br>J: 0.40</td>
-                        <td>K: 0.70<br>J: 0.22</td>
-                        <td>K: 0.85<br>J: 0.34</td>
-                        <td class="fw-bold">K: 0.15<br>J: 0.08</td>
-                        <td class="fw-bold">K: 0.29<br>J: 0.17</td>
-                    </tr>
-                    <tr>
-                        <td>Lucas White</td>
-                        <td>K: 0.92<br>J: 0.41</td>
-                        <td>K: 0.47<br>J: 0.50</td>
-                        <td>K: 0.65<br>J: 0.18</td>
-                        <td>K: 0.80<br>J: 0.23</td>
-                        <td class="fw-bold">K: 0.17<br>J: 0.10</td>
-                        <td class="fw-bold">K: 0.34<br>J: 0.21</td>
-                    </tr>
-                    <tr>
-                        <td>Mia Lee</td>
-                        <td>K: 0.88<br>J: 0.36</td>
-                        <td>K: 0.49<br>J: 0.28</td>
-                        <td>K: 0.72<br>J: 0.31</td>
-                        <td>K: 0.69<br>J: 0.27</td>
-                        <td class="fw-bold">K: 0.18<br>J: 0.05</td>
-                        <td class="fw-bold">K: 0.24<br>J: 0.14</td>
-                    </tr>
-                    <tr>
-                        <td>Ella King</td>
-                        <td>K: 0.78<br>J: 0.30</td>
-                        <td>K: 0.55<br>J: 0.47</td>
-                        <td>K: 0.80<br>J: 0.26</td>
-                        <td>K: 0.74<br>J: 0.32</td>
-                        <td class="fw-bold">K: 0.20<br>J: 0.12</td>
-                        <td class="fw-bold">K: 0.37<br>J: 0.16</td>
-                    </tr>
-                </tbody>
-            </table>
+            <?php
+            
+
+            
+function getLargestMnFile($directory, $classSelection) {
+    $files = scandir($directory);
+    $largestN = 0;
+    $fileMn = null;
+
+    foreach ($files as $file) {
+        if (preg_match('/' . preg_quote($classSelection) . '_m(\d+)\.json$/', $file, $matches)) {
+            $n = (int)$matches[1];
+            if ($n > $largestN) {
+                $largestN = $n;
+                $fileMn = "$directory/$file";
+            }
+        }
+    }
+
+    return $fileMn;
+}
+
+
+// Funzione per verificare l'esistenza dei file
+            function isValidClass($classSelection) {
+                $directory = "simulatedclass/$classSelection";
+                $file_m0 = "$directory/{$classSelection}_m0.json";
+                $file_mr = "$directory/{$classSelection}_mr.json";
+                return file_exists($file_m0) && file_exists($file_mr);
+            }
+
+            // Crea un elenco delle classi valide
+            $baseDirectory = "simulatedclass";
+            $validClasses = [];
+            if (is_dir($baseDirectory)) {
+                $directories = scandir($baseDirectory);
+                foreach ($directories as $dir) {
+                    if ($dir !== "." && $dir !== ".." && isValidClass($dir)) {
+                        $validClasses[] = $dir;
+                    }
+                }
+            }
+
+            // Mostra sempre il menu a tendina
+            echo '<form method="post" action="simulationclass.php">';
+            echo '<label for="classSelection" class="form-label">Session to see:</label>';
+            echo '<select id="classSelection" name="classSelection" class="form-select mb-3">';
+            foreach ($validClasses as $class) {
+                // Seleziona automaticamente l'opzione corrispondente alla classe in sessione
+                $selected = (isset($_SESSION['classSelection']) && $_SESSION['classSelection'] === $class) ? "selected" : "";
+                echo "<option value='$class' $selected>$class</option>";
+            }
+            echo '</select>';
+            echo '<button type="submit" class="btn btn-primary">Load Session</button>';
+            echo '</form>';
+
+            // Gestisci la selezione della classe
+            if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['classSelection'])) {
+                $_SESSION['classSelection'] = $_POST['classSelection']; // Salva la classe selezionata in sessione
+            }
+
+            // Mostra la tabella se c'è una classe selezionata in sessione
+            if (isset($_SESSION['classSelection'])) {
+                $classSelection = $_SESSION['classSelection'];
+                $directory = "simulatedclass/$classSelection";
+                $file_m0 = "$directory/{$classSelection}_m0.json";
+                $file_mr = "$directory/{$classSelection}_mr.json";
+
+                // Mostra un messaggio e i dati se i file esistono
+                if (isValidClass($classSelection)) {
+                    echo "<h3>Data for $classSelection</h3>";
+                   
+                    
+    
+// Funzione per ottenere UserID distinti da un file JSON
+function getDistinctUserIds($filePath) {
+    if (!file_exists($filePath)) {
+        return [];
+    }
+
+    $data = json_decode(file_get_contents($filePath), true);
+    $userIds = [];
+
+    if (is_array($data)) {
+        foreach ($data as $entry) {
+            if (isset($entry['UserID']) && !in_array($entry['UserID'], $userIds)) {
+                $userIds[] = $entry['UserID'];
+            }
+        }
+    }
+
+    return $userIds;
+}
+
+// Ottieni gli UserID distinti dal file MR
+$userIds = getDistinctUserIds($file_mr);
+
+// Determina se esiste il file Mn
+$file_mn = getLargestMnFile($directory, $classSelection);
+$mnColumnExists = $file_mn !== null;
+
+// Inizio della tabella
+echo '<table class="table table-bordered">';
+echo '<thead class="table-light">';
+echo '<tr>';
+echo '<th>Student ID</th>';
+echo '<th>MR</th>';
+echo '<th>M0</th>';
+echo '<th>MPA</th>';
+if ($mnColumnExists) {
+    echo "<th>Mn</th>";
+    echo "<th>Mn-MR</th>";
+    echo "<th>Mn-MPA</th>";
+}
+echo '</tr>';
+echo '</thead>';
+echo '<tbody>';
+
+// Popola la tabella con righe basate sugli UserID distinti
+foreach ($userIds as $userId) {
+    echo '<tr>';
+    echo "<td>$userId</td>";
+    echo '<td>-</td>'; // Placeholder per MR
+    echo '<td>-</td>'; // Placeholder per M0
+    echo '<td>-</td>'; // Placeholder per MPA
+    if ($mnColumnExists) {
+        echo '<td>-</td>'; // Placeholder per Mn
+        echo '<td>-</td>'; // Placeholder per Mn-MR
+        echo '<td>-</td>'; // Placeholder per Mn-MPA
+    }
+    echo '</tr>';
+}
+echo '</tbody>';
+echo '</table>';
+
+
+    // Cerca il file m#.json con il numero più grande
+    $file_mn = getLargestMnFile($directory, $classSelection);
+    if ($file_mn) {
+        echo "<tr><td>Largest Mn File</td><td><a href='$file_mn'>Download</a></td></tr>";
+    }
+    
+                    echo "<tr><td>M0 File</td><td><a href='$file_m0'>Download</a></td></tr>";
+                    echo "<tr><td>MR File</td><td><a href='$file_mr'>Download</a></td></tr>";
+                    echo '</tbody>';
+                    echo '</table>';
+                } else {
+                    echo "<p class='text-danger'>Files not found in: $directory</p>";
+                }
+            }
+            ?>
         </section>
+
+
+
     </main>
 
     <!-- Footer -->
@@ -728,6 +1061,21 @@ function send_data() {
         });
 
         // Mostra la sezione iniziale (class-settings) al caricamento della pagina
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                const target = this.getAttribute('data-target');
+                document.querySelectorAll('section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                document.getElementById(target).classList.remove('hidden');
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('class-settings').classList.remove('hidden');
+        });
+    
         document.addEventListener('DOMContentLoaded', () => {
             showSection('class-settings');
         });
